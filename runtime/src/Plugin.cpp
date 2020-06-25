@@ -14,6 +14,12 @@ namespace fs = std::filesystem;
 
 #include "Plugin.hpp"
 
+#ifdef _WIN32
+# define EXPORTED extern "C" __declspec(dllexport)
+#else
+# define EXPORTED
+#endif
+
 #ifdef LUA_DEFINE
 # undef LUA_DEFINE
 #endif

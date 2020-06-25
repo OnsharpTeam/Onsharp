@@ -1,5 +1,8 @@
 set(PLUGIN_CONFIG_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/config_headers")
-link_libraries(stdc++fs)
+
+if(UNIX)
+    link_libraries(stdc++fs)
+endif()
 
 configure_file(
         "version.hpp.in"
@@ -11,7 +14,7 @@ add_library(OnsharpRuntime MODULE
         Plugin.cpp
         Plugin.hpp
         Singleton.hpp
-        PluginInterface.cpp)
+        PluginInterface.cpp coreclrhost.h NetBridge.hpp)
 
 target_include_directories(OnsharpRuntime PRIVATE
         ${PLUGIN_CONFIG_INCLUDE_DIR}
