@@ -19,7 +19,6 @@ add_library(OnsharpRuntime MODULE
 target_include_directories(OnsharpRuntime PRIVATE
         ${PLUGIN_CONFIG_INCLUDE_DIR}
         ${HORIZONSDK_INCLUDE_DIR}
-        ${JNI_INCLUDE_DIRS}
         )
 
 set_property(TARGET OnsharpRuntime PROPERTY PREFIX "")
