@@ -14,12 +14,15 @@ add_library(OnsharpRuntime MODULE
         Plugin.cpp
         Plugin.hpp
         Singleton.hpp
-        PluginInterface.cpp coreclrhost.h NetBridge.hpp)
+        PluginInterface.cpp
+        coreclrhost.h
+        NetBridge.hpp
+)
 
 target_include_directories(OnsharpRuntime PRIVATE
         ${PLUGIN_CONFIG_INCLUDE_DIR}
         ${HORIZONSDK_INCLUDE_DIR}
-        )
+)
 
 set_property(TARGET OnsharpRuntime PROPERTY PREFIX "")
 
@@ -30,7 +33,7 @@ if(MSVC)
     target_compile_definitions(OnsharpRuntime PRIVATE
             _CRT_SECURE_NO_WARNINGS
             NOMINMAX
-            )
+    )
 endif()
 
 # increase warning levels
@@ -40,7 +43,7 @@ if (MSVC)
             /WX
             /permissive-
             /wd4505
-            )
+    )
 elseif(UNIX)
     target_compile_options(OnsharpRuntime PRIVATE
             -Wall
@@ -49,7 +52,7 @@ elseif(UNIX)
             -Werror
             -Wno-unused-variable
             -Wno-unused-function
-            )
+    )
 endif()
 
 target_link_libraries(OnsharpRuntime ${HORIZONSDK_LIBRARY})
