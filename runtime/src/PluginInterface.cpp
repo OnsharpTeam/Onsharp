@@ -26,6 +26,8 @@ EXPORT(int) OnPluginStart()
 
 EXPORT(void) OnPluginStop()
 {
+    Onset::Plugin::Get()->Log("!");
+    Plugin::Get()->GetBridge().stop();
     Plugin::Singleton::Destroy();
     Onset::Plugin::Get()->Log("OnsharpRuntime unloaded!");
     Onset::Plugin::Destroy();

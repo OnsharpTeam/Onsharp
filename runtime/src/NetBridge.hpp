@@ -18,9 +18,9 @@
 
 #include "coreclrhost.h"
 
-#define NO_ERROR 0
-#define CONSOLE_ERROR -1
-#define SUCCESS 1
+#define NET_NO_ERROR 0
+#define NET_CONSOLE_ERROR -1
+#define NET_SUCCESS 1
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -42,7 +42,7 @@
 #endif
 
 typedef int (*report_callback_ptr)(int progress);
-typedef void (*load_ptr)();
+typedef void (*load_ptr)(const char* appPath);
 typedef void (*unload_ptr)();
 typedef bool (*execute_event_ptr)(const char* name, const char* data);
 
@@ -63,40 +63,51 @@ private:
     unload_ptr unload;
 
 public:
-    int last_error = NO_ERROR;
+    int last_error = NET_NO_ERROR;
 
     NetBridge()
     {
+        char aCurrentPath[FILENAME_MAX];
+
+        if (!GetCurrentDir(aCurrentPath, sizeof(aCurrentPath)))
+        {
+            printf("ERROR: No app path found!");
+            last_error = NET_CONSOLE_ERROR;
+            return;
+        }
+
+        aCurrentPath[sizeof(aCurrentPath) - 1] = '\0';
+        std::string appPath = std::string(aCurrentPath);
+
         char gCurrentPath[FILENAME_MAX];
 
         if (!GetCurrentDir(gCurrentPath, sizeof(gCurrentPath)))
         {
             printf("ERROR: No coreclr path found!");
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
         gCurrentPath[sizeof(gCurrentPath) - 1] = '\0';
-        printf(("the current path: " + std::string(gCurrentPath)).c_str());
 #if defined(_WIN32)
-        std::string coreClrPath = std::string(gCurrentPath) + "\\csharp\\coreclr.dll";
+        std::string coreClrPath = std::string(gCurrentPath) + "\\onsharp\\runtime\\coreclr.dll";
 #else
-        std::string coreClrPath = std::string(gCurrentPath) + "\\csharp\\libcoreclr.so";
+        std::string coreClrPath = std::string(gCurrentPath) + "\\onsharp\\runtime\\libcoreclr.so";
 #endif
         char cCurrentPath[FILENAME_MAX];
 
         if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
         {
             printf("ERROR: No Wrapper path found!");
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
         cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
 #if defined(_WIN32)
-        std::string wrapperPath = std::string(cCurrentPath) + "\\csharp\\Onsharp.dll";
+        std::string wrapperPath = std::string(cCurrentPath) + "\\onsharp\\runtime\\Onsharp.dll";
 #else
-        std::string wrapperPath = std::string(cCurrentPath) + "\\csharp\\Onsharp.dll";
+        std::string wrapperPath = std::string(cCurrentPath) + "\\onsharp\\runtime\\Onsharp.dll";
 #endif
 
         char rCurrentPath[FILENAME_MAX];
@@ -104,15 +115,15 @@ public:
         if (!GetCurrentDir(rCurrentPath, sizeof(rCurrentPath)))
         {
             printf("ERROR: No Runtime path found!");
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
         rCurrentPath[sizeof(rCurrentPath) - 1] = '\0';
 #if defined(_WIN32)
-        std::string runtimePath = std::string(rCurrentPath) + "\\csharp\\";
+        std::string runtimePath = std::string(rCurrentPath) + "\\onsharp\\runtime\\";
 #else
-        std::string runtimePath = std::string(rCurrentPath) + "\\csharp\\";
+        std::string runtimePath = std::string(rCurrentPath) + "\\onsharp\\runtime\\";
 #endif
 
 #if defined(_WIN32)
@@ -123,7 +134,7 @@ public:
         if (coreClr == NULL)
         {
             printf("ERROR: Failed to load CoreCLR from %s\n", coreClrPath.c_str());
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
@@ -140,27 +151,26 @@ public:
         if (initializeCoreClr == NULL)
         {
             printf("ERROR: coreclr_initialize not found");
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
         if (createManagedDelegate == NULL)
         {
             printf("ERROR: coreclr_create_delegate not found");
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
         if (shutdownCoreClr == NULL)
         {
             printf("ERROR: coreclr_shutdown not found");
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
         std::string tpaList;
 
-        //
 #if defined(_WIN32)
         std::string searchPath(runtimePath.c_str());
         searchPath.append(FS_SEPARATOR);
@@ -220,7 +230,7 @@ public:
         if (hr < 0)
         {
             printf("ERROR: coreclr_initialize failed - status: 0x%08x\n", hr);
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
@@ -229,14 +239,14 @@ public:
                 hostHandle,
                 domainId,
                 "Onsharp",
-                "Onsharp.Runtime.Wrapper",
+                "Onsharp.Native.Bridge",
                 "Load",
                 (void**)&managedDelegate);
 
         if (hr < 0)
         {
             printf("ERROR: load delegate failed - status: 0x%08x\n", hr);
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
@@ -244,14 +254,14 @@ public:
                 hostHandle,
                 domainId,
                 "Onsharp",
-                "Onsharp.Runtime.Wrapper",
+                "Onsharp.Native.Bridge",
                 "Unload",
                 (void**)&unload);
 
         if (hr < 0)
         {
             printf("ERROR: unload delegate failed - status: 0x%08x\n", hr);
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
@@ -259,33 +269,34 @@ public:
                 hostHandle,
                 domainId,
                 "Onsharp",
-                "Onsharp.Runtime.Wrapper",
+                "Onsharp.Native.Bridge",
                 "ExecuteEvent",
                 (void**)&executeEvent);
 
         if (hr < 0)
         {
             printf("ERROR: execute_event delegate failed - status: 0x%08x\n", hr);
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
             return;
         }
 
-        managedDelegate();
-        last_error = SUCCESS;
+        managedDelegate(appPath.c_str());
+        last_error = NET_SUCCESS;
     }
 
     void stop()
     {
+        printf("stopping netbridge...");
         unload();
         int hr = shutdownCoreClr(hostHandle, domainId);
         if (hr >= 0)
         {
-            last_error = SUCCESS;
+            last_error = NET_SUCCESS;
         }
         else
         {
             printf("ERROR: coreclr_shutdown failed - status: 0x%08x\n", hr);
-            last_error = CONSOLE_ERROR;
+            last_error = NET_CONSOLE_ERROR;
         }
     }
 

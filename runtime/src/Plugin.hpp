@@ -6,6 +6,7 @@
 #include <functional>
 #include <PluginSDK.h>
 #include "Singleton.hpp"
+#include "NetBridge.hpp"
 
 class Plugin : public Singleton<Plugin>
 {
@@ -15,6 +16,7 @@ private:
     ~Plugin() = default;
     std::map<std::string, lua_State*> packageStates;
     std::map<lua_State*, std::string> statePackages;
+    NetBridge bridge;
 
 private:
     using FuncInfo_t = std::tuple<const char *, lua_CFunction>;
@@ -45,5 +47,7 @@ public:
     std::string GetStatePackage(lua_State* L) {
         return this->statePackages[L];
     }
-    void DestoryRuntime();
+    NetBridge GetBridge() {
+        return this->bridge;
+    }
 };

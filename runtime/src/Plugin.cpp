@@ -47,9 +47,4 @@ Lua::LuaArgs_t CallLuaFunction(lua_State* ScriptVM, const char* LuaFunctionName,
 
 Plugin::Plugin()
 {
-    //TODO start runtime
-}
-
-void Plugin::DestoryRuntime() {
-    //TODO write destory method
 }

@@ -25,6 +25,7 @@ target_include_directories(OnsharpRuntime PRIVATE
 )
 
 set_property(TARGET OnsharpRuntime PROPERTY PREFIX "")
+set_property(TARGET OnsharpRuntime PROPERTY OUTPUT_NAME "onsharp-runtime")
 
 set_property(TARGET OnsharpRuntime PROPERTY CXX_STANDARD 17)
 set_property(TARGET OnsharpRuntime PROPERTY CXX_STANDARD_REQUIRED ON)
