@@ -26,7 +26,7 @@ EXPORT(int) OnPluginStart()
 
 EXPORT(void) OnPluginStop()
 {
-    Onset::Plugin::Get()->Log("!");
+    Onset::Plugin::Get()->Log("Stopping Runtime...");
     Plugin::Get()->GetBridge().stop();
     Plugin::Singleton::Destroy();
     Onset::Plugin::Get()->Log("OnsharpRuntime unloaded!");
@@ -48,5 +48,6 @@ EXPORT(void) OnPackageLoad(const char *PackageName, lua_State *L)
 
 EXPORT(void) OnPackageUnload(const char *PackageName)
 {
+    Onset::Plugin::Get()->Log("unloading package");
     Plugin::Get()->RemovePackage(PackageName);
 }
