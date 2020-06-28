@@ -48,3 +48,16 @@ Lua::LuaArgs_t Plugin::CallLuaFunction(const char* LuaFunctionName, Lua::LuaArgs
 Plugin::Plugin()
 {
 }
+
+//region Native Bridge Functions
+
+EXPORTED bool IsEntityValid(long id, const char* entityName)
+{
+    std::string sFuncName = "IsValid" + std::string(entityName);
+    const char* funcName = sFuncName.c_str();
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction(funcName, &argValues);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+//endregion

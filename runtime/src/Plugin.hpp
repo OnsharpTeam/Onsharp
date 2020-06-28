@@ -54,5 +54,6 @@ public:
     NetBridge GetBridge() {
         return this->bridge;
     }
+
     Lua::LuaArgs_t CallLuaFunction(const char* LuaFunctionName, Lua::LuaArgs_t* Arguments);
 };
