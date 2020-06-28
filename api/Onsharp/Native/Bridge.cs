@@ -1,15 +1,36 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Nett;
+using Onsharp.Events;
 using Onsharp.IO;
 using Onsharp.Plugin;
 
 namespace Onsharp.Native
 {
+    /// <summary>
+    /// The bridge managed the direct contact from the c++ runtime
+    /// and the base runtime functionality and data.
+    /// </summary>
     internal static class Bridge
     {
+        /// <summary>
+        /// The name of the c++ runtime dll.
+        /// </summary>
         internal const string DllName = "onsharp-runtime";
+        
+        /// <summary>
+        /// A list containing all the events which needs as first argument a player, so called player events.
+        /// </summary>
+        private static readonly List<EventType> PlayerEvents = new List<EventType>
+        {
+            EventType.PlayerChat, EventType.PlayerChatCommand, EventType.PlayerJoin, EventType.PlayerQuit, EventType.PlayerPickupHit,
+            EventType.NPCStreamIn, EventType.NPCStreamOut, EventType.PlayerEnterVehicle, EventType.PlayerLeaveVehicle, EventType.PlayerStateChange,
+            EventType.VehicleStreamIn, EventType.VehicleStreamOut, EventType.PlayerDamage, EventType.PlayerDeath, EventType.PlayerInteractDoor,
+            EventType.PlayerStreamIn, EventType.PlayerStreamOut, EventType.PlayerServerAuth, EventType.PlayerSteamAuth, EventType.PlayerDownloadFile,
+            EventType.PlayerWeaponShot, EventType.PlayerSpawn
+        };
 
         /// <summary>
         /// The path of the server software running this runtime.
@@ -104,9 +125,46 @@ namespace Onsharp.Native
         /// <summary>
         /// Just a placeholder: Maybe this will be replaced by another technique.
         /// </summary>
-        internal static bool ExecuteEvent(string name, string json)
+        internal static bool ExecuteEvent(int typeId, string json)
         {
-            return false;
+            ReturnData data = new ReturnData(json);
+            EventType type = (EventType) typeId;
+            bool flag = true;
+            PluginManager.IteratePlugins(plugin =>
+            {
+                PluginDomain domain = PluginManager.GetDomain(plugin);
+                if (domain == null)
+                {
+                    Logger.Fatal("Could not get plugin domain for loaded plugin {PLUGIN}!", plugin.Display);
+                    return;
+                }
+
+                object[] args = ParseEventArgs(domain, type, data);
+                if (!domain.Server.CallEvent(type, args))
+                    flag = false;
+            });
+            
+            return flag;
+        }
+
+        /// <summary>
+        /// Executes an internal Onsharp event.
+        /// </summary>
+        /// <param name="type">The type of the internal event</param>
+        /// <param name="args">The arguments of the internal event</param>
+        internal static void ExecuteInternalEvent(EventType type, params object[] args)
+        {
+            PluginManager.IteratePlugins(plugin =>
+            {
+                PluginDomain domain = PluginManager.GetDomain(plugin);
+                if (domain == null)
+                {
+                    Logger.Fatal("Could not get plugin domain for loaded plugin {PLUGIN}!", plugin.Display);
+                    return;
+                }
+
+                domain.Server.CallEvent(type, args);
+            });
         }
 
         /// <summary>
@@ -117,6 +175,102 @@ namespace Onsharp.Native
         internal static string PtrToString(IntPtr ptr)
         {
             return Marshal.PtrToStringUTF8(ptr);
+        }
+        
+        /// <summary>
+        /// Returns a boolean whether the given event is a player event - so needs a player as the first argument - or not.
+        /// </summary>
+        /// <param name="type">The event type</param>
+        /// <returns>True if it is a player event</returns>
+        internal static bool IsPlayerEvent(EventType type)
+        {
+            return PlayerEvents.Contains(type);
+        }
+
+        private static object[] ParseEventArgs(PluginDomain owner, EventType type, ReturnData data)
+        {
+            try
+            {
+                object[] args = null;
+                switch (type)
+                {
+                    case EventType.PlayerQuit:
+                        break;
+                    case EventType.PlayerChat:
+                        break;
+                    case EventType.PlayerChatCommand:
+                        break;
+                    case EventType.PlayerJoin:
+                        break;
+                    case EventType.PlayerPickupHit:
+                        break;
+                    case EventType.PackageStart:
+                        break;
+                    case EventType.PackageStop:
+                        break;
+                    case EventType.GameTick:
+                        break;
+                    case EventType.ClientConnectionRequest:
+                        break;
+                    case EventType.NPCReachTarget:
+                        break;
+                    case EventType.NPCDamage:
+                        break;
+                    case EventType.NPCSpawn:
+                        break;
+                    case EventType.NPCDeath:
+                        break;
+                    case EventType.NPCStreamIn:
+                        break;
+                    case EventType.NPCStreamOut:
+                        break;
+                    case EventType.PlayerEnterVehicle:
+                        break;
+                    case EventType.PlayerLeaveVehicle:
+                        break;
+                    case EventType.PlayerStateChange:
+                        break;
+                    case EventType.VehicleRespawn:
+                        break;
+                    case EventType.VehicleStreamIn:
+                        break;
+                    case EventType.VehicleStreamOut:
+                        break;
+                    case EventType.PlayerServerAuth:
+                        break;
+                    case EventType.PlayerSteamAuth:
+                        break;
+                    case EventType.PlayerDownloadFile:
+                        break;
+                    case EventType.PlayerStreamIn:
+                        break;
+                    case EventType.PlayerStreamOut:
+                        break;
+                    case EventType.PlayerSpawn:
+                        break;
+                    case EventType.PlayerDeath:
+                        break;
+                    case EventType.PlayerWeaponShot:
+                        break;
+                    case EventType.PlayerDamage:
+                        break;
+                    case EventType.PlayerInteractDoor:
+                        break;
+                    case EventType.PlayerCommandFailed:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                }
+
+                return args;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex,
+                    "An error occurred while parsing event args for the Event {TYPE} owned by the Plugin {PLUGIN}!",
+                    Enum.GetName(typeof(EventType), type), owner.Plugin.Display);
+                return null;
+            }
         }
     }
 }

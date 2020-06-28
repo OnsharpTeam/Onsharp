@@ -44,7 +44,7 @@
 typedef int (*report_callback_ptr)(int progress);
 typedef void (*load_ptr)(const char* appPath);
 typedef void (*unload_ptr)();
-typedef bool (*execute_event_ptr)(const char* name, const char* data);
+typedef bool (*execute_event_ptr)(int type, const char* data);
 
 #ifdef __cplusplus
 extern "C"
@@ -299,9 +299,9 @@ public:
         }
     }
 
-    bool execute_event(const char* name, const char* data)
+    bool ExecuteEvent(int type, const char* data)
     {
-        return executeEvent(name, data);
+        return executeEvent(type, data);
     }
 };
 

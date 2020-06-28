@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Loader;
+using Onsharp.Events;
 using Onsharp.IO;
 using Onsharp.Native;
 
@@ -33,21 +34,26 @@ namespace Onsharp.Plugin
         /// the plugin main class of the plugin which is owned by this domain.
         /// </summary>
         internal IPlugin Plugin { get; private set; }
+        
+        /// <summary>
+        /// The server owned by this domain and the plugin.
+        /// </summary>
+        internal Server Server { get; private set; }
 
         internal PluginDomain(PluginManager pluginManager, string path)
         {
             Path = path;
             _pluginManager = pluginManager;
             _context = new DomainLoadContext(path);
+            Server = new Server(this);
         }
 
         /// <summary>
         /// Initializes the plugin and loads its assembly but does not start it.
         /// To start the plugin use <see cref="Start"/>
         /// </summary>
-        internal void Initialize(out Server server)
+        internal void Initialize()
         {
-            server = null;
             EntryPoints = new List<IEntryPoint>();
             _assembly = _context.Load();
             foreach (Type type in _assembly.GetExportedTypes())
@@ -57,36 +63,51 @@ namespace Onsharp.Plugin
                     PluginMeta meta = type.GetCustomAttribute<PluginMeta>();
                     if (meta == null)
                     {
+                        ChangePluginState(PluginState.Failed);
                         Bridge.Logger.Fatal(
                             "Onsharp found a plugin class {CLASS} in the plugin on path \"{PATH}\" which does not have a meta descriptor!",
                             type.FullName, Path);
+                        return;
+                    }
+
+                    Plugin = TryCreatePlugin(type);
+                    if (Plugin != null)
+                    {
+                        Plugin.Data = new DataStorage(Plugin);
+                        Plugin.FilePath = Path;
+                        Plugin.Meta = meta;
+                        Plugin.Logger = new Logger(Plugin.Display, meta.IsDebug);
+                        Plugin.State = PluginState.Unknown;
+                        EntryPoints.Add(Plugin);
                     }
                     else
                     {
-                        Plugin = TryCreatePlugin(type);
-                        if (Plugin != null)
-                        {
-                            Plugin.Data = new DataStorage(Plugin);
-                            Plugin.FilePath = Path;
-                            Plugin.Meta = meta;
-                            Plugin.Logger = new Logger(Plugin.Display, meta.IsDebug);
-                            Plugin.State = PluginState.Unknown;
-                            server = new Server(this);
-                            Plugin.Server = server;
-                            EntryPoints.Add(Plugin);
-                        }
-                        else
-                        {
-                            Bridge.Logger.Fatal(
-                                "Onsharp tried to instantiate the plugin class {CLASS} in the plugin on path \"{PATH}\" but failed! Does the class have a default constructor?",
-                                type.FullName, Path);
-                        }
+                        ChangePluginState(PluginState.Failed);
+                        Bridge.Logger.Fatal(
+                            "Onsharp tried to instantiate the plugin class {CLASS} in the plugin on path \"{PATH}\" but failed! Does the class have a default constructor?",
+                            type.FullName, Path);
+                        return;
                     }
                 }
                 else if (EntryPointType.IsAssignableFrom(type))
                 {
-                    EntryPoints.Add((IEntryPoint) Activator.CreateInstance(type));
+                    IEntryPoint entryPoint = (IEntryPoint) Activator.CreateInstance(type);
+                    if (entryPoint == null)
+                    {
+                        Bridge.Logger.Fatal(
+                            "Could not instantiate the entry class {CLASS} in the plugin on path \"{PATH}\"! Does it has a default constructor?",
+                            type.FullName, Path);
+                        continue;    
+                    }
+                    
+                    EntryPoints.Add(entryPoint);
                 }
+            }
+
+            foreach (IEntryPoint entryPoint in EntryPoints)
+            {
+                entryPoint.Server = Server;
+                entryPoint.PluginManager = Bridge.PluginManager;
             }
 
             ChangePluginState(PluginState.Loaded);
@@ -112,10 +133,6 @@ namespace Onsharp.Plugin
             try
             {
                 Plugin.Logger.Info("Starting plugin {NAME}...", Plugin.Display);
-                foreach (IEntryPoint entryPoint in EntryPoints)
-                {
-                    entryPoint.PluginManager = Bridge.PluginManager;
-                }
                 
                 Plugin.OnStart();
                 lock (_pluginManager.Plugins)
@@ -142,8 +159,6 @@ namespace Onsharp.Plugin
                 Unload();
                 lock (_pluginManager.Plugins)
                     _pluginManager.Plugins.Remove(Plugin);
-                lock (_pluginManager.AssociatedServers)
-                    _pluginManager.AssociatedServers.Remove(this);
                 ChangePluginState(PluginState.Stopped);
                 Plugin.Logger.Info("Plugin {NAME} successfully stopped!", Plugin.Display);
             }
@@ -161,7 +176,7 @@ namespace Onsharp.Plugin
 
         private void ChangePluginState(PluginState state)
         {
-            //TODO call plugin state changed event
+            Bridge.ExecuteInternalEvent(EventType.PluginStateChanging, Plugin.Meta, Plugin.State, state);
             Plugin.State = state;
         }
     }

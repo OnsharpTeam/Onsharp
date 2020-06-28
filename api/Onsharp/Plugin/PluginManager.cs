@@ -12,24 +12,19 @@ namespace Onsharp.Plugin
         public List<IPlugin> Plugins { get; }
         
         internal List<PluginDomain> Domains { get; }
-        
-        internal Dictionary<PluginDomain, Server> AssociatedServers { get; }
 
         internal PluginManager()
         {
             Plugins = new List<IPlugin>();
             Domains = new List<PluginDomain>();
-            AssociatedServers = new Dictionary<PluginDomain, Server>();
             ReloadLibs();
             List<PluginDomain> domainCache = new List<PluginDomain>();
             foreach (string pluginPath in Directory.GetFiles(Bridge.PluginsPath))
             {
                 PluginDomain domain = new PluginDomain(this, pluginPath);
-                domain.Initialize(out var server);
-                if (server == null)
+                domain.Initialize();
+                if (domain.Plugin.State == PluginState.Failed)
                     continue;
-                lock(AssociatedServers)
-                    AssociatedServers.Add(domain, server);
                 domainCache.Add(domain);
             }
 
@@ -76,14 +71,30 @@ namespace Onsharp.Plugin
             return Plugins.AsReadOnly();
         }
 
+        internal void IteratePlugins(Action<IPlugin> callback)
+        {
+            lock (Plugins)
+            {
+                for (int i = Plugins.Count - 1; i >= 0; i--)
+                {
+                    IPlugin plugin = Plugins[i];
+                    callback.Invoke(plugin);
+                }
+            }
+        }
+        
+
         public IPlugin GetPlugin(string id)
         {
-            for (int i = Plugins.Count - 1; i >= 0; i--)
+            lock (Plugins)
             {
-                IPlugin plugin = Plugins[i];
-                if (plugin.Meta.Id == id)
+                for (int i = Plugins.Count - 1; i >= 0; i--)
                 {
-                    return plugin;
+                    IPlugin plugin = Plugins[i];
+                    if (plugin.Meta.Id == id)
+                    {
+                        return plugin;
+                    }
                 }
             }
 
@@ -121,11 +132,9 @@ namespace Onsharp.Plugin
             if (domain != null)
             {
                 domain.Stop(false);
-                domain.Initialize(out var server);
-                if (server == null)
+                domain.Initialize();
+                if (domain.Plugin.State == PluginState.Failed)
                     return;
-                lock(AssociatedServers)
-                    AssociatedServers.Add(domain, server);
                 domain.Start();
             }
             else
@@ -165,11 +174,9 @@ namespace Onsharp.Plugin
                 }
                 
                 PluginDomain domain = new PluginDomain(this, path);
-                domain.Initialize(out var server);
-                if (server == null)
+                domain.Initialize();
+                if (domain.Plugin.State == PluginState.Failed)
                     return null;
-                lock(AssociatedServers)
-                    AssociatedServers.Add(domain, server);
                 IPlugin otherPlugin = GetPlugin(domain.Plugin.Meta.Id);
                 if (otherPlugin != null)
                 {
@@ -184,7 +191,7 @@ namespace Onsharp.Plugin
             }
         }
 
-        private PluginDomain GetDomain(IPlugin plugin)
+        internal PluginDomain GetDomain(IPlugin plugin)
         {
             lock (Domains)
             {

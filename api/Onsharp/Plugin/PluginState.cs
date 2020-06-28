@@ -5,6 +5,6 @@
     /// </summary>
     public enum PluginState
     {
-        Unknown, Loaded, Started, Stopped
+        Unknown, Loaded, Started, Stopped, Failed
     }
 }

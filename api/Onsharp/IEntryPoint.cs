@@ -12,5 +12,10 @@ namespace Onsharp
         /// The manager which manages all the plugin instances running currently.
         /// </summary>
         IPluginManager PluginManager { get; set; }
+        
+        /// <summary>
+        /// The own server instance associated to the plugin.
+        /// </summary>
+        IServer Server { get; set; }
     }
 }
