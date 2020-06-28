@@ -19,15 +19,12 @@ EXPORT(void) OnPluginCreateInterface(Onset::IBaseInterface *PluginInterface)
 
 EXPORT(int) OnPluginStart()
 {
-    Plugin::Get();
     Onset::Plugin::Get()->Log("OnsharpRuntime (" PLUGIN_VERSION ") loaded!");
     return PLUGIN_API_VERSION;
 }
 
 EXPORT(void) OnPluginStop()
 {
-    Onset::Plugin::Get()->Log("Stopping Runtime...");
-    Plugin::Get()->GetBridge().stop();
     Plugin::Singleton::Destroy();
     Onset::Plugin::Get()->Log("OnsharpRuntime unloaded!");
     Onset::Plugin::Destroy();
@@ -40,14 +37,18 @@ EXPORT(void) OnPluginTick(float DeltaSeconds)
 
 EXPORT(void) OnPackageLoad(const char *PackageName, lua_State *L)
 {
-    (void)PackageName;
-    for (auto const &f : Plugin::Get()->GetFunctions())
-        Lua::RegisterPluginFunction(L, std::get<0>(f), std::get<1>(f));
-    Plugin::Get()->AddPackage(PackageName, L);
+    auto pn = new std::string(PackageName);
+    if (*pn == "onsharp") {
+        Plugin::Get()->Setup(L);
+        for (auto const &f : Plugin::Get()->GetFunctions())
+            Lua::RegisterPluginFunction(L, std::get<0>(f), std::get<1>(f));
+    }
 }
 
 EXPORT(void) OnPackageUnload(const char *PackageName)
 {
-    Onset::Plugin::Get()->Log("unloading package");
-    Plugin::Get()->RemovePackage(PackageName);
+    auto pn = new std::string(PackageName);
+    if (*pn == "onsharp") {
+        Plugin::Get()->GetBridge().stop();
+    }
 }

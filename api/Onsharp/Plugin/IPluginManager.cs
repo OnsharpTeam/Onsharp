@@ -8,9 +8,9 @@ namespace Onsharp.Plugin
     public interface IPluginManager
     {
         /// <summary>
-        /// All plugins which are currently managed by this plugin manager.
+        /// Returns a list with all plugins which are currently managed by this plugin manager.
         /// </summary>
-        List<IPlugin> Plugins { get; }
+        IReadOnlyList<IPlugin> GetAllPlugins();
 
         /// <summary>
         /// Gets the plugin of the wanted plugin meta id.

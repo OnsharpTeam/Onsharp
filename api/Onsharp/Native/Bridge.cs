@@ -1,15 +1,15 @@
-﻿using System.IO;
-using System.Security;
+﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using Nett;
 using Onsharp.IO;
 using Onsharp.Plugin;
 
 namespace Onsharp.Native
 {
-    [SuppressUnmanagedCodeSecurity]
     internal static class Bridge
     {
-        private const string DllName = "onsharp-runtime";
+        internal const string DllName = "onsharp-runtime";
 
         /// <summary>
         /// The path of the server software running this runtime.
@@ -82,6 +82,7 @@ namespace Onsharp.Native
             }
             
             Logger = new Logger("Onsharp", Config.IsDebug, "_global");
+            if(Config.IsDebug) Logger.Warn("{DEBUG}-Mode is currently active!", "DEBUG");
             PluginManager = new PluginManager();
         }
 
@@ -96,6 +97,8 @@ namespace Onsharp.Native
                 IPlugin plugin = PluginManager.Plugins[i];
                 PluginManager.ForceStop(plugin);
             }
+            
+            Logger.Info("Onsharp successfully stopped!");
         }
 
         /// <summary>
@@ -104,6 +107,16 @@ namespace Onsharp.Native
         internal static bool ExecuteEvent(string name, string json)
         {
             return false;
+        }
+
+        /// <summary>
+        /// Converts a pointer to a string.
+        /// </summary>
+        /// <param name="ptr">The pointer to be converted</param>
+        /// <returns>The converted string</returns>
+        internal static string PtrToString(IntPtr ptr)
+        {
+            return Marshal.PtrToStringUTF8(ptr);
         }
     }
 }

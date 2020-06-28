@@ -286,7 +286,6 @@ public:
 
     void stop()
     {
-        printf("stopping netbridge...");
         unload();
         int hr = shutdownCoreClr(hostHandle, domainId);
         if (hr >= 0)

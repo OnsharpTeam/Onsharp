@@ -12,17 +12,24 @@ namespace Onsharp.Plugin
         public List<IPlugin> Plugins { get; }
         
         internal List<PluginDomain> Domains { get; }
+        
+        internal Dictionary<PluginDomain, Server> AssociatedServers { get; }
 
         internal PluginManager()
         {
             Plugins = new List<IPlugin>();
             Domains = new List<PluginDomain>();
+            AssociatedServers = new Dictionary<PluginDomain, Server>();
             ReloadLibs();
             List<PluginDomain> domainCache = new List<PluginDomain>();
             foreach (string pluginPath in Directory.GetFiles(Bridge.PluginsPath))
             {
                 PluginDomain domain = new PluginDomain(this, pluginPath);
-                domain.Initialize();
+                domain.Initialize(out var server);
+                if (server == null)
+                    continue;
+                lock(AssociatedServers)
+                    AssociatedServers.Add(domain, server);
                 domainCache.Add(domain);
             }
 
@@ -62,6 +69,11 @@ namespace Onsharp.Plugin
                 Domains.Add(domain);
                 domain.Start();
             }
+        }
+
+        public IReadOnlyList<IPlugin> GetAllPlugins()
+        {
+            return Plugins.AsReadOnly();
         }
 
         public IPlugin GetPlugin(string id)
@@ -109,7 +121,11 @@ namespace Onsharp.Plugin
             if (domain != null)
             {
                 domain.Stop(false);
-                domain.Initialize();
+                domain.Initialize(out var server);
+                if (server == null)
+                    return;
+                lock(AssociatedServers)
+                    AssociatedServers.Add(domain, server);
                 domain.Start();
             }
             else
@@ -149,10 +165,17 @@ namespace Onsharp.Plugin
                 }
                 
                 PluginDomain domain = new PluginDomain(this, path);
-                domain.Initialize();
-                if (GetPlugin(domain.Plugin.Meta.Id) != null)
+                domain.Initialize(out var server);
+                if (server == null)
+                    return null;
+                lock(AssociatedServers)
+                    AssociatedServers.Add(domain, server);
+                IPlugin otherPlugin = GetPlugin(domain.Plugin.Meta.Id);
+                if (otherPlugin != null)
                 {
-                    //TODO warning that there is a duplicate plugin id
+                    Bridge.Logger.Warn(
+                        "Could not loading plugin {ID} on path \"{PATH}\" because the id is already occupied by the plugin {ID2} on the path {PATH2}!",
+                        domain.Plugin.Meta.Id, domain.Path, otherPlugin.Meta.Id, otherPlugin.FilePath);
                     return null;
                 }
                 

@@ -17,6 +17,7 @@ private:
     std::map<std::string, lua_State*> packageStates;
     std::map<lua_State*, std::string> statePackages;
     NetBridge bridge;
+    lua_State* MainScriptVM;
 
 private:
     using FuncInfo_t = std::tuple<const char *, lua_CFunction>;
@@ -47,7 +48,11 @@ public:
     std::string GetStatePackage(lua_State* L) {
         return this->statePackages[L];
     }
+    void Setup(lua_State* L) {
+        this->MainScriptVM = L;
+    }
     NetBridge GetBridge() {
         return this->bridge;
     }
+    Lua::LuaArgs_t CallLuaFunction(const char* LuaFunctionName, Lua::LuaArgs_t* Arguments);
 };

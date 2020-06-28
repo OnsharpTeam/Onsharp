@@ -25,22 +25,22 @@ namespace fs = std::filesystem;
 #endif
 #define LUA_DEFINE(name) Define(#name, [](lua_State *L) -> int
 
-Lua::LuaArgs_t CallLuaFunction(lua_State* ScriptVM, const char* LuaFunctionName, Lua::LuaArgs_t* Arguments) {
+Lua::LuaArgs_t Plugin::CallLuaFunction(const char* LuaFunctionName, Lua::LuaArgs_t* Arguments) {
     Lua::LuaArgs_t ReturnValues;
-    int ArgCount = lua_gettop(ScriptVM);
-    lua_getglobal(ScriptVM, LuaFunctionName);
+    int ArgCount = lua_gettop(Plugin::MainScriptVM);
+    lua_getglobal(Plugin::MainScriptVM, LuaFunctionName);
     int argc = 0;
     if (Arguments) {
         for (auto const& e : *Arguments) {
-            Lua::PushValueToLua(e, ScriptVM);
+            Lua::PushValueToLua(e, Plugin::MainScriptVM);
             argc++;
         }
     }
-    int Status = lua_pcall(ScriptVM, argc, LUA_MULTRET, 0);
-    ArgCount = lua_gettop(ScriptVM) - ArgCount;
+    int Status = lua_pcall(Plugin::MainScriptVM, argc, LUA_MULTRET, 0);
+    ArgCount = lua_gettop(Plugin::MainScriptVM) - ArgCount;
     if (Status == LUA_OK) {
-        Lua::ParseArguments(ScriptVM, ReturnValues);
-        lua_pop(ScriptVM, ArgCount);
+        Lua::ParseArguments(Plugin::MainScriptVM, ReturnValues);
+        lua_pop(Plugin::MainScriptVM, ArgCount);
     }
     return ReturnValues;
 }

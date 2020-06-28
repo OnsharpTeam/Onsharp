@@ -32,6 +32,11 @@ namespace Onsharp.Plugin
         /// The specialized logger for this plugin.
         /// </summary>
         ILogger Logger { get; set; }
+        
+        /// <summary>
+        /// The own server instance associated to this plugin.
+        /// </summary>
+        IServer Server { get; set; }
 
         /// <summary>
         /// The display name of this plugin. Either the name or the plugin id.

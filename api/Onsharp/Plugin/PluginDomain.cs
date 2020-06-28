@@ -45,8 +45,9 @@ namespace Onsharp.Plugin
         /// Initializes the plugin and loads its assembly but does not start it.
         /// To start the plugin use <see cref="Start"/>
         /// </summary>
-        internal void Initialize()
+        internal void Initialize(out Server server)
         {
+            server = null;
             EntryPoints = new List<IEntryPoint>();
             _assembly = _context.Load();
             foreach (Type type in _assembly.GetExportedTypes())
@@ -70,6 +71,8 @@ namespace Onsharp.Plugin
                             Plugin.Meta = meta;
                             Plugin.Logger = new Logger(Plugin.Display, meta.IsDebug);
                             Plugin.State = PluginState.Unknown;
+                            server = new Server(this);
+                            Plugin.Server = server;
                             EntryPoints.Add(Plugin);
                         }
                         else
@@ -139,6 +142,8 @@ namespace Onsharp.Plugin
                 Unload();
                 lock (_pluginManager.Plugins)
                     _pluginManager.Plugins.Remove(Plugin);
+                lock (_pluginManager.AssociatedServers)
+                    _pluginManager.AssociatedServers.Remove(this);
                 ChangePluginState(PluginState.Stopped);
                 Plugin.Logger.Info("Plugin {NAME} successfully stopped!", Plugin.Display);
             }

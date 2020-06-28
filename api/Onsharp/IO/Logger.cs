@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using Onsharp.Native;
 using Serilog;
@@ -14,8 +13,8 @@ namespace Onsharp.IO
     {
         private readonly SLogger _internalLogger;
         private readonly string _prefix;
-        private readonly bool _isDebug;
         private readonly string _path;
+        private bool _isDebug;
 
         internal Logger(string prefix, bool isDebug, string pathName = null)
         {
@@ -23,7 +22,7 @@ namespace Onsharp.IO
             _path = Path.Combine(Bridge.LogPath, pathName ?? prefix);
             Directory.CreateDirectory(_path);
             _isDebug = isDebug;
-            _internalLogger = new LoggerConfiguration().WriteTo.Console().WriteTo.Sink(new EventLogSink(this)).CreateLogger();
+            _internalLogger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().WriteTo.Sink(new EventLogSink(this)).CreateLogger();
         }
 
         private string Format(string message)
@@ -61,7 +60,12 @@ namespace Onsharp.IO
         {
             _internalLogger.Fatal(Format(message) + "\n" + exception, args);
         }
-        
+
+        public void SetDebug(bool enabled)
+        {
+            _isDebug = enabled;
+        }
+
         private class EventLogSink : ILogEventSink
         {
             private readonly ReaderWriterLock _locker = new ReaderWriterLock();

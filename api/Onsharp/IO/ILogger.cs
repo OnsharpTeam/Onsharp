@@ -51,5 +51,11 @@ namespace Onsharp.IO
         /// <param name="message">The message to be printed</param>
         /// <param name="args">Arguments which will be placed into the message by {PLACEHOLDERS}</param>
         void Error(Exception exception, string message, params object[] args);
+
+        /// <summary>
+        /// Manually setting the debug mode enabled or disabled.
+        /// </summary>
+        /// <param name="enabled">True if the debug mode should be enabled</param>
+        void SetDebug(bool enabled);
     }
 }
