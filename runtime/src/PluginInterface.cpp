@@ -49,6 +49,6 @@ EXPORT(void) OnPackageUnload(const char *PackageName)
 {
     auto pn = new std::string(PackageName);
     if (*pn == "onsharp") {
-        Plugin::Get()->GetBridge().stop();
+        Plugin::Get()->GetBridge().Stop();
     }
 }

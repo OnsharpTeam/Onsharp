@@ -9,6 +9,9 @@ namespace Onsharp.Native
     [SuppressUnmanagedCodeSecurity]
     internal static class Onset
     {
+        [DllImport(Bridge.DllName)]
+        internal static extern void ForceRuntimeRestart(bool complete);
+        
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool IsEntityValid(long id, [MarshalAs(UnmanagedType.LPStr)] string name);
     }

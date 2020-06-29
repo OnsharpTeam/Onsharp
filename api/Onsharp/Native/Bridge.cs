@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security;
 using Nett;
 using Onsharp.Events;
 using Onsharp.IO;
@@ -13,6 +14,7 @@ namespace Onsharp.Native
     /// The bridge managed the direct contact from the c++ runtime
     /// and the base runtime functionality and data.
     /// </summary>
+    [SuppressUnmanagedCodeSecurity]
     internal static class Bridge
     {
         /// <summary>

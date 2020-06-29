@@ -67,6 +67,17 @@ public:
 
     NetBridge()
     {
+        Start();
+    }
+
+    void Restart()
+    {
+        Stop();
+        Start();
+    }
+
+    void Start()
+    {
         char aCurrentPath[FILENAME_MAX];
 
         if (!GetCurrentDir(aCurrentPath, sizeof(aCurrentPath)))
@@ -284,7 +295,7 @@ public:
         last_error = NET_SUCCESS;
     }
 
-    void stop()
+    void Stop()
     {
         unload();
         int hr = shutdownCoreClr(hostHandle, domainId);

@@ -51,6 +51,12 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED void ForceRuntimeRestart(bool complete)
+{
+    Onset::Plugin::Get()->
+    Plugin::Get()->GetBridge().Restart();
+}
+
 EXPORTED bool IsEntityValid(long id, const char* entityName)
 {
     std::string sFuncName = "IsValid" + std::string(entityName);
