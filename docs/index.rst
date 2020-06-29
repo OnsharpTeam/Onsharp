@@ -16,3 +16,4 @@ Here a small feature list which describes the basic features of Onsharp:
 - Serilog as Logging System, each plugin has its own logger
 - An advanced Command and Event System
 - Wrapping Onset Entities so that you can store your data bound to an Entity while runtime
+- Integrated auto updater for the Runtime itself and every plugin, if wanted
