@@ -1,5 +1,5 @@
 # Onsharp
-Onsharp is C# Wrapper for the [Onset Game](https://playonset.com/). It allows you to use C# as your scripting language for the server-side.
+Onsharp is a C# Wrapper for the [Onset Game](https://playonset.com/). It allows you to use C# as your scripting language for the server-side.
 
 ## In Development
 Onsharp is still in development. If you want to help me, feel free to fork this repo and create a pull request.
