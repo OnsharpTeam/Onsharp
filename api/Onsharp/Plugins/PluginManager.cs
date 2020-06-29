@@ -5,18 +5,21 @@ using System.Linq;
 using System.Reflection;
 using Onsharp.Native;
 
-namespace Onsharp.Plugin
+namespace Onsharp.Plugins
 {
     internal class PluginManager : IPluginManager
     {
-        public List<IPlugin> Plugins { get; }
+        public List<Plugin> Plugins { get; }
         
         internal List<PluginDomain> Domains { get; }
+        
+        internal List<string> LoadedLibraries { get; }
 
         internal PluginManager()
         {
-            Plugins = new List<IPlugin>();
+            Plugins = new List<Plugin>();
             Domains = new List<PluginDomain>();
+            LoadedLibraries = new List<string>();
             ReloadLibs();
             List<PluginDomain> domainCache = new List<PluginDomain>();
             foreach (string pluginPath in Directory.GetFiles(Bridge.PluginsPath))
@@ -52,7 +55,7 @@ namespace Onsharp.Plugin
                     return;
                 }
 
-                IPlugin otherPlugin = GetPlugin(domain.Plugin.Meta.Id);
+                Plugin otherPlugin = GetPlugin(domain.Plugin.Meta.Id);
                 if (otherPlugin != null)
                 {
                     Bridge.Logger.Warn(
@@ -66,31 +69,31 @@ namespace Onsharp.Plugin
             }
         }
 
-        public IReadOnlyList<IPlugin> GetAllPlugins()
+        public IReadOnlyList<Plugin> GetAllPlugins()
         {
             return Plugins.AsReadOnly();
         }
 
-        internal void IteratePlugins(Action<IPlugin> callback)
+        internal void IteratePlugins(Action<Plugin> callback)
         {
             lock (Plugins)
             {
                 for (int i = Plugins.Count - 1; i >= 0; i--)
                 {
-                    IPlugin plugin = Plugins[i];
+                    Plugin plugin = Plugins[i];
                     callback.Invoke(plugin);
                 }
             }
         }
         
 
-        public IPlugin GetPlugin(string id)
+        public Plugin GetPlugin(string id)
         {
             lock (Plugins)
             {
                 for (int i = Plugins.Count - 1; i >= 0; i--)
                 {
-                    IPlugin plugin = Plugins[i];
+                    Plugin plugin = Plugins[i];
                     if (plugin.Meta.Id == id)
                     {
                         return plugin;
@@ -107,13 +110,13 @@ namespace Onsharp.Plugin
             CreateDomain(path)?.Start();
         }
 
-        public void Stop(IPlugin plugin)
+        public void Stop(Plugin plugin)
         {
             //TODO check if this is not longer a dependency
             ForceStop(plugin);
         }
         
-        internal void ForceStop(IPlugin plugin)
+        internal void ForceStop(Plugin plugin)
         {
             PluginDomain domain = GetDomain(plugin);
             if (domain != null)
@@ -126,7 +129,7 @@ namespace Onsharp.Plugin
             }
         }
 
-        public void Restart(IPlugin plugin)
+        public void Restart(Plugin plugin)
         {
             PluginDomain domain = GetDomain(plugin);
             if (domain != null)
@@ -147,11 +150,13 @@ namespace Onsharp.Plugin
         {
             Bridge.Logger.Debug("Reloading third-party libraries...");
             int reloadedCount = 0;
+            LoadedLibraries.Clear();
             foreach (string libPath in Directory.GetFiles(Bridge.LibsPath))
             {
                 try
                 {
-                    Assembly.LoadFile(libPath);
+                    Assembly.LoadFrom(libPath);
+                    LoadedLibraries.Add(libPath);
                     reloadedCount++;
                 }
                 catch(Exception ex)
@@ -177,7 +182,7 @@ namespace Onsharp.Plugin
                 domain.Initialize();
                 if (domain.Plugin.State == PluginState.Failed)
                     return null;
-                IPlugin otherPlugin = GetPlugin(domain.Plugin.Meta.Id);
+                Plugin otherPlugin = GetPlugin(domain.Plugin.Meta.Id);
                 if (otherPlugin != null)
                 {
                     Bridge.Logger.Warn(
@@ -191,7 +196,7 @@ namespace Onsharp.Plugin
             }
         }
 
-        internal PluginDomain GetDomain(IPlugin plugin)
+        internal PluginDomain GetDomain(Plugin plugin)
         {
             lock (Domains)
             {

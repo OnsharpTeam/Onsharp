@@ -53,7 +53,7 @@ Plugin::Plugin()
 
 EXPORTED void ForceRuntimeRestart(bool complete)
 {
-    Onset::Plugin::Get()->
+    (void*) complete;
     Plugin::Get()->GetBridge().Restart();
 }
 

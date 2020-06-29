@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using Nett;
 using Onsharp.Native;
-using Onsharp.Plugin;
+using Onsharp.Plugins;
 
 namespace Onsharp.IO
 {
@@ -13,10 +13,9 @@ namespace Onsharp.IO
         private readonly List<object> _cache;
         private readonly string _path;
 
-        internal DataStorage(IPlugin plugin)
+        internal DataStorage(Plugin plugin)
         {
-            _path = Path.Combine(Bridge.DataPath,
-                string.IsNullOrEmpty(plugin.Meta.Name) ? plugin.Meta.Id : plugin.Meta.Name);
+            _path = Path.Combine(Bridge.DataPath, plugin.Display);
             Directory.CreateDirectory(_path);
             _cache = new List<object>();
         }

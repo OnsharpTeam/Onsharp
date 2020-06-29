@@ -1,10 +1,11 @@
 ﻿using System;
+using Onsharp.Plugins;
 
 namespace Onsharp.IO
 {
     /// <summary>
     /// The logger is a tool to log messages to the console and the log file system of Onsharp.
-    /// Every plugin has its own logger and can use it via the <see cref="Onsharp.Plugin.IPlugin"/> file.
+    /// Every plugin has its own logger and can use it via the <see cref="Plugin"/> file.
     /// </summary>
     public interface ILogger
     {

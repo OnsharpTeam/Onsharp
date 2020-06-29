@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Onsharp.Plugin
+namespace Onsharp.Plugins
 {
     /// <summary>
     /// The meta attribute offers basic information about the plugin
@@ -77,7 +77,7 @@ namespace Onsharp.Plugin
         /// <param name="id">The id of the plugin</param>
         /// <param name="version">The version of the plugin</param>
         /// <param name="dependencies">The dependencies the plugin has</param>
-        public PluginMeta(string id, string version, params string[] dependencies) : this(id, version, null, dependencies)
+        public PluginMeta(string id, string version, params string[] dependencies) : this(id, version, "Some Guy", dependencies)
         {
         }
     }

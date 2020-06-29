@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Onsharp.Plugin
+namespace Onsharp.Plugins
 {
     /// <summary>
     /// The manager which manages every plugin running on the server.
@@ -10,14 +10,14 @@ namespace Onsharp.Plugin
         /// <summary>
         /// Returns a list with all plugins which are currently managed by this plugin manager.
         /// </summary>
-        IReadOnlyList<IPlugin> GetAllPlugins();
+        IReadOnlyList<Plugin> GetAllPlugins();
 
         /// <summary>
         /// Gets the plugin of the wanted plugin meta id.
         /// </summary>
         /// <param name="id">The wanted plugin meta id</param>
         /// <returns>The plugin class of the wanted plugin</returns>
-        IPlugin GetPlugin(string id);
+        Plugin GetPlugin(string id);
 
         /// <summary>
         /// Loads and starts the plugin on the given path.
@@ -30,13 +30,13 @@ namespace Onsharp.Plugin
         /// Stopping a plugin which is dependency of another running plugin, will cancel the stopping process due to a dependency lock.
         /// </summary>
         /// <param name="plugin">The plugin to be stopped</param>
-        void Stop(IPlugin plugin);
+        void Stop(Plugin plugin);
 
         /// <summary>
         /// Restarts the plugin: Stops the plugin and unloads it. After the plugin is unloaded, the plugin gets loaded again and started.
         /// </summary>
         /// <param name="plugin"></param>
-        void Restart(IPlugin plugin);
+        void Restart(Plugin plugin);
 
         /// <summary>
         /// Reloads the libraries folder. When reloading the folder, every library will be reinitialized by the .NET runtime.

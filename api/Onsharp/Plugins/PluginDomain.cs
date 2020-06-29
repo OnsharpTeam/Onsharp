@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.Loader;
-using Onsharp.Events;
 using Onsharp.IO;
 using Onsharp.Native;
 
-namespace Onsharp.Plugin
+namespace Onsharp.Plugins
 {
     /// <summary>
     /// The plugin domain is controlling its wrapped plugin.
     /// It also manages the underlying assembly and interacts with it, if needed.
     /// </summary>
-    internal class PluginDomain : AssemblyLoadContext
+    internal class PluginDomain
     {
         private static readonly Type EntryPointType = typeof(IEntryPoint);
-        private static readonly Type PluginType = typeof(IPlugin);
+        private static readonly Type PluginType = typeof(Plugin);
         private readonly DomainLoadContext _context;
         private readonly PluginManager _pluginManager;
         private Assembly _assembly;
@@ -33,7 +31,7 @@ namespace Onsharp.Plugin
         /// <summary>
         /// the plugin main class of the plugin which is owned by this domain.
         /// </summary>
-        internal IPlugin Plugin { get; private set; }
+        internal Plugin Plugin { get; private set; }
         
         /// <summary>
         /// The server owned by this domain and the plugin.
@@ -45,7 +43,6 @@ namespace Onsharp.Plugin
             Path = path;
             _pluginManager = pluginManager;
             _context = new DomainLoadContext(path);
-            Server = new Server(this);
         }
 
         /// <summary>
@@ -54,6 +51,7 @@ namespace Onsharp.Plugin
         /// </summary>
         internal void Initialize()
         {
+            Server = new Server(this);
             EntryPoints = new List<IEntryPoint>();
             _assembly = _context.Load();
             foreach (Type type in _assembly.GetExportedTypes())
@@ -73,9 +71,9 @@ namespace Onsharp.Plugin
                     Plugin = TryCreatePlugin(type);
                     if (Plugin != null)
                     {
-                        Plugin.Data = new DataStorage(Plugin);
-                        Plugin.FilePath = Path;
                         Plugin.Meta = meta;
+                        Plugin.FilePath = Path;
+                        Plugin.Data = new DataStorage(Plugin);
                         Plugin.Logger = new Logger(Plugin.Display, meta.IsDebug);
                         Plugin.State = PluginState.Unknown;
                         EntryPoints.Add(Plugin);
@@ -113,11 +111,11 @@ namespace Onsharp.Plugin
             ChangePluginState(PluginState.Loaded);
         }
 
-        private IPlugin TryCreatePlugin(Type type)
+        private Plugin TryCreatePlugin(Type type)
         {
             try
             {
-                return (IPlugin) Activator.CreateInstance(type);
+                return (Plugin) Activator.CreateInstance(type);
             }
             catch
             {
@@ -132,8 +130,8 @@ namespace Onsharp.Plugin
         {
             try
             {
-                Plugin.Logger.Info("Starting plugin {NAME}...", Plugin.Display);
-                
+                Plugin.Logger.Info("Starting plugin {NAME} v{VERSION} by {AUTHOR}...", Plugin.Display,
+                    Plugin.Meta.Version, Plugin.Meta.Author);
                 Plugin.OnStart();
                 lock (_pluginManager.Plugins)
                     _pluginManager.Plugins.Add(Plugin);
@@ -156,7 +154,7 @@ namespace Onsharp.Plugin
             {
                 Plugin.Logger.Warn("Stopping plugin {NAME}...", Plugin.Display);
                 Plugin.OnStop();
-                Unload();
+                _context.Unload();
                 lock (_pluginManager.Plugins)
                     _pluginManager.Plugins.Remove(Plugin);
                 ChangePluginState(PluginState.Stopped);
@@ -167,6 +165,8 @@ namespace Onsharp.Plugin
                 Plugin.Logger.Error(ex, "Plugin {NAME} failed to stop!", Plugin.Display);
             }
 
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
             if (!completely) return;
             lock (_pluginManager.Domains)
             {
@@ -176,7 +176,6 @@ namespace Onsharp.Plugin
 
         private void ChangePluginState(PluginState state)
         {
-            Bridge.ExecuteInternalEvent(EventType.PluginStateChanging, Plugin.Meta, Plugin.State, state);
             Plugin.State = state;
         }
     }

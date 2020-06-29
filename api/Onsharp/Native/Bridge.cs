@@ -6,7 +6,7 @@ using System.Security;
 using Nett;
 using Onsharp.Events;
 using Onsharp.IO;
-using Onsharp.Plugin;
+using Onsharp.Plugins;
 
 namespace Onsharp.Native
 {
@@ -82,31 +82,38 @@ namespace Onsharp.Native
         /// </summary>
         internal static void Load(string appPath)
         {
-            ServerPath = appPath;
-            AppPath = Path.Combine(ServerPath, "onsharp");
-            Directory.CreateDirectory(AppPath);
-            LibsPath = Path.Combine(AppPath, "libs");
-            Directory.CreateDirectory(LibsPath);
-            PluginsPath = Path.Combine(AppPath, "plugins");
-            Directory.CreateDirectory(PluginsPath);
-            LogPath = Path.Combine(AppPath, "logs");
-            Directory.CreateDirectory(LogPath);
-            DataPath = Path.Combine(AppPath, "data");
-            Directory.CreateDirectory(DataPath);
-            string configPath = Path.Combine(DataPath, "global.toml");
-            if (File.Exists(configPath))
+            try
             {
-                Config = Toml.ReadFile<RuntimeConfig>(configPath);
-            }
-            else
-            {
-                Config = new RuntimeConfig();
-                Toml.WriteFile(Config, configPath);
-            }
+                ServerPath = appPath;
+                AppPath = Path.Combine(ServerPath, "onsharp");
+                Directory.CreateDirectory(AppPath);
+                LibsPath = Path.Combine(AppPath, "libs");
+                Directory.CreateDirectory(LibsPath);
+                PluginsPath = Path.Combine(AppPath, "plugins");
+                Directory.CreateDirectory(PluginsPath);
+                LogPath = Path.Combine(AppPath, "logs");
+                Directory.CreateDirectory(LogPath);
+                DataPath = Path.Combine(AppPath, "data");
+                Directory.CreateDirectory(DataPath);
+                string configPath = Path.Combine(DataPath, "global.toml");
+                if (File.Exists(configPath))
+                {
+                    Config = Toml.ReadFile<RuntimeConfig>(configPath);
+                }
+                else
+                {
+                    Config = new RuntimeConfig();
+                    Toml.WriteFile(Config, configPath);
+                }
             
-            Logger = new Logger("Onsharp", Config.IsDebug, "_global");
-            if(Config.IsDebug) Logger.Warn("{DEBUG}-Mode is currently active!", "DEBUG");
-            PluginManager = new PluginManager();
+                Logger = new Logger("Onsharp", Config.IsDebug, "_global");
+                if(Config.IsDebug) Logger.Warn("{DEBUG}-Mode is currently active!", "DEBUG");
+                PluginManager = new PluginManager();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "The loading of the runtime ran into an error!");
+            }
         }
 
         /// <summary>
@@ -117,7 +124,7 @@ namespace Onsharp.Native
             Logger.Warn("Stopping bridge...");
             for (int i = PluginManager.Plugins.Count - 1; i >= 0; i--)
             {
-                IPlugin plugin = PluginManager.Plugins[i];
+                Plugin plugin = PluginManager.Plugins[i];
                 PluginManager.ForceStop(plugin);
             }
             
@@ -147,26 +154,6 @@ namespace Onsharp.Native
             });
             
             return flag;
-        }
-
-        /// <summary>
-        /// Executes an internal Onsharp event.
-        /// </summary>
-        /// <param name="type">The type of the internal event</param>
-        /// <param name="args">The arguments of the internal event</param>
-        internal static void ExecuteInternalEvent(EventType type, params object[] args)
-        {
-            PluginManager.IteratePlugins(plugin =>
-            {
-                PluginDomain domain = PluginManager.GetDomain(plugin);
-                if (domain == null)
-                {
-                    Logger.Fatal("Could not get plugin domain for loaded plugin {PLUGIN}!", plugin.Display);
-                    return;
-                }
-
-                domain.Server.CallEvent(type, args);
-            });
         }
 
         /// <summary>

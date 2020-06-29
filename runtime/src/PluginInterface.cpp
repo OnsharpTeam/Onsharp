@@ -26,7 +26,6 @@ EXPORT(int) OnPluginStart()
 EXPORT(void) OnPluginStop()
 {
     Plugin::Singleton::Destroy();
-    Onset::Plugin::Get()->Log("OnsharpRuntime unloaded!");
     Onset::Plugin::Destroy();
 }
 

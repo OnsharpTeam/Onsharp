@@ -8,8 +8,6 @@ namespace Onsharp.Events
     /// Marking a method with this attribute marks them as handler for the specified event.
     /// When the event gets fired, the marked method gets called. Therefore the class must be registered
     /// via <see cref="IServer.RegisterServerEvents"/> or <see cref="IServer.RegisterServerEvents{T}"/>.
-    ///
-    /// Newly Onsharp offers its own events which wont be called from the lua side but from the C# runtime itself.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class ServerEvent : Attribute

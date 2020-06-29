@@ -6,11 +6,6 @@
     public enum EventType
     {
         /// <summary>
-        /// Called when a plugins state gets changed.<br/>
-        /// (<see cref="Plugin.PluginMeta"/> pluginMeta, <see cref="Plugin.PluginState"/> oldState, <see cref="Plugin.PluginState"/> newState)
-        /// </summary>
-        PluginStateChanging = -1,
-        /// <summary>
         /// Called when a <see cref="Onsharp.Entities.Player"/> quits the server.<br/>
         /// (<see cref="Onsharp.Entities.Player"/> player)
         /// </summary>

@@ -3,7 +3,7 @@ using System.Reflection;
 using Onsharp.Entities;
 using Onsharp.Entities.Factory;
 using Onsharp.Events;
-using Onsharp.Plugin;
+using Onsharp.Plugins;
 
 namespace Onsharp
 {

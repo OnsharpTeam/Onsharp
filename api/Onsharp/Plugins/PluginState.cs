@@ -1,4 +1,4 @@
-﻿namespace Onsharp.Plugin
+﻿namespace Onsharp.Plugins
 {
     /// <summary>
     /// The state defines the current mode in which the plugin is.

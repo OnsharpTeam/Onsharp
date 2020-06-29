@@ -1,4 +1,4 @@
-﻿using Onsharp.Plugin;
+﻿using Onsharp.Plugins;
 
 namespace Onsharp
 {
