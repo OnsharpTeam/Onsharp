@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Security;
 
 namespace Onsharp.Native
@@ -14,5 +15,14 @@ namespace Onsharp.Native
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool IsEntityValid(long id, [MarshalAs(UnmanagedType.LPStr)] string name);
+        
+        [DllImport(Bridge.DllName)]
+        internal static extern int ReleaseLongArray(IntPtr ptr);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr GetEntities([MarshalAs(UnmanagedType.LPStr)] string name);
+
+        
+
     }
 }

@@ -13,6 +13,6 @@
         /// </summary>
         /// <param name="id">The id of the new entity</param>
         /// <returns>The created entity</returns>
-        T Create(uint id);
+        T Create(long id);
     }
 }

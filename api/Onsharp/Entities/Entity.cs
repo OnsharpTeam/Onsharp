@@ -10,7 +10,7 @@
         /// The session id of the entity in the world. The id is given by the server and is unique.
         /// The id will change on restart.
         /// </summary>
-        public uint Id { get; }
+        public long Id { get; }
 
         /// <summary>
         /// Checks if the entity is valid or not.
@@ -24,7 +24,7 @@
         
         internal EntityPool Pool { get; set; }
 
-        internal Entity(uint id, string name)
+        internal Entity(long id, string name)
         {
             Id = id;
             Name = name;

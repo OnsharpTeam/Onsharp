@@ -51,6 +51,27 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED long* GetEntities(const char* entityName)
+{
+    std::string sFuncName = "GetAll" + std::string(entityName);
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction(sFuncName.c_str(), &argValues);
+    Lua::LuaTable_t entityTable = returnValues.at(0).GetValue<Lua::LuaTable_t>();
+    long* entities = new long[entityTable->Count() + 1];
+    entities[0] = entityTable->Count();
+    for(int i = 0; i < entityTable->Count(); i++)
+    {
+        entities[i + 1] = entityTable->
+    }
+    return entities;
+}
+
+EXPORTED int ReleaseLongArray(long* lArray)
+{
+    delete[] lArray;
+    return 0;
+}
+
 EXPORTED void ForceRuntimeRestart(bool complete)
 {
     (void*) complete;

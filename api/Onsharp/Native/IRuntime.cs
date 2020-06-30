@@ -12,5 +12,12 @@
         /// <param name="args">The arguments of the custom event. Onsharp Entities are valid but only in the single form. Lists or something like that are not allowed in combination</param>
         /// <returns>False, if the event gets cancelled</returns>
         bool CallEvent(string name, params object[] args);
+
+        /// <summary>
+        /// Disables the refreshing of the entity pools when retrieving all elements of the pools.
+        /// The disabling is only recommended if only Onsharp will be used for server-side scripting because than the
+        /// refreshing process is unnecessary.
+        /// </summary>
+        void DisableEntityPoolRefreshing();
     }
 }

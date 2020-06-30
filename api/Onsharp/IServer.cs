@@ -17,6 +17,36 @@ namespace Onsharp
         IReadOnlyList<Player> Players { get; }
         
         /// <summary>
+        /// A list containing all doors currently on the server.
+        /// </summary>
+        IReadOnlyList<Door> Doors { get; }
+        
+        /// <summary>
+        /// A list containing all NPCs currently on the server.
+        /// </summary>
+        IReadOnlyList<NPC> NPCs { get; }
+        
+        /// <summary>
+        /// A list containing all objects currently on the server.
+        /// </summary>
+        IReadOnlyList<Object> Objects { get; }
+        
+        /// <summary>
+        /// A list containing all pickups currently on the server.
+        /// </summary>
+        IReadOnlyList<Pickup> Pickups { get; }
+        
+        /// <summary>
+        /// A list containing all 3d texts currently on the server.
+        /// </summary>
+        IReadOnlyList<Text3D> Text3Ds { get; }
+        
+        /// <summary>
+        /// A list containing all vehicles currently on the server.
+        /// </summary>
+        IReadOnlyList<Vehicle> Vehicles { get; }
+        
+        /// <summary>
         /// Overrides the build in version of the existing entity factory.
         /// </summary>
         /// <param name="factory">The new factory which overrides the old one</param>

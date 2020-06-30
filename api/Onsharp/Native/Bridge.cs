@@ -82,8 +82,17 @@ namespace Onsharp.Native
         /// <summary>
         /// The current wrapped runtime instance for the bridge.
         /// </summary>
-        internal static IRuntime Runtime { get; private set; }
-        
+        internal static Bridge Runtime { get; private set; }
+
+        /// <summary>
+        /// The flag defining if the entity refreshing of the pools is enabled.
+        /// If true, the pool gets refreshed if its getting accessed for retrieving all elements.
+        /// Turning it off is recommended if Onsharp is the only scripting environment running in Onset,
+        /// because than the management of every entity is managed by Onsharp.
+        /// </summary>
+        internal static bool IsEntityRefreshingEnabled => Runtime._isEntityRefreshingEnabled;
+
+        private bool _isEntityRefreshingEnabled = true;
         
         /// <summary>
         /// Gets called by the native runtime when Onsharp should load itself.
@@ -288,6 +297,11 @@ namespace Onsharp.Native
                     flag = false;
             });
             return flag;
+        }
+
+        public void DisableEntityPoolRefreshing()
+        {
+            _isEntityRefreshingEnabled = false;
         }
     }
 }

@@ -11,9 +11,13 @@ namespace Onsharp.Entities
     internal class EntityPool
     {
         private readonly List<Entity> _entities;
-
-        public EntityPool()
+        private readonly string _entityName;
+        private readonly Action<long> _creator;
+        
+        public EntityPool(string entityName, Action<long> creator)
         {
+            _entityName = entityName;
+            _creator = creator;
             _entities = new List<Entity>();
         }
 
@@ -31,7 +35,7 @@ namespace Onsharp.Entities
                 _entities.Remove(entity);
         }
 
-        internal T GetEntity<T>(uint id, Func<T> creator) where T : Entity
+        internal T GetEntity<T>(long id, Func<T> creator) where T : Entity
         {
             lock (_entities)
             {
@@ -53,6 +57,12 @@ namespace Onsharp.Entities
         
         internal IReadOnlyList<T> CastEntities<T>() where T : Entity
         {
+            if (Bridge.IsEntityRefreshingEnabled && _entityName != null)
+            {
+                IntPtr ptr = Onset.GetEntities(_entityName);
+                Onset.ReleaseLongArray(ptr);
+            }
+            
             lock (_entities)
             {
                 return _entities.Cast<T>().ToList().AsReadOnly();
