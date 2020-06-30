@@ -13,13 +13,15 @@ namespace Onsharp.IO
         private readonly List<object> _cache;
         private readonly string _path;
 
+        public DirectoryInfo Directory { get; }
+
         internal DataStorage(Plugin plugin)
         {
             _path = Path.Combine(Bridge.DataPath, plugin.Display);
-            Directory.CreateDirectory(_path);
+            Directory = System.IO.Directory.CreateDirectory(_path);
             _cache = new List<object>();
         }
-        
+
         public T Retrieve<T>(T @default = default)
         {
             lock (_cache)

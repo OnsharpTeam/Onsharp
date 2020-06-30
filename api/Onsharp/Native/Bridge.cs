@@ -15,7 +15,7 @@ namespace Onsharp.Native
     /// and the base runtime functionality and data.
     /// </summary>
     [SuppressUnmanagedCodeSecurity]
-    internal static class Bridge
+    internal class Bridge : IRuntime
     {
         /// <summary>
         /// The name of the c++ runtime dll.
@@ -74,7 +74,16 @@ namespace Onsharp.Native
         /// </summary>
         internal static ILogger Logger { get; private set; }
         
+        /// <summary>
+        /// The current plugin manager instance managing all the plugins
+        /// </summary>
         internal static PluginManager PluginManager { get; private set; }
+        
+        /// <summary>
+        /// The current wrapped runtime instance for the bridge.
+        /// </summary>
+        internal static IRuntime Runtime { get; private set; }
+        
         
         /// <summary>
         /// Gets called by the native runtime when Onsharp should load itself.
@@ -108,6 +117,7 @@ namespace Onsharp.Native
             
                 Logger = new Logger("Onsharp", Config.IsDebug, "_global");
                 if(Config.IsDebug) Logger.Warn("{DEBUG}-Mode is currently active!", "DEBUG");
+                Runtime = new Bridge();
                 PluginManager = new PluginManager();
             }
             catch (Exception ex)
@@ -260,6 +270,24 @@ namespace Onsharp.Native
                     Enum.GetName(typeof(EventType), type), owner.Plugin.Display);
                 return null;
             }
+        }
+
+        public bool CallEvent(string name, params object[] args)
+        {
+            bool flag = true;
+            PluginManager.IteratePlugins(plugin =>
+            {
+                PluginDomain domain = PluginManager.GetDomain(plugin);
+                if (domain == null)
+                {
+                    Logger.Fatal("Could not get plugin domain for loaded plugin {PLUGIN}!", plugin.Display);
+                    return;
+                }
+
+                if (!domain.Server.CallEvent(name, args))
+                    flag = false;
+            });
+            return flag;
         }
     }
 }

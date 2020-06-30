@@ -1,10 +1,17 @@
-﻿namespace Onsharp.IO
+﻿using System.IO;
+
+namespace Onsharp.IO
 {
     /// <summary>
     /// The data storage interface for interacting with the IO of the onsharp system.
     /// </summary>
     public interface IDataStorage
     {
+        /// <summary>
+        /// The directory of this data storage folder.
+        /// </summary>
+        DirectoryInfo Directory { get; }
+    
         /// <summary>
         /// Retrieves the wanted data from the storage.
         /// </summary>

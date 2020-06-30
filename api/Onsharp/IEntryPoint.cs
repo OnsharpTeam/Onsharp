@@ -1,4 +1,5 @@
-﻿using Onsharp.Plugins;
+﻿using Onsharp.Native;
+using Onsharp.Plugins;
 
 namespace Onsharp
 {
@@ -17,5 +18,10 @@ namespace Onsharp
         /// The own server instance associated to the plugin.
         /// </summary>
         IServer Server { get; set; }
+        
+        /// <summary>
+        /// The current Onsharp runtime instance running in the background.
+        /// </summary>
+        IRuntime Runtime { get; set; }
     }
 }

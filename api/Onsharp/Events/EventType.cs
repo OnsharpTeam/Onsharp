@@ -6,6 +6,10 @@
     public enum EventType
     {
         /// <summary>
+        /// The custom event can be called by a specified name and must be called manually.
+        /// </summary>
+        Custom = -1,
+        /// <summary>
         /// Called when a <see cref="Onsharp.Entities.Player"/> quits the server.<br/>
         /// (<see cref="Onsharp.Entities.Player"/> player)
         /// </summary>

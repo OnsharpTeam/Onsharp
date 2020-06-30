@@ -1,4 +1,5 @@
 ﻿using Onsharp.IO;
+using Onsharp.Native;
 
 namespace Onsharp.Plugins
 {
@@ -51,5 +52,7 @@ namespace Onsharp.Plugins
         public IPluginManager PluginManager { get; set; }
         
         public IServer Server { get; set; }
+        
+        public IRuntime Runtime { get; set; }
     }
 }
