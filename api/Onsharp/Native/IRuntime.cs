@@ -1,4 +1,6 @@
-﻿namespace Onsharp.Native
+﻿using System;
+
+namespace Onsharp.Native
 {
     /// <summary>
     /// The runtime represents the whole Onsharp instance and its functionality.
@@ -19,5 +21,19 @@
         /// refreshing process is unnecessary.
         /// </summary>
         void DisableEntityPoolRefreshing();
+
+        /// <summary>
+        /// Registers a new converter in the system.
+        /// </summary>
+        /// <param name="convertProcess">The process which will convert the given string into its typed object</param>
+        /// <typeparam name="T">The type which gets handled by this converter</typeparam>
+        void RegisterConverter<T>(Func<string, Type, object> convertProcess);
+
+        /// <summary>
+        /// Registers a completely custom converter. If you need to override the handle check, extend from the <see cref="Converter"/> class and override it.
+        /// With this method you can than register the converter.
+        /// </summary>
+        /// <param name="converter">The custom converter</param>
+        void RegisterCustomConverter(Converter converter);
     }
 }

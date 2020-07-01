@@ -18,16 +18,16 @@
         public bool IsValid => Pool.Validate(this);
         
         /// <summary>
-        /// The name of the entity which will be needed for calling specific native methods.
+        /// The entity name of the entity which will be needed for calling specific native methods.
         /// </summary>
-        internal string Name { get; }
+        internal string EntityName { get; }
         
         internal EntityPool Pool { get; set; }
 
-        internal Entity(long id, string name)
+        internal Entity(long id, string entityName)
         {
             Id = id;
-            Name = name;
+            EntityName = entityName;
         }
     }
 }

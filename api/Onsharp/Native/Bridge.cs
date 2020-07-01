@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using Nett;
+using Onsharp.Converters;
+using Onsharp.Entities;
 using Onsharp.Events;
 using Onsharp.IO;
 using Onsharp.Plugins;
@@ -83,6 +86,16 @@ namespace Onsharp.Native
         /// The current wrapped runtime instance for the bridge.
         /// </summary>
         internal static Bridge Runtime { get; private set; }
+        
+        /// <summary>
+        /// All converters which are registered in the runtime.
+        /// </summary>
+        private static List<Converter> Converters { get; } = new List<Converter>
+        {
+            new EnumConverter(), new PlayerConverter()
+        };
+
+        private static readonly Converter DefaultConverter = new BasicConverter();
 
         /// <summary>
         /// The flag defining if the entity refreshing of the pools is enabled.
@@ -195,6 +208,66 @@ namespace Onsharp.Native
             return PlayerEvents.Contains(type);
         }
 
+        
+        /// <summary>
+        /// Finds the right converter which can handle this given parameter.
+        /// </summary>
+        /// <param name="parameter">The parameter to be handled</param>
+        /// <returns>The converter which handles the parameter</returns>
+        private static Converter FindConverter(ParameterInfo parameter)
+        {
+            for (int i = Converters.Count - 1; i >= 0; i--)
+            {
+                Converter converter = Converters[i];
+                if (converter.IsHandlerFor(parameter))
+                {
+                    return converter;
+                }
+            }
+
+            return DefaultConverter;
+        }
+        
+        /// <summary>
+        /// Converts the given string list to an object parameter fitting array.
+        /// </summary>
+        /// <param name="server">The server instance from where the process is requested</param>
+        /// <param name="objects">The strings which will be converted</param>
+        /// <param name="wantedTypes">The parameters which are wanted</param>
+        /// <param name="invoker">The player which executes the command</param>
+        /// <param name="withOptional">If optional parameters are allowed or not</param>
+        /// <returns>The converted object array or null if something failed</returns>
+        internal static object[] Convert(Server server, List<string> objects, ParameterInfo[] wantedTypes, Player invoker, bool withOptional = false)
+        {
+            try
+            {
+                object[] arr = new object[wantedTypes.Length];
+                arr[0] = invoker;
+                for (int i = 1; i < wantedTypes.Length; i++)
+                {
+                    ParameterInfo wantedType = wantedTypes[i];
+                    if (withOptional && wantedType.IsOptional && (i - 1) >= objects.Count)
+                    {
+                        arr[i] = Type.Missing;
+                        continue;
+                    }
+                    
+                    Converter converter = FindConverter(wantedType);
+                    if (converter != null)
+                    {
+                        arr[i] = converter.Handle(objects[i - 1], wantedType, server);
+                    }
+                }
+
+                return arr;
+            }
+            catch (Exception e)
+            {
+                server.Owner.Plugin.Logger.Error(e, "An error occurred in converting process!");
+                return null;
+            }
+        }
+
         private static object[] ParseEventArgs(PluginDomain owner, EventType type, ReturnData data)
         {
             try
@@ -264,8 +337,6 @@ namespace Onsharp.Native
                         break;
                     case EventType.PlayerInteractDoor:
                         break;
-                    case EventType.PlayerCommandFailed:
-                        break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(type), type, null);
                 }
@@ -302,6 +373,16 @@ namespace Onsharp.Native
         public void DisableEntityPoolRefreshing()
         {
             _isEntityRefreshingEnabled = false;
+        }
+
+        public void RegisterConverter<T>(Func<string, Type, object> convertProcess)
+        {
+            Converters.Add(new Converter(typeof(T), convertProcess));
+        }
+
+        public void RegisterCustomConverter(Converter converter)
+        {
+            Converters.Add(converter);
         }
     }
 }

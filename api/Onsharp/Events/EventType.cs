@@ -167,11 +167,6 @@
         /// </summary>
         PlayerInteractDoor = 31,
         /// <summary>
-        /// Called when a <see cref="Onsharp.Entities.Player"/> wants to execute a command, but it fails with a <see cref="Onset.CommandError"/>.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="string"/> commandName, <see cref="string"/>[] args, <see cref="Onset.CommandError"/> error)<br/>
-        /// </summary>
-        PlayerCommandFailed = 32,
-        /// <summary>
         /// Called before the command is being processed.<br/>
         /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="string"/> commandName, <see cref="string"/>[] args)
         /// /// <returns>Returning false results in preventing the further processing</returns>

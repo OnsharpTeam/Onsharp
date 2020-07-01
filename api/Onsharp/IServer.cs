@@ -61,22 +61,6 @@ namespace Onsharp
         void RegisterServerEvents(object owner);
 
         /// <summary>
-        /// Searches through the class of the given owner objects for <see cref="Events.RemoteEvent"/> marked methods and registers them.
-        /// <see cref="IEntryPoint"/> classes will be registered automatically.
-        /// The difference to the other method is that in this method no owner object is created,
-        /// instead only the static methods are registered as handlers. 
-        /// </summary>
-        /// <typeparam name="T">The type which will be searched through</typeparam>
-        void RegisterRemoteEvents<T>();
-
-        /// <summary>
-        /// Searches through the class of the given owner objects for <see cref="Events.RemoteEvent"/> marked methods and registers them.
-        /// <see cref="IEntryPoint"/> classes will be registered automatically.
-        /// </summary>
-        /// <param name="owner">The owner object owning the marked methods</param>
-        void RegisterRemoteEvents(object owner);
-
-        /// <summary>
         /// Searches through the class of the given owner objects for <see cref="Events.ServerEvent"/> marked methods and registers them.
         /// <see cref="IEntryPoint"/> classes will be registered automatically.
         /// The difference to the other method is that in this method no owner object is created,
@@ -86,11 +70,43 @@ namespace Onsharp
         void RegisterServerEvents<T>();
 
         /// <summary>
+        /// Searches through the class of the given owner objects for <see cref="Events.RemoteEvent"/> marked methods and registers them.
+        /// <see cref="IEntryPoint"/> classes will be registered automatically.
+        /// </summary>
+        /// <param name="owner">The owner object owning the marked methods</param>
+        void RegisterRemoteEvents(object owner);
+
+        /// <summary>
+        /// Searches through the class of the given owner objects for <see cref="Events.RemoteEvent"/> marked methods and registers them.
+        /// <see cref="IEntryPoint"/> classes will be registered automatically.
+        /// The difference to the other method is that in this method no owner object is created,
+        /// instead only the static methods are registered as handlers. 
+        /// </summary>
+        /// <typeparam name="T">The type which will be searched through</typeparam>
+        void RegisterRemoteEvents<T>();
+
+        /// <summary>
         /// Calls a custom event on this server with the given arguments. If the event gets cancelled, this event is returning false.
         /// </summary>
         /// <param name="name">The name of the custom event</param>
         /// <param name="args">The arguments of the custom event. Onsharp Entities are valid but only in the single form. Lists or something like that are not allowed in combination</param>
         /// <returns>False, if the event gets cancelled</returns>
         bool CallEvent(string name, params object[] args);
+
+        /// <summary>
+        /// Searches through the class of the given owner objects for <see cref="Commands.Command"/> marked methods and registers them.
+        /// <see cref="IEntryPoint"/> classes will be registered automatically.
+        /// </summary>
+        /// <param name="owner">The owner object owning the marked methods</param>
+        void RegisterCommands(object owner);
+
+        /// <summary>
+        /// Searches through the class of the given owner objects for <see cref="Commands.Command"/> marked methods and registers them.
+        /// <see cref="IEntryPoint"/> classes will be registered automatically.
+        /// The difference to the other method is that in this method no owner object is created,
+        /// instead only the static methods are registered as handlers. 
+        /// </summary>
+        /// <typeparam name="T">The type which will be searched through</typeparam>
+        void RegisterCommands<T>();
     }
 }

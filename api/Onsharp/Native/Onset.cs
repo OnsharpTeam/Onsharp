@@ -10,6 +10,15 @@ namespace Onsharp.Native
     [SuppressUnmanagedCodeSecurity]
     internal static class Onset
     {
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetPlayerName(long player, [MarshalAs(UnmanagedType.LPStr)] string name);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr GetPlayerName(long player);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SendPlayerChatMessage(long player, [MarshalAs(UnmanagedType.LPStr)] string message);
+        
         [DllImport(Bridge.DllName)]
         internal static extern void ForceRuntimeRestart(bool complete);
         

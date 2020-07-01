@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using Onsharp.Commands;
 using Onsharp.Entities;
 using Onsharp.Entities.Factory;
 using Onsharp.Events;
 using Onsharp.Plugins;
+using Object = Onsharp.Entities.Object;
 
 namespace Onsharp
 {
@@ -57,6 +60,8 @@ namespace Onsharp
         
         private List<RemoteEvent> RemoteEvents { get; }
 
+        private readonly CommandManager _commandManager;
+
         internal Server(PluginDomain owner)
         {
             Owner = owner;
@@ -76,6 +81,7 @@ namespace Onsharp
             VehiclePool = new EntityPool("Vehicles", CreateVehicle);
             ServerEvents = new List<ServerEvent>();
             RemoteEvents = new List<RemoteEvent>();
+            _commandManager = new CommandManager(this);
         }
 
         public void OverrideEntityFactory<T>(IEntityFactory<T> factory) where T : Entity
@@ -108,6 +114,26 @@ namespace Onsharp
             {
                 VehicleFactory = (IEntityFactory<Vehicle>) factory;
             }
+        }
+
+        /// <summary>
+        /// Returns a player which fits to the given check.
+        /// </summary>
+        /// <param name="check">The check which needs to fit to the wanted player</param>
+        /// <returns>The wanted player or null</returns>
+        internal Player GetPlayerBy(Predicate<Player> check)
+        {
+            IReadOnlyList<Player> players = Players;
+            for (int i = players.Count - 1; i >= 0; i--)
+            {
+                Player player = players[i];
+                if (check.Invoke(player))
+                {
+                    return player; 
+                }
+            }
+
+            return null;
         }
 
         public void RegisterServerEvents(object owner)
@@ -170,6 +196,24 @@ namespace Onsharp
             }
         }
 
+        internal bool CallEventUnsafely(string name, params object[] args)
+        {
+            bool flag = true;
+            lock (ServerEvents)
+            {
+                foreach (ServerEvent @event in ServerEvents)
+                {
+                    if (@event.Type == EventType.Custom && @event.Specification == name)
+                    {
+                        if (!@event.FireEvent(args))
+                            flag = false;
+                    }
+                }
+            }
+
+            return flag;
+        }
+
         public bool CallEvent(string name, params object[] args)
         {
             bool flag = true;
@@ -189,12 +233,22 @@ namespace Onsharp
             return flag;
         }
 
+        public void RegisterCommands(object owner)
+        {
+            _commandManager.RegisterCommands(owner);
+        }
+
+        public void RegisterCommands<T>()
+        {
+            _commandManager.RegisterCommands<T>();
+        }
+
         internal void FireRemoteEvent(string name, uint player, object[] args)
         {
             //TODO adding calling of remote events
         }
 
-        internal bool CallEvent(EventType type, object[] eventArgs)
+        internal bool CallEvent(EventType type, params object[] eventArgs)
         {
             bool flag = true;
             lock (ServerEvents)

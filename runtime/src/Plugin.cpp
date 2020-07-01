@@ -51,12 +51,33 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED void SetPlayerName(long player, const char* name)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player, name);
+    Plugin::Get()->CallLuaFunction("SetPlayerName", &argValues);
+}
+
+EXPORTED const char* GetPlayerName(long player)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerName", &argValues);
+    auto name = returnValues.at(0).GetValue<std::string>();
+    const char* namePtr = name.c_str();
+    return namePtr;
+}
+
+EXPORTED void SendPlayerChatMessage(long player, const char* message)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player, message);
+    Plugin::Get()->CallLuaFunction("AddPlayerChat", &argValues);
+}
+
 EXPORTED int* GetEntities(const char* entityName, int* len)
 {
     std::string sFuncName = "GetAll" + std::string(entityName);
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction(sFuncName.c_str(), &argValues);
-    Lua::LuaTable_t entityTable = returnValues.at(0).GetValue<Lua::LuaTable_t>();
+    auto entityTable = returnValues.at(0).GetValue<Lua::LuaTable_t>();
     *len = entityTable->Count();
     int* entities = new int[entityTable->Count()];
     int idx = 0;
