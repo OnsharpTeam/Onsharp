@@ -20,7 +20,7 @@ namespace Onsharp.Native
         internal static extern int ReleaseLongArray(IntPtr ptr);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr GetEntities([MarshalAs(UnmanagedType.LPStr)] string name);
+        internal static extern IntPtr GetEntities([MarshalAs(UnmanagedType.LPStr)] string name, ref int len);
 
         
 

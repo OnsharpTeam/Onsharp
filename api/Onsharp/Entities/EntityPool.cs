@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Onsharp.Native;
 
 namespace Onsharp.Entities
@@ -10,11 +11,11 @@ namespace Onsharp.Entities
     /// </summary>
     internal class EntityPool
     {
-        private readonly List<Entity> _entities;
+        private List<Entity> _entities;
         private readonly string _entityName;
-        private readonly Action<long> _creator;
+        private readonly Func<long, Entity> _creator;
         
-        public EntityPool(string entityName, Action<long> creator)
+        public EntityPool(string entityName, Func<long, Entity> creator)
         {
             _entityName = entityName;
             _creator = creator;
@@ -57,9 +58,20 @@ namespace Onsharp.Entities
         
         internal IReadOnlyList<T> CastEntities<T>() where T : Entity
         {
-            if (Bridge.IsEntityRefreshingEnabled && _entityName != null)
+            if (Bridge.IsEntityRefreshingEnabled)
             {
-                IntPtr ptr = Onset.GetEntities(_entityName);
+                int len = 0;
+                IntPtr ptr = Onset.GetEntities(_entityName, ref len);
+                int[] entities = new int[len];
+                Marshal.Copy(ptr, entities, 0, len);
+                List<Entity> newEntities = new List<Entity>();
+                foreach (int entityId in entities)
+                {
+                    newEntities.Add(_creator.Invoke(entityId));
+                }
+
+                lock (_entities)
+                    _entities = newEntities;
                 Onset.ReleaseLongArray(ptr);
             }
             

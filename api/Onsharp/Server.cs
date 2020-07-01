@@ -61,40 +61,19 @@ namespace Onsharp
         {
             Owner = owner;
             PlayerFactory = new PlayerFactory();
-            PlayerPool = new EntityPool("Players", id =>
-            {
-                CreatePlayer(id);
-            });
+            PlayerPool = new EntityPool("Players", CreatePlayer);
             DoorFactory = new DoorFactory();
-            DoorPool = new EntityPool("Doors", id =>
-            {
-                CreateDoor(id);
-            });
+            DoorPool = new EntityPool("Doors", CreateDoor);
             NPCFactory = new NPCFactory();
-            NPCPool = new EntityPool("NPC", id =>
-            {
-                CreateNPC(id);
-            });
+            NPCPool = new EntityPool("NPC", CreateNPC);
             ObjectFactory = new ObjectFactory();
-            ObjectPool = new EntityPool("Objects", id =>
-            {
-                CreateObject(id);
-            });
+            ObjectPool = new EntityPool("Objects", CreateObject);
             PickupFactory = new PickupFactory();
-            PickupPool = new EntityPool("Pickups", id =>
-            {
-                CreatePickup(id);
-            });
+            PickupPool = new EntityPool("Pickups", CreatePickup);
             Text3DFactory = new Text3DFactory();
-            Text3DPool = new EntityPool("Text3D", id =>
-            {
-                CreateText3D(id);
-            });
+            Text3DPool = new EntityPool("Text3D", CreateText3D);
             VehicleFactory = new VehicleFactory();
-            VehiclePool = new EntityPool("Vehicles", id =>
-            {
-                CreateVehicle(id);
-            });
+            VehiclePool = new EntityPool("Vehicles", CreateVehicle);
             ServerEvents = new List<ServerEvent>();
             RemoteEvents = new List<RemoteEvent>();
         }
