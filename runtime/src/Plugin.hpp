@@ -47,7 +47,6 @@ public:
         bool bVal;
         const char* sVal;
 
-
         Lua::LuaValue GetLuaValue()
         {
             if(type == NTYPE::STRING)
@@ -72,7 +71,38 @@ public:
 
             return new Lua::LuaValue();
         }
+
+        void Debug()
+        {
+            if(type == NTYPE::STRING)
+            {
+                printf("nval STR : %s \n", sVal);
+                return;
+            }
+
+            if(type == NTYPE::INTEGER)
+            {
+                printf("nval INT : %d \n", iVal);
+                return;
+            }
+
+            if(type == NTYPE::DOUBLE)
+            {
+                printf("nval DBL : %f \n", dVal);
+                return;
+            }
+
+            if(type == NTYPE::BOOLEAN)
+            {
+                printf("nval BLD : %s \n", bVal ? "true" : "false");
+                return;
+            }
+
+            printf("nval NULL\n");
+        }
     } NValue;
+    typedef NValue* (*call_bridge_ptr)(const char* data, NValue* args[]);
+    call_bridge_ptr callBridge;
 
     decltype(_func_list) const &GetFunctions() const
     {
@@ -94,15 +124,20 @@ public:
     }
     void Setup(lua_State* L) {
         this->MainScriptVM = L;
+        this->bridge.CreateDelegate("CallBridge", (void**)&this->callBridge);
+    }
+    Plugin::NValue* CallBridge(const char* key, NValue** args) const
+    {
+        return this->callBridge(key, args);
     }
     NetBridge GetBridge() {
         return this->bridge;
     }
-    Plugin::NValue* CreateNValueByLua(Lua::LuaValue lVal)
+    NValue* CreateNValueByLua(const Lua::LuaValue lVal)
     {
         if(lVal.IsBoolean())
         {
-            Plugin::NValue* nVal = new Plugin::NValue;
+            NValue* nVal = new NValue;
             nVal->type = NTYPE::BOOLEAN;
             nVal->bVal = lVal.GetValue<bool>();
             return nVal;
@@ -110,7 +145,7 @@ public:
 
         if(lVal.IsInteger())
         {
-            Plugin::NValue* nVal = new Plugin::NValue;
+            NValue* nVal = new NValue;
             nVal->type = NTYPE::INTEGER;
             nVal->iVal = lVal.GetValue<int>();
             return nVal;
@@ -118,7 +153,7 @@ public:
 
         if(lVal.IsNumber())
         {
-            Plugin::NValue* nVal = new Plugin::NValue;
+            NValue* nVal = new NValue;
             nVal->type = NTYPE::DOUBLE;
             nVal->dVal = lVal.GetValue<double>();
             return nVal;
@@ -126,14 +161,14 @@ public:
 
         if(lVal.IsString())
         {
-            Plugin::NValue* nVal = new Plugin::NValue;
+            NValue* nVal = new NValue;
             nVal->type = NTYPE::STRING;
             auto sVal = lVal.GetValue<std::string>();
             nVal->sVal = sVal.c_str();
             return nVal;
         }
 
-        Plugin::NValue* nVal = new Plugin::NValue;
+        NValue* nVal = new NValue;
         nVal->type = NTYPE::NONE;
         return nVal;
     }

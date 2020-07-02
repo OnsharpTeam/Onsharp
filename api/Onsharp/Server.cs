@@ -5,6 +5,7 @@ using Onsharp.Commands;
 using Onsharp.Entities;
 using Onsharp.Entities.Factory;
 using Onsharp.Events;
+using Onsharp.Native;
 using Onsharp.Plugins;
 using Object = Onsharp.Entities.Object;
 
@@ -66,7 +67,7 @@ namespace Onsharp
         {
             Owner = owner;
             PlayerFactory = new PlayerFactory();
-            PlayerPool = new EntityPool("Players", CreatePlayer);
+            PlayerPool = new EntityPool(null, CreatePlayer);
             DoorFactory = new DoorFactory();
             DoorPool = new EntityPool("Doors", CreateDoor);
             NPCFactory = new NPCFactory();
@@ -175,6 +176,7 @@ namespace Onsharp
                     if(!method.IsStatic) continue;
                     RemoteEvent @event = method.GetCustomAttribute<RemoteEvent>();
                     if (@event == null) continue;
+                    Onset.RegisterRemoteEvent(Owner.Plugin.Meta.Id, @event.Name);
                     @event.SetHandler(null, method);
                     RemoteEvents.Add(@event);
                 }
@@ -190,6 +192,7 @@ namespace Onsharp
                     if(method.IsStatic) continue;
                     RemoteEvent @event = method.GetCustomAttribute<RemoteEvent>();
                     if (@event == null) continue;
+                    Onset.RegisterRemoteEvent(Owner.Plugin.Meta.Id, @event.Name);
                     @event.SetHandler(owner, method);
                     RemoteEvents.Add(@event);
                 }
@@ -242,10 +245,15 @@ namespace Onsharp
         {
             _commandManager.RegisterCommands<T>();
         }
-
-        internal void FireRemoteEvent(string name, uint player, object[] args)
+        
+        internal void FireRemoteEvent(string name, long player, object[] args)
         {
             //TODO adding calling of remote events
+        }
+
+        internal void FireCommand(long player, string name, string line)
+        {
+            _commandManager.ExecuteCommand(name, line, player);
         }
 
         internal bool CallEvent(EventType type, params object[] eventArgs)

@@ -47,9 +47,45 @@ Lua::LuaArgs_t Plugin::CallLuaFunction(const char* LuaFunctionName, Lua::LuaArgs
 
 Plugin::Plugin()
 {
+    LUA_DEFINE(CallBridge)
+    {
+        std::string key;
+        Lua::LuaTable_t args_table;
+        Lua::ParseArguments(L, key, args_table);
+        auto args = new NValue*[args_table->Count()];
+        int idx = 0;
+        args_table->ForEach([args, &idx](Lua::LuaValue k, Lua::LuaValue v) {
+            args[idx] = Plugin::Get()->CreateNValueByLua(std::move(v));
+            idx++;
+        });
+        NValue* returnVal = Plugin::Get()->CallBridge(key.c_str(), args);
+        Lua::LuaArgs_t argValues = Lua::BuildArgumentList(returnVal->GetLuaValue());
+        Lua::ReturnValues(L, argValues);
+        return 1;
+    });
+
+    LUA_DEFINE(InitRuntimeEntries)
+    {
+        Plugin::Get()->GetBridge().InitRuntime();
+        Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+        Lua::ReturnValues(L, argValues);
+        return 1;
+    });
 }
 
 //region Native Bridge Functions
+
+EXPORTED void RegisterRemoteEvent(const char* pluginId, const char* eventName)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(pluginId, eventName);
+    Plugin::Get()->CallLuaFunction("Onsharp_RegisterRemoteEvent", &args);
+}
+
+EXPORTED void RegisterCommand(const char* pluginId, const char* commandName)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(pluginId, commandName);
+    Plugin::Get()->CallLuaFunction("Onsharp_RegisterCommand", &args);
+}
 
 EXPORTED Plugin::NValue* CreateNValue_s(const char* val)
 {

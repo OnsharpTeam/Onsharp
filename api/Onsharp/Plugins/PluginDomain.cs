@@ -109,6 +109,7 @@ namespace Onsharp.Plugins
                 entryPoint.Runtime = Bridge.Runtime;
                 entryPoint.Server.RegisterRemoteEvents(entryPoint);
                 entryPoint.Server.RegisterServerEvents(entryPoint);
+                entryPoint.Server.RegisterCommands(entryPoint);
             }
 
             ChangePluginState(PluginState.Loaded);

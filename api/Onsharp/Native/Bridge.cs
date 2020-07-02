@@ -140,7 +140,6 @@ namespace Onsharp.Native
                 Logger = new Logger("Onsharp", Config.IsDebug, "_global");
                 if(Config.IsDebug) Logger.Warn("{DEBUG}-Mode is currently active!", "DEBUG");
                 Runtime = new Bridge();
-                PluginManager = new PluginManager();
             }
             catch (Exception ex)
             {
@@ -164,28 +163,103 @@ namespace Onsharp.Native
         }
 
         /// <summary>
-        /// Just a placeholder: Maybe this will be replaced by another technique.
+        /// Gets called when the half script is loaded and the runtime entries can be loaded.
         /// </summary>
-        internal static bool ExecuteEvent(int typeId, string json)
+        internal static void InitRuntimeEntries()
         {
-            ReturnData data = new ReturnData(json);
-            EventType type = (EventType) typeId;
-            bool flag = true;
-            PluginManager.IteratePlugins(plugin =>
+            try
             {
-                PluginDomain domain = PluginManager.GetDomain(plugin);
-                if (domain == null)
+                PluginManager = new PluginManager();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "The init of the runtime ran into an error!");
+            }
+        }
+
+        /// <summary>
+        /// This method gets called from the native side and is the interaction interface from the pipeline to the dotnet runtime.
+        /// </summary>
+        /// <param name="key">The key which defines what the reason is, the native side is calling</param>
+        /// <param name="nArgs">The arguments which are passed to the dotnet runtime</param>
+        /// <returns>If wanted, some data as NVal</returns>
+        internal static IntPtr CallBridge(string key, IntPtr[] nArgs)
+        {
+            Logger.Debug("Bridge got called by {KEY} with ", key, nArgs.Length);
+            object[] args = new object[nArgs.Length];
+            for (int i = 0; i < nArgs.Length; i++)
+            {
+                args[i] = new NativeValue(nArgs[i]).GetValue(); 
+                Logger.Debug("with arg : {ARG}", args[i]);         
+            }
+
+            return CreateNValue(HandleCalling(key, args)).NativePtr;
+        }
+
+        /// <summary>
+        /// Handles the incoming calling from the native side.
+        /// </summary>
+        private static object HandleCalling(string key, object[] args)
+        {
+            try
+            {
+                if (key == "call-event")
                 {
-                    Logger.Fatal("Could not get plugin domain for loaded plugin {PLUGIN}!", plugin.Display);
-                    return;
+                    EventType type = (EventType) (int) args[0];
+                    bool flag = true;
+                    PluginManager.IteratePlugins(plugin =>
+                    {
+                        PluginDomain domain = PluginManager.GetDomain(plugin);
+                        if (domain == null)
+                        {
+                            Logger.Fatal("Could not get plugin domain for loaded plugin {PLUGIN}!", plugin.Display);
+                            return;
+                        }
+
+                        if (!domain.Server.CallEvent(type, ParseEventArgs(domain, type, args)))
+                            flag = false;
+                    });
+            
+                    return flag;
                 }
 
-                object[] args = ParseEventArgs(domain, type, data);
-                if (!domain.Server.CallEvent(type, args))
-                    flag = false;
-            });
+                if (key == "call-remote")
+                {
+                    long player = (long) (double) args[0];
+                    string pluginId = (string) args[1];
+                    string name = (string) args[2];
+                    object[] remoteArgs = new object[args.Length - 3];
+                    for (int i = 3; i < args.Length; i++)
+                    {
+                        remoteArgs[i - 2] = args[i];
+                    }
+                    
+                    Plugin plugin = PluginManager.GetPlugin(pluginId);
+                    if (plugin != null)
+                    {
+                        PluginManager.GetDomain(plugin)?.Server.FireRemoteEvent(name, player, remoteArgs);
+                    }
+                }
+
+                if (key == "call-command")
+                {
+                    string pluginId = (string) args[0];
+                    long player = (long) (double) args[1];
+                    string name = (string) args[2];
+                    string line = (string) args[3];
+                    Plugin plugin = PluginManager.GetPlugin(pluginId);
+                    if (plugin != null)
+                    {
+                        PluginManager.GetDomain(plugin)?.Server.FireCommand(player, name, line);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "An error occurred while handling a call from the native side!");
+            }
             
-            return flag;
+            return null;
         }
 
         /// <summary>
@@ -208,7 +282,6 @@ namespace Onsharp.Native
             return PlayerEvents.Contains(type);
         }
 
-        
         /// <summary>
         /// Finds the right converter which can handle this given parameter.
         /// </summary>
@@ -303,88 +376,80 @@ namespace Onsharp.Native
             return new NativeValue(Onset.CreateNValue());
         }
 
-        private static object[] ParseEventArgs(PluginDomain owner, EventType type, ReturnData data)
+        /// <summary>
+        /// Parses the given argument array from the bridge caller into event args which than can be passed to the event handler.
+        /// WARNING: The first argument of the given array is the event type. Don't use it.
+        /// </summary>
+        private static object[] ParseEventArgs(PluginDomain owner, EventType type, object[] args)
         {
-            try
+            switch (type)
             {
-                object[] args = null;
-                switch (type)
-                {
-                    case EventType.PlayerQuit:
-                        break;
-                    case EventType.PlayerChat:
-                        break;
-                    case EventType.PlayerChatCommand:
-                        break;
-                    case EventType.PlayerJoin:
-                        break;
-                    case EventType.PlayerPickupHit:
-                        break;
-                    case EventType.PackageStart:
-                        break;
-                    case EventType.PackageStop:
-                        break;
-                    case EventType.GameTick:
-                        break;
-                    case EventType.ClientConnectionRequest:
-                        break;
-                    case EventType.NPCReachTarget:
-                        break;
-                    case EventType.NPCDamage:
-                        break;
-                    case EventType.NPCSpawn:
-                        break;
-                    case EventType.NPCDeath:
-                        break;
-                    case EventType.NPCStreamIn:
-                        break;
-                    case EventType.NPCStreamOut:
-                        break;
-                    case EventType.PlayerEnterVehicle:
-                        break;
-                    case EventType.PlayerLeaveVehicle:
-                        break;
-                    case EventType.PlayerStateChange:
-                        break;
-                    case EventType.VehicleRespawn:
-                        break;
-                    case EventType.VehicleStreamIn:
-                        break;
-                    case EventType.VehicleStreamOut:
-                        break;
-                    case EventType.PlayerServerAuth:
-                        break;
-                    case EventType.PlayerSteamAuth:
-                        break;
-                    case EventType.PlayerDownloadFile:
-                        break;
-                    case EventType.PlayerStreamIn:
-                        break;
-                    case EventType.PlayerStreamOut:
-                        break;
-                    case EventType.PlayerSpawn:
-                        break;
-                    case EventType.PlayerDeath:
-                        break;
-                    case EventType.PlayerWeaponShot:
-                        break;
-                    case EventType.PlayerDamage:
-                        break;
-                    case EventType.PlayerInteractDoor:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
-                }
-
-                return args;
+                case EventType.PlayerQuit:
+                    break;
+                case EventType.PlayerChat:
+                    break;
+                case EventType.PlayerChatCommand:
+                    break;
+                case EventType.PlayerJoin:
+                    break;
+                case EventType.PlayerPickupHit:
+                    break;
+                case EventType.PackageStart:
+                    break;
+                case EventType.PackageStop:
+                    break;
+                case EventType.GameTick:
+                    break;
+                case EventType.ClientConnectionRequest:
+                    break;
+                case EventType.NPCReachTarget:
+                    break;
+                case EventType.NPCDamage:
+                    break;
+                case EventType.NPCSpawn:
+                    break;
+                case EventType.NPCDeath:
+                    break;
+                case EventType.NPCStreamIn:
+                    break;
+                case EventType.NPCStreamOut:
+                    break;
+                case EventType.PlayerEnterVehicle:
+                    break;
+                case EventType.PlayerLeaveVehicle:
+                    break;
+                case EventType.PlayerStateChange:
+                    break;
+                case EventType.VehicleRespawn:
+                    break;
+                case EventType.VehicleStreamIn:
+                    break;
+                case EventType.VehicleStreamOut:
+                    break;
+                case EventType.PlayerServerAuth:
+                    break;
+                case EventType.PlayerSteamAuth:
+                    break;
+                case EventType.PlayerDownloadFile:
+                    break;
+                case EventType.PlayerStreamIn:
+                    break;
+                case EventType.PlayerStreamOut:
+                    break;
+                case EventType.PlayerSpawn:
+                    break;
+                case EventType.PlayerDeath:
+                    break;
+                case EventType.PlayerWeaponShot:
+                    break;
+                case EventType.PlayerDamage:
+                    break;
+                case EventType.PlayerInteractDoor:
+                    break;
+                default:
+                    return null;
             }
-            catch (Exception ex)
-            {
-                Logger.Error(ex,
-                    "An error occurred while parsing event args for the Event {TYPE} owned by the Plugin {PLUGIN}!",
-                    Enum.GetName(typeof(EventType), type), owner.Plugin.Display);
-                return null;
-            }
+            return null;
         }
 
         public bool CallEvent(string name, params object[] args)

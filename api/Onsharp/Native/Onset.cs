@@ -11,6 +11,12 @@ namespace Onsharp.Native
     internal static class Onset
     {
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void RegisterRemoteEvent([MarshalAs(UnmanagedType.LPStr)] string pluginId, [MarshalAs(UnmanagedType.LPStr)] string eventName);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void RegisterCommand([MarshalAs(UnmanagedType.LPStr)] string pluginId, [MarshalAs(UnmanagedType.LPStr)] string commandName);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void CallRemote(long player, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr[] nVals, int len);
         
         [DllImport(Bridge.DllName, EntryPoint = "CreateNValue_s", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]

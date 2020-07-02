@@ -38,9 +38,9 @@ EXPORT(void) OnPackageLoad(const char *PackageName, lua_State *L)
 {
     auto pn = new std::string(PackageName);
     if (*pn == "onsharp") {
-        Plugin::Get()->Setup(L);
         for (auto const &f : Plugin::Get()->GetFunctions())
             Lua::RegisterPluginFunction(L, std::get<0>(f), std::get<1>(f));
+        Plugin::Get()->Setup(L);
     }
 }
 

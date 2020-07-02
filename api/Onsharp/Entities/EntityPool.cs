@@ -58,7 +58,7 @@ namespace Onsharp.Entities
         
         internal IReadOnlyList<T> CastEntities<T>() where T : Entity
         {
-            if (Bridge.IsEntityRefreshingEnabled)
+            if (Bridge.IsEntityRefreshingEnabled && _entityName != null)
             {
                 int len = 0;
                 IntPtr ptr = Onset.GetEntities(_entityName, ref len);
@@ -72,7 +72,7 @@ namespace Onsharp.Entities
 
                 lock (_entities)
                     _entities = newEntities;
-                Onset.ReleaseLongArray(ptr);
+                Onset.ReleaseIntArray(ptr);
             }
             
             lock (_entities)

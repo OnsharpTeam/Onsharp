@@ -32,6 +32,7 @@ namespace Onsharp.Commands
                     if(method.IsStatic) continue;
                     Command command = method.GetCustomAttribute<Command>();
                     if (command == null) continue;
+                    Onset.RegisterCommand(_server.Owner.Plugin.Meta.Id, command.Name);
                     command.SetHandler(owner, method);
                     _commands.Add(command);
                 }
@@ -47,6 +48,7 @@ namespace Onsharp.Commands
                     if(!method.IsStatic) continue;
                     Command command = method.GetCustomAttribute<Command>();
                     if (command == null) continue;
+                    Onset.RegisterCommand(_server.Owner.Plugin.Meta.Id, command.Name);
                     command.SetHandler(null, method);
                     _commands.Add(command);
                 }
@@ -59,9 +61,10 @@ namespace Onsharp.Commands
         /// If the command execution fails, a custom event called CommandFailure event is getting called.<br/>
         /// The arguments are: <see cref="Player"/> executor, <see cref="CommandFailure"/> failure, <see cref="string"/> line, <see cref="string"/> commandName
         /// </summary>
+        /// <param name="name">The name of the command</param>
         /// <param name="line">The data in form of a line of text</param>
         /// <param name="playerId">The player id which executed the command</param>
-        internal void ExecuteCommand(string line, long playerId)
+        internal void ExecuteCommand(string name, string line, long playerId)
         {
             
             try
@@ -73,8 +76,6 @@ namespace Onsharp.Commands
                     return;
                 }
 
-                string[] parts = line.Split(' ');
-                string name = parts[0];
                 Command command = GetCommand(name);
                 if (command == null)
                 {
@@ -88,9 +89,9 @@ namespace Onsharp.Commands
 
                 #region Greedy String Formatting
 
-                for (int i = 1; i < parts.Length; i++)
+                string[] parts = line.Split(' ');
+                foreach (string str in parts)
                 {
-                    string str = parts[i];
                     if (currentStr == null)
                     {
                         if (str.StartsWith("\""))

@@ -44,7 +44,7 @@
 typedef int (*report_callback_ptr)(int progress);
 typedef void (*load_ptr)(const char* appPath);
 typedef void (*unload_ptr)();
-typedef bool (*execute_event_ptr)(int type, const char* data);
+typedef void (*init_ptr)();
 
 #ifdef __cplusplus
 extern "C"
@@ -59,8 +59,8 @@ private:
     coreclr_initialize_ptr initializeCoreClr;
     coreclr_create_delegate_ptr createManagedDelegate;
     coreclr_shutdown_ptr shutdownCoreClr;
-    execute_event_ptr executeEvent;
     unload_ptr unload;
+    init_ptr init;
 
 public:
     int last_error = NET_NO_ERROR;
@@ -266,8 +266,8 @@ public:
                 domainId,
                 "Onsharp",
                 "Onsharp.Native.Bridge",
-                "Unload",
-                (void**)&unload);
+                "InitRuntimeEntries",
+                (void**)&init);
 
         if (hr < 0)
         {
@@ -281,18 +281,35 @@ public:
                 domainId,
                 "Onsharp",
                 "Onsharp.Native.Bridge",
-                "ExecuteEvent",
-                (void**)&executeEvent);
+                "Unload",
+                (void**)&unload);
 
         if (hr < 0)
         {
-            printf("ERROR: execute_event delegate failed - status: 0x%08x\n", hr);
+            printf("ERROR: unload delegate failed - status: 0x%08x\n", hr);
             last_error = NET_CONSOLE_ERROR;
             return;
         }
 
         managedDelegate(appPath.c_str());
         last_error = NET_SUCCESS;
+    }
+
+    bool CreateDelegate(const char* entryPointMethodName,
+                        void** delegate)
+    {
+        return createManagedDelegate(
+                hostHandle,
+                domainId,
+                "Onsharp",
+                "Onsharp.Native.Bridge",
+                entryPointMethodName,
+                (void**)&delegate) >= 0;
+    }
+
+    void InitRuntime()
+    {
+        init();
     }
 
     void Stop()
@@ -308,11 +325,6 @@ public:
             printf("ERROR: coreclr_shutdown failed - status: 0x%08x\n", hr);
             last_error = NET_CONSOLE_ERROR;
         }
-    }
-
-    bool ExecuteEvent(int type, const char* data)
-    {
-        return executeEvent(type, data);
     }
 };
 
