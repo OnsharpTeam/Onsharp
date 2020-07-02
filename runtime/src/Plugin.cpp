@@ -51,90 +51,73 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
-enum class NTYPE
+EXPORTED Plugin::NValue* CreateNValue_s(const char* val)
 {
-    NONE = 0,
-    STRING = 1,
-    DOUBLE = 2,
-    INTEGER = 3,
-    BOOLEAN = 4
-};
-
-typedef struct {
-
-    NTYPE type;
-    int iVal;
-    double dVal;
-    bool bVal;
-    const char* sVal;
-
-} NValue;
-
-EXPORTED NValue* CreateNValue_s(const char* val)
-{
-    auto nVal = new NValue;
-    nVal->type = NTYPE::STRING;
-    nVal->sVal = val;
+    char* cVal = new char;
+    strcpy(cVal, val);
+    auto nVal = new Plugin::NValue;
+    nVal->type = Plugin::NTYPE::STRING;
+    nVal->sVal = cVal;
     return nVal;
 }
 
-EXPORTED NValue* CreateNValue_i(int val)
+EXPORTED Plugin::NValue* CreateNValue_i(int val)
 {
-    auto nVal = new NValue;
-    nVal->type = NTYPE::INTEGER;
+    auto nVal = new Plugin::NValue;
+    nVal->type = Plugin::NTYPE::INTEGER;
     nVal->iVal = val;
     return nVal;
 }
 
-EXPORTED NValue* CreateNValue_d(double val)
+EXPORTED Plugin::NValue* CreateNValue_d(double val)
 {
-    auto nVal = new NValue;
-    nVal->type = NTYPE::DOUBLE;
+    auto nVal = new Plugin::NValue;
+    nVal->type = Plugin::NTYPE::DOUBLE;
     nVal->dVal = val;
     return nVal;
 }
 
-EXPORTED NValue* CreateNValue_b(bool val)
+EXPORTED Plugin::NValue* CreateNValue_b(bool val)
 {
-    auto nVal = new NValue;
-    nVal->type = NTYPE::BOOLEAN;
+    auto nVal = new Plugin::NValue;
+    nVal->type = Plugin::NTYPE::BOOLEAN;
     nVal->bVal = val;
     return nVal;
 }
 
-EXPORTED NValue* CreateNValue_n()
+EXPORTED Plugin::NValue* CreateNValue_n()
 {
-    auto nVal = new NValue;
-    nVal->type = NTYPE::NONE;
+    auto nVal = new Plugin::NValue;
+    nVal->type = Plugin::NTYPE::NONE;
     return nVal;
 }
 
-EXPORTED double GetNDouble(NValue* nPtr)
+EXPORTED double GetNDouble(Plugin::NValue* nPtr)
 {
     return nPtr->dVal;
 }
 
-EXPORTED int GetNInt(NValue* nPtr)
+EXPORTED int GetNInt(Plugin::NValue* nPtr)
 {
     return nPtr->iVal;
 }
 
-EXPORTED const char* GetNString(NValue* nPtr)
+EXPORTED const char* GetNString(Plugin::NValue* nPtr)
 {
     return nPtr->sVal;
 }
 
-EXPORTED bool GetNBoolean(NValue* nPtr)
+EXPORTED bool GetNBoolean(Plugin::NValue* nPtr)
 {
     return nPtr->bVal;
 }
 
-EXPORTED void FreeNValue(NValue* nPtr)
+EXPORTED void FreeNValue(Plugin::NValue* nPtr)
 {
     delete nPtr;
 }
 
-EXPORTED NTYPE GetNType(NValue* nPtr)
+EXPORTED Plugin::NTYPE GetNType(Plugin::NValue* nPtr)
 {
     return nPtr->type;
 }

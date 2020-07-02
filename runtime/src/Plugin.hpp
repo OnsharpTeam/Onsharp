@@ -30,6 +30,25 @@ private:
     }
 
 public:
+    enum class NTYPE
+    {
+        NONE = 0,
+        STRING = 1,
+        DOUBLE = 2,
+        INTEGER = 3,
+        BOOLEAN = 4
+    };
+
+    typedef struct {
+
+        NTYPE type;
+        int iVal;
+        double dVal;
+        bool bVal;
+        const char* sVal;
+
+    } NValue;
+
     decltype(_func_list) const &GetFunctions() const
     {
         return _func_list;
@@ -54,6 +73,44 @@ public:
     NetBridge GetBridge() {
         return this->bridge;
     }
+    Plugin::NValue* CreateNValueByLua(Lua::LuaValue lVal)
+    {
+        if(lVal.IsBoolean())
+        {
+            Plugin::NValue* nVal = new Plugin::NValue;
+            nVal->type = NTYPE::BOOLEAN;
+            nVal->bVal = lVal.GetValue<bool>();
+            return nVal;
+        }
 
+        if(lVal.IsInteger())
+        {
+            Plugin::NValue* nVal = new Plugin::NValue;
+            nVal->type = NTYPE::INTEGER;
+            nVal->iVal = lVal.GetValue<int>();
+            return nVal;
+        }
+
+        if(lVal.IsNumber())
+        {
+            Plugin::NValue* nVal = new Plugin::NValue;
+            nVal->type = NTYPE::DOUBLE;
+            nVal->dVal = lVal.GetValue<double>();
+            return nVal;
+        }
+
+        if(lVal.IsString())
+        {
+            Plugin::NValue* nVal = new Plugin::NValue;
+            nVal->type = NTYPE::STRING;
+            auto sVal = lVal.GetValue<std::string>();
+            nVal->sVal = sVal.c_str();
+            return nVal;
+        }
+
+        Plugin::NValue* nVal = new Plugin::NValue;
+        nVal->type = NTYPE::NONE;
+        return nVal;
+    }
     Lua::LuaArgs_t CallLuaFunction(const char* LuaFunctionName, Lua::LuaArgs_t* Arguments);
 };

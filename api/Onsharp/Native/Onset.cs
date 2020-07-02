@@ -11,7 +11,7 @@ namespace Onsharp.Native
     internal static class Onset
     {
         [DllImport(Bridge.DllName, EntryPoint = "CreateNValue_s", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr CreateNValue(string val);
+        internal static extern IntPtr CreateNValue([MarshalAs(UnmanagedType.LPStr)] string val);
 
         [DllImport(Bridge.DllName, EntryPoint = "CreateNValue_i", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr CreateNValue(int val);
@@ -40,7 +40,7 @@ namespace Onsharp.Native
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool GetNBoolean(IntPtr ptr);
 
-        [DllImport(@"E:\Development\Onset\Onsharp\runtime\cmake-build-debug\src\onsharp-runtime.dll")]
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr GetNString(IntPtr ptr);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
