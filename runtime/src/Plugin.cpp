@@ -60,93 +60,83 @@ enum class NTYPE
     BOOLEAN = 4
 };
 
-EXPORTED Lua::LuaValue* CreateNValue_s(const char* val)
+typedef struct {
+
+    NTYPE type;
+    int iVal;
+    double dVal;
+    bool bVal;
+    const char* sVal;
+
+} NValue;
+
+EXPORTED NValue* CreateNValue_s(const char* val)
 {
-    return new Lua::LuaValue(val);
+    auto nVal = new NValue;
+    nVal->type = NTYPE::STRING;
+    nVal->sVal = val;
+    return nVal;
 }
 
-EXPORTED Lua::LuaValue* CreateNValue_i(int val)
+EXPORTED NValue* CreateNValue_i(int val)
 {
-    return new Lua::LuaValue(val);
+    auto nVal = new NValue;
+    nVal->type = NTYPE::INTEGER;
+    nVal->iVal = val;
+    return nVal;
 }
 
-EXPORTED Lua::LuaValue* CreateNValue_d(double val)
+EXPORTED NValue* CreateNValue_d(double val)
 {
-    return new Lua::LuaValue(val);
+    auto nVal = new NValue;
+    nVal->type = NTYPE::DOUBLE;
+    nVal->dVal = val;
+    return nVal;
 }
 
-EXPORTED Lua::LuaValue* CreateNValue_b(bool val)
+EXPORTED NValue* CreateNValue_b(bool val)
 {
-    return new Lua::LuaValue(val);
+    auto nVal = new NValue;
+    nVal->type = NTYPE::BOOLEAN;
+    nVal->bVal = val;
+    return nVal;
 }
 
-EXPORTED Lua::LuaValue* CreateNValue_n()
+EXPORTED NValue* CreateNValue_n()
 {
-    return new Lua::LuaValue();
+    auto nVal = new NValue;
+    nVal->type = NTYPE::NONE;
+    return nVal;
 }
 
-EXPORTED Lua::LuaValue* CreateNValue(Lua::LuaValue val)
+EXPORTED double GetNDouble(NValue* nPtr)
 {
-    return new Lua::LuaValue(val);
+    return nPtr->dVal;
 }
 
-EXPORTED Lua::LuaValue* GenerateTest()
+EXPORTED int GetNInt(NValue* nPtr)
 {
-    const char* test = "FF";
-    auto nPtr = new Lua::LuaValue(test);
-    return nPtr;
+    return nPtr->iVal;
 }
 
-EXPORTED double GetNDouble(Lua::LuaValue* nPtr)
+EXPORTED const char* GetNString(NValue* nPtr)
 {
-    return nPtr->GetValue<double>();
+    return nPtr->sVal;
 }
 
-EXPORTED int GetNInt(Lua::LuaValue* nPtr)
+EXPORTED bool GetNBoolean(NValue* nPtr)
 {
-    return nPtr->GetValue<int>();
+    return nPtr->bVal;
 }
 
-EXPORTED const char* GetNString(Lua::LuaValue* nPtr)
-{
-    auto sVal = nPtr->GetValue<std::string>();
-    const char* cVal = sVal.c_str();
-    return cVal;
-}
-
-EXPORTED bool GetNBoolean(Lua::LuaValue* nPtr)
-{
-    return nPtr->GetValue<bool>();
-}
-
-EXPORTED void FreeNValue(Lua::LuaValue* nPtr)
+EXPORTED void FreeNValue(NValue* nPtr)
 {
     delete nPtr;
 }
 
-EXPORTED NTYPE GetNType(Lua::LuaValue* nPtr)
+EXPORTED NTYPE GetNType(NValue* nPtr)
 {
-    if(nPtr->IsBoolean())
-    {
-        return NTYPE::BOOLEAN;
-    }
-
-    if(nPtr->IsString())
-    {
-        return NTYPE::STRING;
-    }
-
-    if(nPtr->IsNumber())
-    {
-        return NTYPE::DOUBLE;
-    }
-
-    if(nPtr->IsInteger())
-    {
-        return NTYPE::INTEGER;
-    }
-
-    return NTYPE::NONE;
+    return nPtr->type;
 }
 
 EXPORTED void SetPlayerName(long player, const char* name)

@@ -40,7 +40,7 @@ namespace Onsharp.Native
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool GetNBoolean(IntPtr ptr);
 
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"E:\Development\Onset\Onsharp\runtime\cmake-build-debug\src\onsharp-runtime.dll")]
         internal static extern IntPtr GetNString(IntPtr ptr);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]

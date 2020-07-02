@@ -43,6 +43,9 @@ namespace Onsharp.Native
             Onset.FreeNValue(_nativePtr);
         }
 
+        /// <summary>
+        /// Defines the type of the value contained by the native value.
+        /// </summary>
         public enum Type : byte
         {
             Null,
