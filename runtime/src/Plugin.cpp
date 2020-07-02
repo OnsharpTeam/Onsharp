@@ -159,7 +159,7 @@ EXPORTED int* GetEntities(const char* entityName, int* len)
     return entities;
 }
 
-EXPORTED int ReleaseLongArray(long* lArray)
+EXPORTED int ReleaseIntArray(int* lArray)
 {
     delete[] lArray;
     return 0;
@@ -177,6 +177,19 @@ EXPORTED bool IsEntityValid(long id, const char* entityName)
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction(sFuncName.c_str(), &argValues);
     return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void CallRemote(long player, const char* name, Plugin::NValue* nVals[], int len)
+{
+    Lua::LuaArgs_t arg_list;
+    arg_list.push_back(new Lua::LuaValue(player));
+    arg_list.push_back(new Lua::LuaValue(name));
+    for(int i = 0; i < len; i++)
+    {
+        arg_list.push_back(nVals[i]->GetLuaValue());
+    }
+
+    Plugin::Get()->CallLuaFunction("CallRemoteEvent", &arg_list);
 }
 
 //endregion

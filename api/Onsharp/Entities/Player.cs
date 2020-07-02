@@ -1,4 +1,5 @@
-﻿using Onsharp.Native;
+﻿using System;
+using Onsharp.Native;
 
 namespace Onsharp.Entities
 {
@@ -26,6 +27,25 @@ namespace Onsharp.Entities
         {
             string formattedString = string.Format(message, args);
             Onset.SendPlayerChatMessage(Id, formattedString);
+        }
+
+        /// <summary>
+        /// Calls a remote event handler on the client-side of this player.
+        /// </summary>
+        /// <param name="name">The name of the remote event handler which should be called</param>
+        /// <param name="args">The arguments which will passed to the event handler. The maximum length is 10</param>
+        public void CallRemote(string name, params object[] args)
+        {
+            if(args.Length > 10)
+                throw new ArgumentException("The maximum length of event handler arguments are 10!");
+
+            IntPtr[] argsArr = new IntPtr[args.Length];
+            for (int i = 0; i < args.Length; i++)
+            {
+                argsArr[i] = Bridge.CreateNValue(args[i]).NativePtr;
+            }
+            
+            Onset.CallRemote(Id, name, argsArr, argsArr.Length);
         }
     }
 }

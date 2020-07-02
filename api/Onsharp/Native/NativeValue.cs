@@ -8,12 +8,12 @@ namespace Onsharp.Native
     /// </summary>
     internal readonly struct NativeValue : IDisposable
     {
-        private readonly IntPtr _nativePtr;
+        internal readonly IntPtr NativePtr;
         private readonly Type _type;
 
         public NativeValue(IntPtr nativePtr)
         {
-            _nativePtr = nativePtr;
+            NativePtr = nativePtr;
             _type = Onset.GetNType(nativePtr);
         }
 
@@ -26,13 +26,13 @@ namespace Onsharp.Native
             switch (_type)
             {
                 case Type.String:
-                    return Marshal.PtrToStringUTF8(Onset.GetNString(_nativePtr));
+                    return Marshal.PtrToStringUTF8(Onset.GetNString(NativePtr));
                 case Type.Double:
-                    return Onset.GetNDouble(_nativePtr);
+                    return Onset.GetNDouble(NativePtr);
                 case Type.Integer:
-                    return Onset.GetNInt(_nativePtr);
+                    return Onset.GetNInt(NativePtr);
                 case Type.Boolean:
-                    return Onset.GetNBoolean(_nativePtr);
+                    return Onset.GetNBoolean(NativePtr);
                 default:
                     return null;
             }
@@ -40,7 +40,7 @@ namespace Onsharp.Native
 
         public void Dispose()
         {
-            Onset.FreeNValue(_nativePtr);
+            Onset.FreeNValue(NativePtr);
         }
 
         /// <summary>

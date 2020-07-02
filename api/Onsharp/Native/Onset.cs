@@ -10,6 +10,9 @@ namespace Onsharp.Native
     [SuppressUnmanagedCodeSecurity]
     internal static class Onset
     {
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void CallRemote(long player, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr[] nVals, int len);
+        
         [DllImport(Bridge.DllName, EntryPoint = "CreateNValue_s", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr CreateNValue([MarshalAs(UnmanagedType.LPStr)] string val);
 
@@ -74,7 +77,7 @@ namespace Onsharp.Native
         internal static extern bool IsEntityValid(long id, [MarshalAs(UnmanagedType.LPStr)] string name);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int ReleaseLongArray(IntPtr ptr);
+        internal static extern int ReleaseIntArray(IntPtr ptr);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr GetEntities([MarshalAs(UnmanagedType.LPStr)] string name, ref int len);

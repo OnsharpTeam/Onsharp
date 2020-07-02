@@ -47,6 +47,31 @@ public:
         bool bVal;
         const char* sVal;
 
+
+        Lua::LuaValue GetLuaValue()
+        {
+            if(type == NTYPE::STRING)
+            {
+                return new Lua::LuaValue(std::string(sVal));
+            }
+
+            if(type == NTYPE::INTEGER)
+            {
+                return new Lua::LuaValue(iVal);
+            }
+
+            if(type == NTYPE::DOUBLE)
+            {
+                return new Lua::LuaValue(dVal);
+            }
+
+            if(type == NTYPE::BOOLEAN)
+            {
+                return new Lua::LuaValue(bVal);
+            }
+
+            return new Lua::LuaValue();
+        }
     } NValue;
 
     decltype(_func_list) const &GetFunctions() const
