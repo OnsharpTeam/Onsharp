@@ -95,7 +95,7 @@ EXPORTED Plugin::NValue* CreateNValue_s(const char* val)
     strcpy(cVal, val);
     auto nVal = new Plugin::NValue;
     nVal->type = Plugin::NTYPE::STRING;
-    nVal->sVal = cVal;
+    nVal->sVal = std::string(cVal);
     return nVal;
 }
 
@@ -142,7 +142,7 @@ EXPORTED int GetNInt(Plugin::NValue* nPtr)
 
 EXPORTED const char* GetNString(Plugin::NValue* nPtr)
 {
-    return nPtr->sVal;
+    return nPtr->sVal.c_str();
 }
 
 EXPORTED bool GetNBoolean(Plugin::NValue* nPtr)

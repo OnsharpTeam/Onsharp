@@ -46,13 +46,13 @@ public:
         int iVal;
         double dVal;
         bool bVal;
-        const char* sVal;
+        std::string sVal;
 
         Lua::LuaValue GetLuaValue()
         {
             if(type == NTYPE::STRING)
             {
-                return new Lua::LuaValue(std::string(sVal));
+                return new Lua::LuaValue(sVal);
             }
 
             if(type == NTYPE::INTEGER)
@@ -77,7 +77,7 @@ public:
         {
             if(type == NTYPE::STRING)
             {
-                printf("nval STR : %s \n", sVal);
+                printf("nval STR : %s \n", sVal.c_str());
                 return;
             }
 
@@ -165,10 +165,7 @@ public:
         {
             NValue* nVal = new NValue;
             nVal->type = NTYPE::STRING;
-            auto sVal = lVal.GetValue<std::string>();
-            const char* v = sVal.c_str();
-            Onset::Plugin::Get()->Log("val tostr %s", v);
-            nVal->sVal = v;
+            nVal->sVal = std::move(lVal.GetValue<std::string>());
             return nVal;
         }
 

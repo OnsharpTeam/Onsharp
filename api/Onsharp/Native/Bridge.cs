@@ -192,10 +192,6 @@ namespace Onsharp.Native
             for (int i = 0; i < len; i++)
             {
                 args[i] = new NativeValue(nArgs[i]).GetValue();
-                if (key == "call-command")
-                {
-                    Logger.Debug("{NV}", args[i]);
-                }
             }
 
             return CreateNValue(HandleCalling(key, args)).NativePtr;
@@ -249,13 +245,9 @@ namespace Onsharp.Native
                 if (key == "call-command")
                 {
                     string pluginId = (string) args[0];
-                    Logger.Debug("cc pluginId: " + pluginId);
                     int player = (int) args[1];
-                    Logger.Debug("cc player: " + player);
                     string name = (string) args[2];
-                    Logger.Debug("cc name: " + name);
                     string line = (string) args[3];
-                    Logger.Debug("cc line: " + line);
                     Plugin plugin = PluginManager.GetPlugin(pluginId);
                     if (plugin != null)
                     {

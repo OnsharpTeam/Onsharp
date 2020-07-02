@@ -68,14 +68,12 @@ namespace Onsharp.Commands
         {
             try
             {
-                _server.Owner.Plugin.Logger.Debug("cc 1");
                 Player player = _server.CreatePlayer(playerId);
                 if (player == null)
                 {
                     _server.Owner.Plugin.Logger.Fatal("No player was found at the command execution! Missing entity id {ID}!", playerId);
                     return;
                 }
-                _server.Owner.Plugin.Logger.Debug("cc 2");
 
                 Command command = GetCommand(name);
                 if (command == null)
@@ -83,7 +81,6 @@ namespace Onsharp.Commands
                     _server.CallEventUnsafely("CommandFailure", player, CommandFailure.NoCommand, line, name);
                     return;
                 }
-                _server.Owner.Plugin.Logger.Debug("cc 3");
                 
                 List<string> strArgs = new List<string>();
                 string currentStr = null;
@@ -142,7 +139,6 @@ namespace Onsharp.Commands
 
                 #endregion
 
-                _server.Owner.Plugin.Logger.Debug("cc 4");
                 ParameterInfo[] parameters = command.GetParameters();
                 if (_server.CallEvent(EventType.PlayerPreCommand, player, name, strArgs.ToArray()))
                 {
