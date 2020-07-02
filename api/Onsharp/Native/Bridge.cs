@@ -267,6 +267,41 @@ namespace Onsharp.Native
                 return null;
             }
         }
+        
+        /// <summary>
+        /// Creates a new instance of native value by the given value object.
+        /// </summary>
+        /// <param name="val">The value object of for the native value</param>
+        /// <returns>The native value instance</returns>
+        internal static NativeValue CreateNValue(object val)
+        {
+            if (val == null)
+            {
+                return new NativeValue(Onset.CreateNValue());
+            }
+
+            if (val is string s)
+            {
+                return new NativeValue(Onset.CreateNValue(s));
+            }
+
+            if (val is int i)
+            {
+                return new NativeValue(Onset.CreateNValue(i));
+            }
+
+            if (val is double d)
+            {
+                return new NativeValue(Onset.CreateNValue(d));
+            }
+
+            if (val is bool b)
+            {
+                return new NativeValue(Onset.CreateNValue(b));
+            }
+
+            return new NativeValue(Onset.CreateNValue());
+        }
 
         private static object[] ParseEventArgs(PluginDomain owner, EventType type, ReturnData data)
         {

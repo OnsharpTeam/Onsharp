@@ -51,6 +51,104 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+enum class NTYPE
+{
+    NONE = 0,
+    STRING = 1,
+    DOUBLE = 2,
+    INTEGER = 3,
+    BOOLEAN = 4
+};
+
+EXPORTED Lua::LuaValue* CreateNValue_s(const char* val)
+{
+    return new Lua::LuaValue(val);
+}
+
+EXPORTED Lua::LuaValue* CreateNValue_i(int val)
+{
+    return new Lua::LuaValue(val);
+}
+
+EXPORTED Lua::LuaValue* CreateNValue_d(double val)
+{
+    return new Lua::LuaValue(val);
+}
+
+EXPORTED Lua::LuaValue* CreateNValue_b(bool val)
+{
+    return new Lua::LuaValue(val);
+}
+
+EXPORTED Lua::LuaValue* CreateNValue_n()
+{
+    return new Lua::LuaValue();
+}
+
+EXPORTED Lua::LuaValue* CreateNValue(Lua::LuaValue val)
+{
+    return new Lua::LuaValue(val);
+}
+
+EXPORTED Lua::LuaValue* GenerateTest()
+{
+    const char* test = "FF";
+    auto nPtr = new Lua::LuaValue(test);
+    return nPtr;
+}
+
+EXPORTED double GetNDouble(Lua::LuaValue* nPtr)
+{
+    return nPtr->GetValue<double>();
+}
+
+EXPORTED int GetNInt(Lua::LuaValue* nPtr)
+{
+    return nPtr->GetValue<int>();
+}
+
+EXPORTED const char* GetNString(Lua::LuaValue* nPtr)
+{
+    auto sVal = nPtr->GetValue<std::string>();
+    const char* cVal = sVal.c_str();
+    return cVal;
+}
+
+EXPORTED bool GetNBoolean(Lua::LuaValue* nPtr)
+{
+    return nPtr->GetValue<bool>();
+}
+
+EXPORTED void FreeNValue(Lua::LuaValue* nPtr)
+{
+    delete nPtr;
+}
+
+EXPORTED NTYPE GetNType(Lua::LuaValue* nPtr)
+{
+    if(nPtr->IsBoolean())
+    {
+        return NTYPE::BOOLEAN;
+    }
+
+    if(nPtr->IsString())
+    {
+        return NTYPE::STRING;
+    }
+
+    if(nPtr->IsNumber())
+    {
+        return NTYPE::DOUBLE;
+    }
+
+    if(nPtr->IsInteger())
+    {
+        return NTYPE::INTEGER;
+    }
+
+    return NTYPE::NONE;
+}
+
 EXPORTED void SetPlayerName(long player, const char* name)
 {
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player, name);
