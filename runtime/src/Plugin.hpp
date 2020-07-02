@@ -166,7 +166,9 @@ public:
             NValue* nVal = new NValue;
             nVal->type = NTYPE::STRING;
             auto sVal = lVal.GetValue<std::string>();
-            nVal->sVal = sVal.c_str();
+            const char* v = sVal.c_str();
+            Onset::Plugin::Get()->Log("val tostr %s", v);
+            nVal->sVal = v;
             return nVal;
         }
 

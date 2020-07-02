@@ -410,7 +410,7 @@ namespace Onsharp.Native
                 case EventType.GameTick:
                     break;
                 case EventType.ClientConnectionRequest:
-                    break;
+                    return new[]{args[1], args[2]};
                 case EventType.NPCReachTarget:
                     break;
                 case EventType.NPCDamage:

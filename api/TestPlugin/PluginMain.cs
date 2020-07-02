@@ -26,6 +26,12 @@ namespace TestPlugin
             Logger.Fatal("command failure {FAIL} with {NAME} and {LINE} for {PLAYER}", failure, name, line, player.Name);
         }
 
+        [ServerEvent(EventType.ClientConnectionRequest)]
+        public void OnConnectionReq(string ip, int port)
+        {
+            Logger.Debug("incoming request {IP}:{PORT}", ip, port);
+        }
+
         [Command("hello")]
         public void OnHelloCommand(Player player)
         {
