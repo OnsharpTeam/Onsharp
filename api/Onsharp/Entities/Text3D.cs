@@ -2,7 +2,7 @@
 {
     public class Text3D : Entity
     {
-        public Text3D(long id) : base(id, "Text3D")
+        public Text3D(int id) : base(id, "Text3D")
         {
         }
     }

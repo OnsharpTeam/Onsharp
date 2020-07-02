@@ -2,7 +2,7 @@
 {
     public class Vehicle : Entity
     {
-        public Vehicle(long id) : base(id, "Vehicle")
+        public Vehicle(int id) : base(id, "Vehicle")
         {
         }
     }

@@ -2,7 +2,7 @@
 {
     public class NPC : Entity
     {
-        public NPC(long id) : base(id, "NPC")
+        public NPC(int id) : base(id, "NPC")
         {
         }
     }

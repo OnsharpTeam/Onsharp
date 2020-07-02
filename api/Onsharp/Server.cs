@@ -246,12 +246,12 @@ namespace Onsharp
             _commandManager.RegisterCommands<T>();
         }
         
-        internal void FireRemoteEvent(string name, long player, object[] args)
+        internal void FireRemoteEvent(string name, int player, object[] args)
         {
             //TODO adding calling of remote events
         }
 
-        internal void FireCommand(long player, string name, string line)
+        internal void FireCommand(int player, string name, string line)
         {
             _commandManager.ExecuteCommand(name, line, player);
         }
@@ -279,7 +279,7 @@ namespace Onsharp
         /// </summary>
         /// <param name="id">The session id of the entity</param>
         /// <returns>The wrapped player object</returns>
-        internal Player CreatePlayer(long id)
+        internal Player CreatePlayer(int id)
         {
             return PlayerPool.GetEntity(id, () => PlayerFactory.Create(id));
         }
@@ -289,7 +289,7 @@ namespace Onsharp
         /// </summary>
         /// <param name="id">The session id of the entity</param>
         /// <returns>The wrapped door object</returns>
-        internal Door CreateDoor(long id)
+        internal Door CreateDoor(int id)
         {
             return DoorPool.GetEntity(id, () => DoorFactory.Create(id));
         }
@@ -299,7 +299,7 @@ namespace Onsharp
         /// </summary>
         /// <param name="id">The session id of the entity</param>
         /// <returns>The wrapped NPC object</returns>
-        internal NPC CreateNPC(long id)
+        internal NPC CreateNPC(int id)
         {
             return NPCPool.GetEntity(id, () => NPCFactory.Create(id));
         }
@@ -309,7 +309,7 @@ namespace Onsharp
         /// </summary>
         /// <param name="id">The session id of the entity</param>
         /// <returns>The wrapped object</returns>
-        internal Object CreateObject(long id)
+        internal Object CreateObject(int id)
         {
             return ObjectPool.GetEntity(id, () => ObjectFactory.Create(id));
         }
@@ -319,7 +319,7 @@ namespace Onsharp
         /// </summary>
         /// <param name="id">The session id of the entity</param>
         /// <returns>The wrapped pickup object</returns>
-        internal Pickup CreatePickup(long id)
+        internal Pickup CreatePickup(int id)
         {
             return PickupPool.GetEntity(id, () => PickupFactory.Create(id));
         }
@@ -329,7 +329,7 @@ namespace Onsharp
         /// </summary>
         /// <param name="id">The session id of the entity</param>
         /// <returns>The wrapped 3d text object</returns>
-        internal Text3D CreateText3D(long id)
+        internal Text3D CreateText3D(int id)
         {
             return Text3DPool.GetEntity(id, () => Text3DFactory.Create(id));
         }
@@ -339,7 +339,7 @@ namespace Onsharp
         /// </summary>
         /// <param name="id">The session id of the entity</param>
         /// <returns>The wrapped vehicle object</returns>
-        internal Vehicle CreateVehicle(long id)
+        internal Vehicle CreateVehicle(int id)
         {
             return VehiclePool.GetEntity(id, () => VehicleFactory.Create(id));
         }

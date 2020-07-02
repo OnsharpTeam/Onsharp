@@ -14,7 +14,7 @@ namespace Onsharp.Entities
             set => Onset.SetPlayerName(Id, value);
         }
         
-        public Player(long id) : base(id, "Player")
+        public Player(int id) : base(id, "Player")
         {
         }
 

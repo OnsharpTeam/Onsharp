@@ -5,7 +5,7 @@
     /// </summary>
     internal class VehicleFactory : IEntityFactory<Vehicle>
     {
-        public Vehicle Create(long id)
+        public Vehicle Create(int id)
         {
             return new Vehicle(id);
         }

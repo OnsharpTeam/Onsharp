@@ -5,7 +5,7 @@
     /// </summary>
     internal class NPCFactory : IEntityFactory<NPC>
     {
-        public NPC Create(long id)
+        public NPC Create(int id)
         {
             return new NPC(id);
         }

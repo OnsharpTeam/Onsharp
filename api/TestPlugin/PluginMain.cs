@@ -1,5 +1,6 @@
 ﻿using Onsharp.Commands;
 using Onsharp.Entities;
+using Onsharp.Events;
 using Onsharp.Plugins;
 
 namespace TestPlugin
@@ -17,6 +18,12 @@ namespace TestPlugin
         public override void OnStop()
         {
             Logger.Fatal("Stopping!");
+        }
+
+        [ServerEvent("CommandFailure")]
+        public void OnCommandFailure(Player player, CommandFailure failure, string line, string name)
+        {
+            Logger.Fatal("command failure {FAIL} with {NAME} and {LINE} for {PLAYER}", failure, name, line, player.Name);
         }
 
         [Command("hello")]

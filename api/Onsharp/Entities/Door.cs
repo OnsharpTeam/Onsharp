@@ -2,7 +2,7 @@
 {
     public class Door : Entity
     {
-        public Door(long id) : base(id, "Door")
+        public Door(int id) : base(id, "Door")
         {
         }
     }

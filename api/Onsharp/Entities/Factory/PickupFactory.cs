@@ -5,7 +5,7 @@
     /// </summary>
     internal class PickupFactory : IEntityFactory<Pickup>
     {
-        public Pickup Create(long id)
+        public Pickup Create(int id)
         {
             return new Pickup(id);
         }

@@ -30,6 +30,7 @@ private:
     }
 
 public:
+    bool isSetup = false;
     enum class NTYPE
     {
         NONE = 0,
@@ -101,8 +102,6 @@ public:
             printf("nval NULL\n");
         }
     } NValue;
-    typedef NValue* (*call_bridge_ptr)(const char* data, NValue* args[]);
-    call_bridge_ptr callBridge;
 
     decltype(_func_list) const &GetFunctions() const
     {
@@ -124,11 +123,14 @@ public:
     }
     void Setup(lua_State* L) {
         this->MainScriptVM = L;
-        this->bridge.CreateDelegate("CallBridge", (void**)&this->callBridge);
     }
-    Plugin::NValue* CallBridge(const char* key, NValue** args) const
+    void InitDelegates()
     {
-        return this->callBridge(key, args);
+        isSetup = true;
+    }
+    Plugin::NValue* CallBridge(const char* key, void** args, int len)
+    {
+        return (Plugin::NValue*) this->bridge.CallBridge(key, args, len);
     }
     NetBridge GetBridge() {
         return this->bridge;

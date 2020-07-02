@@ -5,7 +5,7 @@
     /// </summary>
     internal class ObjectFactory : IEntityFactory<Object>
     {
-        public Object Create(long id)
+        public Object Create(int id)
         {
             return new Object(id);
         }

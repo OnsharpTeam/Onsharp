@@ -181,16 +181,21 @@ namespace Onsharp.Native
         /// This method gets called from the native side and is the interaction interface from the pipeline to the dotnet runtime.
         /// </summary>
         /// <param name="key">The key which defines what the reason is, the native side is calling</param>
-        /// <param name="nArgs">The arguments which are passed to the dotnet runtime</param>
+        /// <param name="nArgsPtr">The arguments which are passed to the dotnet runtime</param>
+        /// <param name="len">The length of the nArgs data which got passed</param>
         /// <returns>If wanted, some data as NVal</returns>
-        internal static IntPtr CallBridge(string key, IntPtr[] nArgs)
+        internal static IntPtr CallBridge(string key, IntPtr nArgsPtr, int len)
         {
-            Logger.Debug("Bridge got called by {KEY} with ", key, nArgs.Length);
-            object[] args = new object[nArgs.Length];
-            for (int i = 0; i < nArgs.Length; i++)
+            IntPtr[] nArgs = new IntPtr[len];
+            Marshal.Copy(nArgsPtr, nArgs, 0, len);
+            object[] args = new object[len];
+            for (int i = 0; i < len; i++)
             {
-                args[i] = new NativeValue(nArgs[i]).GetValue(); 
-                Logger.Debug("with arg : {ARG}", args[i]);         
+                args[i] = new NativeValue(nArgs[i]).GetValue();
+                if (key == "call-command")
+                {
+                    Logger.Debug("{NV}", args[i]);
+                }
             }
 
             return CreateNValue(HandleCalling(key, args)).NativePtr;
@@ -225,7 +230,7 @@ namespace Onsharp.Native
 
                 if (key == "call-remote")
                 {
-                    long player = (long) (double) args[0];
+                    int player = (int) args[0];
                     string pluginId = (string) args[1];
                     string name = (string) args[2];
                     object[] remoteArgs = new object[args.Length - 3];
@@ -244,9 +249,13 @@ namespace Onsharp.Native
                 if (key == "call-command")
                 {
                     string pluginId = (string) args[0];
-                    long player = (long) (double) args[1];
+                    Logger.Debug("cc pluginId: " + pluginId);
+                    int player = (int) args[1];
+                    Logger.Debug("cc player: " + player);
                     string name = (string) args[2];
+                    Logger.Debug("cc name: " + name);
                     string line = (string) args[3];
+                    Logger.Debug("cc line: " + line);
                     Plugin plugin = PluginManager.GetPlugin(pluginId);
                     if (plugin != null)
                     {

@@ -2,7 +2,7 @@
 {
     public class Object : Entity
     {
-        public Object(long id) : base(id, "Object")
+        public Object(int id) : base(id, "Object")
         {
         }
     }

@@ -5,7 +5,7 @@
     /// </summary>
     internal class DoorFactory : IEntityFactory<Door>
     {
-        public Door Create(long id)
+        public Door Create(int id)
         {
             return new Door(id);
         }

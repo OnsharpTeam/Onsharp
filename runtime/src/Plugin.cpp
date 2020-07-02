@@ -52,13 +52,14 @@ Plugin::Plugin()
         std::string key;
         Lua::LuaTable_t args_table;
         Lua::ParseArguments(L, key, args_table);
-        auto args = new NValue*[args_table->Count()];
+        int len = args_table->Count();
+        void** args = new void*[len];
         int idx = 0;
         args_table->ForEach([args, &idx](Lua::LuaValue k, Lua::LuaValue v) {
             args[idx] = Plugin::Get()->CreateNValueByLua(std::move(v));
             idx++;
         });
-        NValue* returnVal = Plugin::Get()->CallBridge(key.c_str(), args);
+        NValue* returnVal = Plugin::Get()->CallBridge(key.c_str(), args, len);
         Lua::LuaArgs_t argValues = Lua::BuildArgumentList(returnVal->GetLuaValue());
         Lua::ReturnValues(L, argValues);
         return 1;
@@ -67,6 +68,7 @@ Plugin::Plugin()
     LUA_DEFINE(InitRuntimeEntries)
     {
         Plugin::Get()->GetBridge().InitRuntime();
+        Plugin::Get()->InitDelegates();
         Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
         Lua::ReturnValues(L, argValues);
         return 1;

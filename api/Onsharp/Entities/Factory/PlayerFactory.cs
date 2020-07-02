@@ -5,7 +5,7 @@
     /// </summary>
     internal class PlayerFactory : IEntityFactory<Player>
     {
-        public Player Create(long id)
+        public Player Create(int id)
         {
             return new Player(id);
         }

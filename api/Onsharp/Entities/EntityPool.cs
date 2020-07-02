@@ -13,9 +13,9 @@ namespace Onsharp.Entities
     {
         private List<Entity> _entities;
         private readonly string _entityName;
-        private readonly Func<long, Entity> _creator;
+        private readonly Func<int, Entity> _creator;
         
-        public EntityPool(string entityName, Func<long, Entity> creator)
+        public EntityPool(string entityName, Func<int, Entity> creator)
         {
             _entityName = entityName;
             _creator = creator;
@@ -36,7 +36,7 @@ namespace Onsharp.Entities
                 _entities.Remove(entity);
         }
 
-        internal T GetEntity<T>(long id, Func<T> creator) where T : Entity
+        internal T GetEntity<T>(int id, Func<T> creator) where T : Entity
         {
             lock (_entities)
             {
