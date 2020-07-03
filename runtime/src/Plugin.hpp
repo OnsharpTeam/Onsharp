@@ -48,6 +48,29 @@ public:
         bool bVal;
         std::string sVal;
 
+        void AddAsArg(Lua::LuaArgs_t* args)
+        {
+            if(type == NTYPE::STRING)
+            {
+                args->emplace_back(sVal);
+            }
+
+            if(type == NTYPE::INTEGER)
+            {
+                args->emplace_back(iVal);
+            }
+
+            if(type == NTYPE::DOUBLE)
+            {
+                args->emplace_back(dVal);
+            }
+
+            if(type == NTYPE::BOOLEAN)
+            {
+                args->emplace_back(bVal);
+            }
+        }
+
         Lua::LuaValue GetLuaValue()
         {
             if(type == NTYPE::STRING)
@@ -137,6 +160,14 @@ public:
     }
     NValue* CreateNValueByLua(const Lua::LuaValue lVal)
     {
+        if(lVal.IsString())
+        {
+            NValue* nVal = new NValue;
+            nVal->type = NTYPE::STRING;
+            nVal->sVal = std::move(lVal.GetValue<std::string>());
+            return nVal;
+        }
+
         if(lVal.IsBoolean())
         {
             NValue* nVal = new NValue;
@@ -158,14 +189,6 @@ public:
             NValue* nVal = new NValue;
             nVal->type = NTYPE::DOUBLE;
             nVal->dVal = lVal.GetValue<double>();
-            return nVal;
-        }
-
-        if(lVal.IsString())
-        {
-            NValue* nVal = new NValue;
-            nVal->type = NTYPE::STRING;
-            nVal->sVal = std::move(lVal.GetValue<std::string>());
             return nVal;
         }
 

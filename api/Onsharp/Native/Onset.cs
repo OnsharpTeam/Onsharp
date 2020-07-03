@@ -17,7 +17,7 @@ namespace Onsharp.Native
         internal static extern void RegisterCommand([MarshalAs(UnmanagedType.LPStr)] string pluginId, [MarshalAs(UnmanagedType.LPStr)] string commandName);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void CallRemote(long player, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr[] nVals, int len);
+        internal static extern void CallRemote(int player, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr[] nVals, int len);
         
         [DllImport(Bridge.DllName, EntryPoint = "CreateNValue_s", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr CreateNValue([MarshalAs(UnmanagedType.LPStr)] string val);
@@ -67,14 +67,16 @@ namespace Onsharp.Native
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr GetVString(IntPtr ptr);
         
+        //NOT WORKING YET
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void SetPlayerName(long player, [MarshalAs(UnmanagedType.LPStr)] string name);
+        internal static extern void SetPlayerName(int player, [MarshalAs(UnmanagedType.LPStr)] string name);
+        
+        //NOT WORKING YET
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr GetPlayerName(int player);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr GetPlayerName(long player);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void SendPlayerChatMessage(long player, [MarshalAs(UnmanagedType.LPStr)] string message);
+        internal static extern void SendPlayerChatMessage(int player, [MarshalAs(UnmanagedType.LPStr)] string message);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void ForceRuntimeRestart(bool complete);

@@ -35,7 +35,7 @@ namespace TestPlugin
         [Command("hello")]
         public void OnHelloCommand(Player player)
         {
-            player.SendMessage("Hallo Welt!");
+            player.CallRemote("trigger-val", "Hallo ");
         }
     }
 }

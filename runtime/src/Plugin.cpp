@@ -91,11 +91,9 @@ EXPORTED void RegisterCommand(const char* pluginId, const char* commandName)
 
 EXPORTED Plugin::NValue* CreateNValue_s(const char* val)
 {
-    char* cVal = new char;
-    strcpy(cVal, val);
     auto nVal = new Plugin::NValue;
     nVal->type = Plugin::NTYPE::STRING;
-    nVal->sVal = std::string(cVal);
+    nVal->sVal = std::string(val);
     return nVal;
 }
 
@@ -160,22 +158,24 @@ EXPORTED Plugin::NTYPE GetNType(Plugin::NValue* nPtr)
     return nPtr->type;
 }
 
-EXPORTED void SetPlayerName(long player, const char* name)
+EXPORTED void SetPlayerName(int player, const char* name)
 {
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player, name);
     Plugin::Get()->CallLuaFunction("SetPlayerName", &argValues);
 }
 
-EXPORTED const char* GetPlayerName(long player)
+EXPORTED Plugin::NValue* GetPlayerName(int player)
 {
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerName", &argValues);
     auto name = returnValues.at(0).GetValue<std::string>();
-    const char* namePtr = name.c_str();
-    return namePtr;
+    Plugin::NValue* nVal = new Plugin::NValue;
+    nVal->type = Plugin::NTYPE::STRING;
+    nVal->sVal = name;
+    return nVal;
 }
 
-EXPORTED void SendPlayerChatMessage(long player, const char* message)
+EXPORTED void SendPlayerChatMessage(int player, const char* message)
 {
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player, message);
     Plugin::Get()->CallLuaFunction("AddPlayerChat", &argValues);
@@ -209,7 +209,7 @@ EXPORTED void ForceRuntimeRestart(bool complete)
     Plugin::Get()->GetBridge().Restart();
 }
 
-EXPORTED bool IsEntityValid(long id, const char* entityName)
+EXPORTED bool IsEntityValid(int id, const char* entityName)
 {
     std::string sFuncName = "IsValid" + std::string(entityName);
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id);
@@ -217,14 +217,12 @@ EXPORTED bool IsEntityValid(long id, const char* entityName)
     return returnValues.at(0).GetValue<bool>();
 }
 
-EXPORTED void CallRemote(long player, const char* name, Plugin::NValue* nVals[], int len)
+EXPORTED void CallRemote(int player, const char* name, Plugin::NValue* nVals[], int len)
 {
-    Lua::LuaArgs_t arg_list;
-    arg_list.push_back(new Lua::LuaValue(player));
-    arg_list.push_back(new Lua::LuaValue(name));
+    Lua::LuaArgs_t arg_list = Lua::BuildArgumentList(player, name);
     for(int i = 0; i < len; i++)
     {
-        arg_list.push_back(nVals[i]->GetLuaValue());
+        nVals[i]->AddAsArg(&arg_list);
     }
 
     Plugin::Get()->CallLuaFunction("CallRemoteEvent", &arg_list);

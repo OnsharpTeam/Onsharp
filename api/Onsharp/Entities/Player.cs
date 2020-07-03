@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Onsharp.Native;
 
 namespace Onsharp.Entities
@@ -10,7 +11,7 @@ namespace Onsharp.Entities
         /// </summary>
         public string Name
         {
-            get => Bridge.PtrToString(Onset.GetPlayerName(Id));
+            get => (string) new NativeValue(Onset.GetPlayerName(Id)).GetValue();
             set => Onset.SetPlayerName(Id, value);
         }
         
