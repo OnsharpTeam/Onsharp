@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Loader;
+using System.Threading;
 using Onsharp.IO;
 using Onsharp.Native;
+using Onsharp.Updater;
 
 namespace Onsharp.Plugins
 {
@@ -14,15 +17,24 @@ namespace Onsharp.Plugins
     {
         private static readonly Type EntryPointType = typeof(IEntryPoint);
         private static readonly Type PluginType = typeof(Plugin);
-        private readonly DomainLoadContext _context;
-        private readonly PluginManager _pluginManager;
+        private readonly AssemblyLoadContext _context;
         private Assembly _assembly;
+        
+        /// <summary>
+        /// The current instance of the plugin manager.
+        /// </summary>
+        internal PluginManager PluginManager { get; }
+        
+        /// <summary>
+        /// If there is an update available, this property contains the updating data.
+        /// </summary>
+        internal UpdatingData UpdatingData { get; private set; }
         
         /// <summary>
         /// The path to the plugins library.
         /// </summary>
         internal string Path { get; }
-        
+
         /// <summary>
         /// All entry points of the plugin which is owned by this domain.
         /// </summary>
@@ -41,19 +53,30 @@ namespace Onsharp.Plugins
         internal PluginDomain(PluginManager pluginManager, string path)
         {
             Path = path;
-            _pluginManager = pluginManager;
-            _context = new DomainLoadContext(path);
+            PluginManager = pluginManager;
+            _context = new AssemblyLoadContext(null, true);
         }
 
+        /// <summary>
+        /// Resets the complete domain before it even started. This is for the updater to clean up.
+        /// </summary>
+        internal void PreReset()
+        {
+            _context.Unload();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+        
         /// <summary>
         /// Initializes the plugin and loads its assembly but does not start it.
         /// To start the plugin use <see cref="Start"/>
         /// </summary>
         internal void Initialize()
         {
+            Bridge.Logger.Info("Loading plugin on path \"{PATH}\"...", Path);
             Server = new Server(this);
             EntryPoints = new List<IEntryPoint>();
-            _assembly = _context.Load();
+            _assembly = _context.LoadFromAssemblyPath(Path);
             foreach (Type type in _assembly.GetExportedTypes())
             {
                 if (PluginType.IsAssignableFrom(type))
@@ -66,6 +89,19 @@ namespace Onsharp.Plugins
                             "Onsharp found a plugin class {CLASS} in the plugin on path \"{PATH}\" which does not have a meta descriptor!",
                             type.FullName, Path);
                         return;
+                    }
+                
+                    Bridge.Logger.Debug("Has plugin autoupdater?");
+                    AutoUpdaterAttribute updateAttribute = type.GetCustomAttribute<AutoUpdaterAttribute>();
+                    if (updateAttribute != null)
+                    {
+                        Bridge.Logger.Debug("YAS!");
+                        UpdatingData = AutoUpdater.RetrieveData(updateAttribute.Url);
+                        Bridge.Logger.Debug("received data : " + UpdatingData.Version + " -> " + meta.Version);
+                        if (meta.Version == UpdatingData.Version)
+                        {
+                            UpdatingData = null;
+                        }
                     }
 
                     Plugin = TryCreatePlugin(type);
@@ -137,8 +173,8 @@ namespace Onsharp.Plugins
                 Plugin.Logger.Info("Starting plugin {NAME} v{VERSION} by {AUTHOR}...", Plugin.Display,
                     Plugin.Meta.Version, Plugin.Meta.Author);
                 Plugin.OnStart();
-                lock (_pluginManager.Plugins)
-                    _pluginManager.Plugins.Add(Plugin);
+                lock (PluginManager.Plugins)
+                    PluginManager.Plugins.Add(Plugin);
                 ChangePluginState(PluginState.Started);
                 Plugin.Logger.Info("Plugin {NAME} successfully started!", Plugin.Display);
             }
@@ -159,8 +195,8 @@ namespace Onsharp.Plugins
                 Plugin.Logger.Warn("Stopping plugin {NAME}...", Plugin.Display);
                 Plugin.OnStop();
                 _context.Unload();
-                lock (_pluginManager.Plugins)
-                    _pluginManager.Plugins.Remove(Plugin);
+                lock (PluginManager.Plugins)
+                    PluginManager.Plugins.Remove(Plugin);
                 ChangePluginState(PluginState.Stopped);
                 Plugin.Logger.Info("Plugin {NAME} successfully stopped!", Plugin.Display);
             }
@@ -172,9 +208,9 @@ namespace Onsharp.Plugins
             GC.Collect();
             GC.WaitForPendingFinalizers();
             if (!completely) return;
-            lock (_pluginManager.Domains)
+            lock (PluginManager.Domains)
             {
-                _pluginManager.Domains.Remove(this);
+                PluginManager.Domains.Remove(this);
             }
         }
 

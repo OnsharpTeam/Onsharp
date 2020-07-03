@@ -51,6 +51,11 @@ namespace Onsharp.Native
         internal static string AppPath { get; private set; }
         
         /// <summary>
+        /// The path to the temp folder.
+        /// </summary>
+        internal static string TempPath { get; private set; }
+        
+        /// <summary>
         /// The path to the third party libraries folder.
         /// </summary>
         internal static string LibsPath { get; private set; }
@@ -125,6 +130,8 @@ namespace Onsharp.Native
                 Directory.CreateDirectory(LibsPath);
                 PluginsPath = Path.Combine(AppPath, "plugins");
                 Directory.CreateDirectory(PluginsPath);
+                TempPath = Path.Combine(AppPath, "tmp");
+                Directory.CreateDirectory(TempPath);
                 LogPath = Path.Combine(AppPath, "logs");
                 Directory.CreateDirectory(LogPath);
                 DataPath = Path.Combine(AppPath, "data");

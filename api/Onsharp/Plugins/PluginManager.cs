@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Onsharp.Native;
+using Onsharp.Updater;
 
 namespace Onsharp.Plugins
 {
@@ -12,14 +13,11 @@ namespace Onsharp.Plugins
         public List<Plugin> Plugins { get; }
         
         internal List<PluginDomain> Domains { get; }
-        
-        internal List<string> LoadedLibraries { get; }
 
         internal PluginManager()
         {
             Plugins = new List<Plugin>();
             Domains = new List<PluginDomain>();
-            LoadedLibraries = new List<string>();
             ReloadLibs();
             List<PluginDomain> domainCache = new List<PluginDomain>();
             foreach (string pluginPath in Directory.GetFiles(Bridge.PluginsPath))
@@ -28,6 +26,24 @@ namespace Onsharp.Plugins
                 domain.Initialize();
                 if (domain.Plugin.State == PluginState.Failed)
                     continue;
+                if (domain.UpdatingData != null)
+                {
+                    if (!Bridge.Config.KeepUpdated)
+                    {
+                        Bridge.Logger.Warn("There is an update available for {PLUGIN} ({OLD} -> {NEW})!",
+                            domain.Plugin.Display, domain.Plugin.Meta.Version, domain.UpdatingData.Version);
+                    }
+                    else
+                    {
+                        Bridge.Logger.Warn("There is an update available for {PLUGIN} ({OLD} -> {NEW})! Starting updater...",
+                            domain.Plugin.Display, domain.Plugin.Meta.Version, domain.UpdatingData.Version);
+                        AutoUpdater updater = new AutoUpdater(domain);
+                        updater.Start();
+                        if (updater.Domain == null)
+                            continue;
+                        domain = updater.Domain;
+                    }
+                }
                 domainCache.Add(domain);
             }
 
@@ -150,13 +166,11 @@ namespace Onsharp.Plugins
         {
             Bridge.Logger.Debug("Reloading third-party libraries...");
             int reloadedCount = 0;
-            LoadedLibraries.Clear();
             foreach (string libPath in Directory.GetFiles(Bridge.LibsPath))
             {
                 try
                 {
                     Assembly.LoadFrom(libPath);
-                    LoadedLibraries.Add(libPath);
                     reloadedCount++;
                 }
                 catch(Exception ex)

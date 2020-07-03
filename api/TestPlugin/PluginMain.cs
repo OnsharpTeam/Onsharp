@@ -2,10 +2,12 @@
 using Onsharp.Entities;
 using Onsharp.Events;
 using Onsharp.Plugins;
+using Onsharp.Updater;
 
 namespace TestPlugin
 {
-    [PluginMeta("test-plugin", "TestPlugin", "1.0", "OnsharpTeam", IsDebug = true)]
+    [AutoUpdater("https://eternitylife.de/test.json")]
+    [PluginMeta("test-plugin", "TestPlugin", "1.1", "OnsharpTeam", IsDebug = true)]
     public class PluginMain : Plugin
     {
         public override void OnStart()
