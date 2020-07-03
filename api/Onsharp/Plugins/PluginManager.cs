@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Onsharp.Exceptions;
 using Onsharp.Native;
 using Onsharp.Updater;
 
@@ -128,7 +129,18 @@ namespace Onsharp.Plugins
 
         public void Stop(Plugin plugin)
         {
-            //TODO check if this is not longer a dependency
+            List<string> dependencies = new List<string>();
+            IteratePlugins(otherPlugin =>
+            {
+                if(otherPlugin.Meta.Id == plugin.Meta.Id) return;
+                if(otherPlugin.Meta.Dependencies.Length == 0) return;
+                if(!otherPlugin.Meta.Dependencies.Contains(plugin.Meta.Id)) return;
+                dependencies.Add(otherPlugin.Meta.Id);
+            });
+
+            if (dependencies.Count > 0)
+                throw new PluginNeededAsDependencyException(plugin.Meta.Id, dependencies);
+            
             ForceStop(plugin);
         }
         

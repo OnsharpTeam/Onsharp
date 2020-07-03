@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Onsharp.Exceptions;
 
 namespace Onsharp.Plugins
 {
@@ -30,6 +31,7 @@ namespace Onsharp.Plugins
         /// Stopping a plugin which is dependency of another running plugin, will cancel the stopping process due to a dependency lock.
         /// </summary>
         /// <param name="plugin">The plugin to be stopped</param>
+        /// <exception cref="PluginNeededAsDependencyException">When the plugin is still a dependency of another plugin</exception>
         void Stop(Plugin plugin);
 
         /// <summary>
