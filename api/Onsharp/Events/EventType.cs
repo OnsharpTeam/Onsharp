@@ -30,8 +30,8 @@
         /// </summary>
         PlayerJoin = 3,
         /// <summary>
-        /// Called when a <see cref="Onsharp.Entities.Player"/> pickups a <see cref="Onset.Entities.IPickup"/>.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Entities.IPickup"/> pickup)
+        /// Called when a <see cref="Onsharp.Entities.Player"/> pickups a <see cref="Onsharp.Entities.Pickup"/>.<br/>
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Entities.Pickup"/> pickup)
         /// </summary>
         PlayerPickupHit = 4,
         /// <summary>
@@ -56,63 +56,65 @@
         /// </summary>
         ClientConnectionRequest = 9,
         /// <summary>
-        /// Called when a <see cref="Onset.Entities.INPC"/> reached its target.<br/>
-        /// (<see cref="Onset.Entities.INPC"/> npc)
+        /// Called when a <see cref="Onsharp.Entities.NPC"/> reached its target.<br/>
+        /// (<see cref="Onsharp.Entities.NPC"/> npc)
         /// </summary>
         NPCReachTarget = 10,
         /// <summary>
-        /// Called when a <see cref="Onset.Entities.INPC"/> is damaged.<br/>
-        /// (<see cref="Onset.Entities.INPC"/> npc, <see cref="Onset.Enums.DamageType"/> damageType, <see cref="float"/> amount)
+        /// Called when a <see cref="Onsharp.Entities.NPC"/> is damaged.<br/>
+        /// (<see cref="Onsharp.Entities.NPC"/> npc, <see cref="Onsharp.Enums.DamageType"/> damageType, <see cref="float"/> amount)
         /// </summary>
         NPCDamage = 11,
         /// <summary>
-        /// Called when a <see cref="Onset.Entities.INPC"/> is spawned.<br/>
-        /// (<see cref="Onset.Entities.INPC"/> npc)
+        /// Called when a <see cref="Onsharp.Entities.NPC"/> is spawned.<br/>
+        /// (<see cref="Onsharp.Entities.NPC"/> npc)
         /// </summary>
         NPCSpawn = 12,
         /// <summary>
-        /// Called when a <see cref="Onset.Entities.INPC"/> dies.<br/>
-        /// (<see cref="Onset.Entities.INPC"/> npc)
+        /// Called when a <see cref="Onsharp.Entities.NPC"/> dies.<br/>
+        /// (<see cref="Onsharp.Entities.NPC"/> npc)
         /// </summary>
         NPCDeath = 13,
         /// <summary>
-        /// Called when a <see cref="Onset.Entities.INPC"/> is streamed for a player.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Entities.INPC"/> npc)
+        /// Called when a <see cref="Onsharp.Entities.NPC"/> is streamed for a player.<br/>
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Entities.NPC"/> npc)
         /// </summary>
         NPCStreamIn = 14,
         /// <summary>
-        /// Called when a <see cref="Onset.Entities.INPC"/> is no longer streamed for a player.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Entities.INPC"/> npc)
+        /// Called when a <see cref="Onsharp.Entities.NPC"/> is no longer streamed for a player.<br/>
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Entities.NPC"/> npc)
         /// </summary>
         NPCStreamOut = 15,
         /// <summary>
-        /// Called when a <see cref="Onsharp.Entities.Player"/> enters a <see cref="Onset.Entities.IVehicle"/>.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Entities.IVehicle"/> vehicle, <see cref="int"/> seat)
+        /// Called when a <see cref="Onsharp.Entities.Player"/> enters a <see cref="Onsharp.Entities.Vehicle"/>.
+        /// The seat is either the driver seat (0) or the passenger seats.<br/>
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Entities.Vehicle"/> vehicle, <see cref="int"/> seat)
         /// </summary>
         PlayerEnterVehicle = 16,
         /// <summary>
-        /// Called when a <see cref="Onsharp.Entities.Player"/> leaves a <see cref="Onset.Entities.IVehicle"/>.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Entities.IVehicle"/> vehicle, <see cref="int"/> seat)
+        /// Called when a <see cref="Onsharp.Entities.Player"/> leaves a <see cref="Onsharp.Entities.Vehicle"/>.
+        /// The seat is either the driver seat (0) or the passenger seats.<br/>
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Entities.Vehicle"/> vehicle, <see cref="int"/> seat)
         /// </summary>
         PlayerLeaveVehicle = 17,
         /// <summary>
-        /// Called when a <see cref="Onset.Enums.PlayerState"/> changes for a <see cref="Onsharp.Entities.Player"/>.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Enums.PlayerState"/> newState, <see cref="Onset.Enums.PlayerState"/> oldState)
+        /// Called when a <see cref="Onsharp.Enums.PlayerState"/> changes for a <see cref="Onsharp.Entities.Player"/>.<br/>
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Enums.PlayerState"/> newState, <see cref="Onsharp.Enums.PlayerState"/> oldState)
         /// </summary>
         PlayerStateChange = 18,
         /// <summary>
         /// Called when a vehicle respawns.<br/>
-        /// (<see cref="Onset.Entities.IVehicle"/> vehicle)
+        /// (<see cref="Onsharp.Entities.Vehicle"/> vehicle)
         /// </summary>
         VehicleRespawn = 19,
         /// <summary>
-        /// Called when a <see cref="Onset.Entities.IVehicle"/> is streamed for a player.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Entities.IVehicle"/> vehicle)
+        /// Called when a <see cref="Onsharp.Entities.Vehicle"/> is streamed for a player.<br/>
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Entities.Vehicle"/> vehicle)
         /// </summary>
         VehicleStreamIn = 20,
         /// <summary>
-        /// Called when a <see cref="Onset.Entities.IVehicle"/> is no longer streamed for a player.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Entities.IVehicle"/> vehicle)
+        /// Called when a <see cref="Onsharp.Entities.Vehicle"/> is no longer streamed for a player.<br/>
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Entities.Vehicle"/> vehicle)
         /// </summary>
         VehicleStreamOut = 21,
         /// <summary>
@@ -152,18 +154,18 @@
         PlayerDeath = 28,
         /// <summary>
         /// Called when a <see cref="Onsharp.Entities.Player"/> has shot their weapon.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Enums.Weapon"/> weapon, <see cref="Onset.Enums.HitType"/> hitType, <see cref="Onset.Entities.IEntity"/> target, <see cref="Onset.Dimension.Vector"/> hitPos, <see cref="Onset.Dimension.Vector"/> startPos, <see cref="Onset.Dimension.Vector"/> impactPos)<br/>
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Enums.Weapon"/> weapon, <see cref="Onsharp.Enums.HitType"/> hitType, <see cref="Onsharp.Entities.Entity"/> target, <see cref="Onsharp.Dimension.Vector"/> hitPos, <see cref="Onsharp.Dimension.Vector"/> startPos, <see cref="Onsharp.Dimension.Vector"/> impactPos)<br/>
         /// <returns>Returning false results in preventing the hit from further processing</returns>
         /// </summary>
         PlayerWeaponShot = 29,
         /// <summary>
         /// Called when a <see cref="Onsharp.Entities.Player"/> is damaged.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Enums.DamageType"/> damageType, <see cref="float"/> amount)
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Enums.DamageType"/> damageType, <see cref="float"/> amount)
         /// </summary>
         PlayerDamage = 30,
         /// <summary>
         /// Called when a <see cref="Onsharp.Entities.Player"/> interacts with a door.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onset.Entities.IDoor"/> door, <see cref="bool"/> isBeingOpened)
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Entities.Door"/> door, <see cref="bool"/> isBeingOpened)
         /// </summary>
         PlayerInteractDoor = 31,
         /// <summary>

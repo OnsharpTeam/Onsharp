@@ -4,6 +4,7 @@ using System.Reflection;
 using Onsharp.Commands;
 using Onsharp.Entities;
 using Onsharp.Entities.Factory;
+using Onsharp.Enums;
 using Onsharp.Events;
 using Onsharp.Native;
 using Onsharp.Plugins;
@@ -246,9 +247,27 @@ namespace Onsharp
             _commandManager.RegisterCommands<T>();
         }
         
-        internal void FireRemoteEvent(string name, int player, object[] args)
+        internal void FireRemoteEvent(string name, int player, object[] nArgs)
         {
-            //TODO adding calling of remote events
+            lock (RemoteEvents)
+            {
+                for (int i = RemoteEvents.Count - 1; i >= 0; i--)
+                {
+                    RemoteEvent @event = RemoteEvents[i];
+                    if (@event.Name == name)
+                    {
+                        object[] args = new object[nArgs.Length + 1];
+                        args[0] = CreatePlayer(player);
+                        for (int j = 0; j < nArgs.Length; j++)
+                        {
+                            args[j + 1] = nArgs[j];
+                        }
+
+                        @event.FireEvent(args);
+                        break;
+                    }
+                }
+            }
         }
 
         internal void FireCommand(int player, string name, string line)
@@ -272,6 +291,34 @@ namespace Onsharp
             }
 
             return flag;
+        }
+
+        /// <summary>
+        /// Creates an entity which will fit the needed hit type.
+        /// </summary>
+        /// <param name="type">The hit type to which the entity needs to fit.</param>
+        /// <param name="id">The id of the entity.</param>
+        /// <returns>The wrapped entity which was hit or null if none was hit.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        internal Entity CreateHitEntity(HitType type, int id)
+        {
+            switch (type)
+            {
+                case HitType.Player:
+                    return CreatePlayer(id);
+                case HitType.Vehicle:
+                    return CreateVehicle(id);
+                case HitType.NPC:
+                    return CreateNPC(id);
+                case HitType.Object:
+                    return CreateObject(id);
+                case HitType.Landscape:
+                case HitType.Air:
+                case HitType.Water:
+                    return null;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
         }
 
         /// <summary>

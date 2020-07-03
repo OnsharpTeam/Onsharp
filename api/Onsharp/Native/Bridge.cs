@@ -6,10 +6,13 @@ using System.Runtime.InteropServices;
 using System.Security;
 using Nett;
 using Onsharp.Converters;
+using Onsharp.Dimension;
 using Onsharp.Entities;
+using Onsharp.Enums;
 using Onsharp.Events;
 using Onsharp.IO;
 using Onsharp.Plugins;
+using Object = System.Object;
 
 namespace Onsharp.Native
 {
@@ -383,74 +386,81 @@ namespace Onsharp.Native
         /// </summary>
         private static object[] ParseEventArgs(PluginDomain owner, EventType type, object[] args)
         {
+            Player player = IsPlayerEvent(type) ? owner.Server.CreatePlayer((int) args[1]) : null;
             switch (type)
             {
                 case EventType.PlayerQuit:
-                    break;
+                    return new object[] {player};
                 case EventType.PlayerChat:
-                    break;
+                    return new[] {player, args[2]};
                 case EventType.PlayerChatCommand:
-                    break;
+                    return new[] {player, args[2], args[3]};
                 case EventType.PlayerJoin:
-                    break;
+                    return new object[] {player};
                 case EventType.PlayerPickupHit:
-                    break;
+                    return new object[] {player, owner.Server.CreatePickup((int) args[2])};
                 case EventType.PackageStart:
-                    break;
+                    return new object[0];
                 case EventType.PackageStop:
-                    break;
+                    return new object[0];
                 case EventType.GameTick:
-                    break;
+                    return new[]{args[1]};
                 case EventType.ClientConnectionRequest:
                     return new[]{args[1], args[2]};
                 case EventType.NPCReachTarget:
-                    break;
+                    return new object[] {owner.Server.CreateNPC((int) args[1])};
                 case EventType.NPCDamage:
-                    break;
+                    return new object[] {owner.Server.CreateNPC((int) args[1]), (DamageType) (int) args[2], (double) args[3]};
                 case EventType.NPCSpawn:
-                    break;
+                    return new object[] {owner.Server.CreateNPC((int) args[1])};
                 case EventType.NPCDeath:
-                    break;
+                    return new object[] {owner.Server.CreateNPC((int) args[1])};
                 case EventType.NPCStreamIn:
-                    break;
+                    return new object[] {player, owner.Server.CreateNPC((int) args[2])};
                 case EventType.NPCStreamOut:
-                    break;
+                    return new object[] {player, owner.Server.CreateNPC((int) args[2])};
                 case EventType.PlayerEnterVehicle:
-                    break;
+                    return new object[] {player, owner.Server.CreateVehicle((int) args[2]), (int) args[3]};
                 case EventType.PlayerLeaveVehicle:
-                    break;
+                    return new object[] {player, owner.Server.CreateVehicle((int) args[2]), (int) args[3]};
                 case EventType.PlayerStateChange:
-                    break;
+                    return new object[] {player, (PlayerState) (int) args[2], (PlayerState) (int) args[3]};
                 case EventType.VehicleRespawn:
-                    break;
+                    return new object[] {owner.Server.CreateVehicle((int) args[1])};
                 case EventType.VehicleStreamIn:
-                    break;
+                    return new object[] {player, owner.Server.CreateVehicle((int) args[2])};
                 case EventType.VehicleStreamOut:
-                    break;
+                    return new object[] {player, owner.Server.CreateVehicle((int) args[2])};
                 case EventType.PlayerServerAuth:
-                    break;
+                    return new object[] {player};
                 case EventType.PlayerSteamAuth:
-                    break;
+                    return new object[] {player};
                 case EventType.PlayerDownloadFile:
-                    break;
+                    return new object[] {player, (string) args[2], (string) args[3]};
                 case EventType.PlayerStreamIn:
-                    break;
+                    return new object[] {player, owner.Server.CreatePlayer((int) args[2])};
                 case EventType.PlayerStreamOut:
-                    break;
+                    return new object[] {player, owner.Server.CreatePlayer((int) args[2])};
                 case EventType.PlayerSpawn:
-                    break;
+                    return new object[] {player};
                 case EventType.PlayerDeath:
-                    break;
+                    return new object[] {player, owner.Server.CreatePlayer((int) args[2])};
                 case EventType.PlayerWeaponShot:
-                    break;
+                    HitType hitType = (HitType) (int) args[3];
+                    return new object[]
+                    {
+                        player, (Weapon) (int) args[2], hitType, owner.Server.CreateHitEntity(hitType, (int) args[4]),
+                        new Vector((double) args[5], (double) args[6], (double) args[7]),
+                        new Vector((double) args[8], (double) args[9], (double) args[10]),
+                        new Vector((double) args[11], (double) args[12], (double) args[13])
+                    };
                 case EventType.PlayerDamage:
-                    break;
+                    return new object[] {player, (DamageType) (int) args[2], (double) args[3]};
                 case EventType.PlayerInteractDoor:
-                    break;
+                    return new object[] {player, owner.Server.CreateDoor((int) args[2]), (bool) args[3]};
                 default:
                     return null;
             }
-            return null;
         }
 
         public bool CallEvent(string name, params object[] args)

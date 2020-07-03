@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using Onsharp.Events;
 using Onsharp.Native;
 
 namespace Onsharp.Entities
@@ -14,6 +14,13 @@ namespace Onsharp.Entities
             get => (string) new NativeValue(Onset.GetPlayerName(Id)).GetValue();
             set => Onset.SetPlayerName(Id, value);
         }
+        
+        /// <summary>
+        /// The steam of the player. Only available after the <see cref="EventType.PlayerSteamAuth"/> was called.
+        ///
+        /// NOT IMPLEMENTED YET!
+        /// </summary>
+        public ulong SteamID { get; }
         
         public Player(int id) : base(id, "Player")
         {
