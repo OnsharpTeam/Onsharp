@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading;
@@ -76,7 +77,11 @@ namespace Onsharp.Plugins
             Bridge.Logger.Info("Loading plugin on path \"{PATH}\"...", Path);
             Server = new Server(this);
             EntryPoints = new List<IEntryPoint>();
-            _assembly = _context.LoadFromAssemblyPath(Path);
+            using (Stream stream = File.OpenRead(Path))
+            {
+                _assembly = _context.LoadFromStream(stream);
+            }
+            
             foreach (Type type in _assembly.GetExportedTypes())
             {
                 if (PluginType.IsAssignableFrom(type))
@@ -91,13 +96,10 @@ namespace Onsharp.Plugins
                         return;
                     }
                 
-                    Bridge.Logger.Debug("Has plugin autoupdater?");
                     AutoUpdaterAttribute updateAttribute = type.GetCustomAttribute<AutoUpdaterAttribute>();
                     if (updateAttribute != null)
                     {
-                        Bridge.Logger.Debug("YAS!");
                         UpdatingData = AutoUpdater.RetrieveData(updateAttribute.Url);
-                        Bridge.Logger.Debug("received data : " + UpdatingData.Version + " -> " + meta.Version);
                         if (meta.Version == UpdatingData.Version)
                         {
                             UpdatingData = null;

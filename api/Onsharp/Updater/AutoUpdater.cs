@@ -58,7 +58,7 @@ namespace Onsharp.Updater
         /// </summary>
         private void Finish()
         {
-            string pluginPath = Path.Combine(Bridge.LibsPath, Domain.UpdatingData.PluginFile + ".dll");
+            string pluginPath = Path.Combine(Bridge.PluginsPath, Domain.UpdatingData.PluginFile + ".dll");
             Domain = new PluginDomain(Domain.PluginManager, pluginPath);
             Domain.Initialize();
             if (Domain.Plugin.State == PluginState.Failed)
@@ -67,44 +67,54 @@ namespace Onsharp.Updater
                 return;
             }
             
-            Domain.Plugin.Logger.Fatal("Update successfully installed! {CHANGELOG}", (string.IsNullOrEmpty(_changelog) ? "" : _changelog));
+            _progress.Refresh(100, "Finished!");
+            Domain.Plugin.Logger.Info("Update v{VER} successfully installed! {CHANGELOG}", Domain.Plugin.Meta.Version, 
+                (string.IsNullOrEmpty(_changelog) ? "" : _changelog));
             _lock.Set();
         }
 
         private void DownloadCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            _progress.Refresh(0, "Extracting...");
-            using (ZipFile zip = ZipFile.Read(_tmpZip))
+            try
             {
-                zip.ExtractProgress += (o, args) =>
+                _progress.Refresh(0, "Extracting...");
+                using (ZipFile zip = ZipFile.Read(_tmpZip))
                 {
-                    if (args.TotalBytesToTransfer > 0)
+                    zip.ExtractProgress += (o, args) =>
                     {
-                        _progress.Refresh(Convert.ToInt32(100 * args.BytesTransferred / args.TotalBytesToTransfer), "Extracting...");
-                    }
-                };
-                zip.ExtractAll(_tmpDir, ExtractExistingFileAction.OverwriteSilently);
-            }
+                        if (args.TotalBytesToTransfer > 0)
+                        {
+                            _progress.Refresh(Convert.ToInt32(100 * args.BytesTransferred / args.TotalBytesToTransfer), "Extracting...");
+                        }
+                    };
+                    zip.ExtractAll(_tmpDir, ExtractExistingFileAction.OverwriteSilently);
+                }
 
-            DeleteFileSilently(_tmpZip);
-            _progress.Refresh(0, "Installing...");
-            DeleteFileSilently(Domain.Path);
-            string[] files = Directory.GetFiles(_tmpDir);
-            int current = 0;
-            foreach (string file in files)
-            {
-                if(Path.GetExtension(file).ToLower() != ".dll") continue;
-                string fileName = Path.GetFileNameWithoutExtension(file);
-                string filePath =
-                    Path.Combine(fileName == Domain.UpdatingData.PluginFile ? Bridge.PluginsPath : Bridge.LibsPath,
-                        fileName + ".dll");
-                File.Move(file, filePath, true);
-                current++;
-                _progress.Refresh(current / files.Length, "Installing...");
-            }
+                DeleteFileSilently(_tmpZip);
+                _progress.Refresh(0, "Installing...");
+                DeleteFileSilently(Domain.Path);
+                string[] files = Directory.GetFiles(_tmpDir);
+                int current = 0;
+                foreach (string file in files)
+                {
+                    if(Path.GetExtension(file).ToLower() != ".dll") continue;
+                    string fileName = Path.GetFileNameWithoutExtension(file);
+                    string filePath =
+                        Path.Combine(fileName == Domain.UpdatingData.PluginFile ? Bridge.PluginsPath : Bridge.LibsPath,
+                            fileName + ".dll");
+                    File.Move(file, filePath, true);
+                    current++;
+                    _progress.Refresh(current / files.Length, "Installing...");
+                }
             
-            DeleteDirectorySilently(_tmpDir);
-            Finish();
+                DeleteDirectorySilently(_tmpDir);
+                Finish();
+            }
+            catch (Exception ex)
+            {
+                Bridge.Logger.Error(ex, "The updater ran into a problem!");
+                _lock.Set();
+            }
         }
 
         private void DownloadProgress(object sender, DownloadProgressChangedEventArgs e)
