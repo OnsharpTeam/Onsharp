@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using Nett;
+using Onsharp.Commands;
 using Onsharp.Converters;
 using Onsharp.Dimension;
 using Onsharp.Entities;
@@ -96,6 +97,11 @@ namespace Onsharp.Native
         internal static Bridge Runtime { get; private set; }
         
         /// <summary>
+        /// The current console manager running in the background.
+        /// </summary>
+        internal static ConsoleManager ConsoleManager { get; private set; }
+        
+        /// <summary>
         /// All converters which are registered in the runtime.
         /// </summary>
         private static List<Converter> Converters { get; } = new List<Converter>
@@ -149,7 +155,9 @@ namespace Onsharp.Native
             
                 Logger = new Logger("Onsharp", Config.IsDebug, "_global");
                 if(Config.IsDebug) Logger.Warn("{DEBUG}-Mode is currently active!", "DEBUG");
+                ConsoleManager = new ConsoleManager();
                 Runtime = new Bridge();
+                Runtime.RegisterConsoleCommands(Runtime);
             }
             catch (Exception ex)
             {
@@ -163,6 +171,7 @@ namespace Onsharp.Native
         internal static void Unload()
         {
             Logger.Warn("Stopping bridge...");
+            ConsoleManager.Stop();
             for (int i = PluginManager.Plugins.Count - 1; i >= 0; i--)
             {
                 Plugin plugin = PluginManager.Plugins[i];
@@ -180,6 +189,7 @@ namespace Onsharp.Native
             try
             {
                 PluginManager = new PluginManager();
+                ConsoleManager.Start();
             }
             catch (Exception ex)
             {
@@ -310,6 +320,39 @@ namespace Onsharp.Native
             }
 
             return DefaultConverter;
+        }
+
+        /// <summary>
+        /// Converts the given string list to an object parameter fitting array using only the <see cref="BasicConverter"/>.
+        /// </summary>
+        /// <param name="objects">The strings which will be converted</param>
+        /// <param name="wantedTypes">The parameters which are wanted</param>
+        /// <param name="withOptional">If optional parameters are allowed or not</param>
+        /// <returns>The converted object array or null if something failed</returns>
+        internal static object[] ConvertBasic(List<string> objects, ParameterInfo[] wantedTypes, bool withOptional)
+        {
+            try
+            {
+                object[] arr = new object[wantedTypes.Length];
+                for (int i = 0; i < wantedTypes.Length; i++)
+                {
+                    ParameterInfo wantedType = wantedTypes[i];
+                    if (withOptional && wantedType.IsOptional && i >= objects.Count)
+                    {
+                        arr[i] = Type.Missing;
+                        continue;
+                    }
+                    
+                    arr[i] = DefaultConverter.Handle(objects[i - 1], wantedType, null);
+                }
+
+                return arr;
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "An error occurred in converting process!");
+                return null;
+            }
         }
         
         /// <summary>
@@ -501,6 +544,22 @@ namespace Onsharp.Native
         public void RegisterCustomConverter(Converter converter)
         {
             Converters.Add(converter);
+        }
+
+        public void RegisterConsoleCommands(object owner)
+        {
+            ConsoleManager.Register(owner);
+        }
+
+        public void RegisterConsoleCommands<T>()
+        {
+            ConsoleManager.Register<T>();
+        }
+
+        [ConsoleCommand("help", "", "Shows all console commands and how to use them")]
+        public void OnHelpConsoleCommand()
+        {
+            ConsoleManager.PrintCommands();
         }
     }
 }

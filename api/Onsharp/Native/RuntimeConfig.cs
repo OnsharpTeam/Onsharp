@@ -15,5 +15,10 @@ namespace Onsharp.Native
         /// Whether Onsharp should keep itself and the plugins updated or not.
         /// </summary>
         public bool KeepUpdated { get; set; } = true;
+
+        /// <summary>
+        /// The timeout how long the console command manager should wait until start to take input.
+        /// </summary>
+        public int ConsoleInputTimeout { get; set; } = 3000;
     }
 }

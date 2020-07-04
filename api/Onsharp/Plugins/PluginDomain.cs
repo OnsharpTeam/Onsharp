@@ -145,6 +145,7 @@ namespace Onsharp.Plugins
                 entryPoint.Server = Server;
                 entryPoint.PluginManager = Bridge.PluginManager;
                 entryPoint.Runtime = Bridge.Runtime;
+                entryPoint.Runtime.RegisterConsoleCommands(entryPoint);
                 entryPoint.Server.RegisterRemoteEvents(entryPoint);
                 entryPoint.Server.RegisterServerEvents(entryPoint);
                 entryPoint.Server.RegisterCommands(entryPoint);
