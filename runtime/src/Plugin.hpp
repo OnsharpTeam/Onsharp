@@ -30,7 +30,6 @@ private:
     }
 
 public:
-    bool isSetup = false;
     enum class NTYPE
     {
         NONE = 0,
@@ -40,12 +39,12 @@ public:
         BOOLEAN = 4
     };
 
-    typedef struct {
+    struct NValue {
 
-        NTYPE type;
-        int iVal;
-        double dVal;
-        bool bVal;
+        NTYPE type = NTYPE::NONE;
+        int iVal = 0;
+        double dVal = 0;
+        bool bVal = false;
         std::string sVal;
 
         void AddAsArg(Lua::LuaArgs_t* args)
@@ -124,7 +123,7 @@ public:
 
             printf("nval NULL\n");
         }
-    } NValue;
+    };
 
     decltype(_func_list) const &GetFunctions() const
     {
@@ -149,7 +148,6 @@ public:
     }
     void InitDelegates()
     {
-        isSetup = true;
     }
     Plugin::NValue* CallBridge(const char* key, void** args, int len)
     {

@@ -29,7 +29,7 @@ namespace Onsharp.Plugins
                     continue;
                 if (domain.UpdatingData != null)
                 {
-                    if (!Bridge.Config.KeepUpdated)
+                    if (!Bridge.Config.KeepPluginsUpdated)
                     {
                         Bridge.Logger.Warn("There is an update available for {PLUGIN} ({OLD} -> {NEW})!",
                             domain.Plugin.Display, domain.Plugin.Meta.Version, domain.UpdatingData.Version);
