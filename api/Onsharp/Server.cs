@@ -6,6 +6,7 @@ using Onsharp.Entities;
 using Onsharp.Entities.Factory;
 using Onsharp.Enums;
 using Onsharp.Events;
+using Onsharp.Interop;
 using Onsharp.Native;
 using Onsharp.Plugins;
 using Object = Onsharp.Entities.Object;
@@ -246,7 +247,13 @@ namespace Onsharp
         {
             _commandManager.RegisterCommands<T>();
         }
-        
+
+        public LuaPackage ImportPackage(string packageName)
+        {
+            Onset.ImportPackage(packageName);
+            return new LuaPackage(Owner.Plugin.Meta.Id, packageName);
+        }
+
         internal void FireRemoteEvent(string name, int player, object[] nArgs)
         {
             lock (RemoteEvents)

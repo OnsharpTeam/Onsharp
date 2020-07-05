@@ -77,6 +77,53 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED Plugin::NValue** InvokePackage(const char* importId, const char* funcName, Plugin::NValue* nVals[], int len)
+{
+    Lua::LuaArgs_t arg_list = Lua::BuildArgumentList(importId, funcName);
+    for(int i = 0; i < len; i++)
+    {
+        nVals[i]->AddAsArg(&arg_list);
+    }
+
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("Onsharp_InvokePackage", &arg_list);
+    auto rVals = new Plugin::NValue*[returnValues.size()];
+    for(int i = 0; i < returnValues.size(); i++)
+    {
+        rVals[i] = Plugin::Get()->CreateNValueByLua(returnValues.at(i));
+    }
+
+    return rVals;
+}
+
+EXPORTED void ImportPackage(const char* packageName)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(packageName);
+    Plugin::Get()->CallLuaFunction("Onsharp_ImportPackage", &args);
+}
+
+EXPORTED void GetEntityPosition(int id, const char* entityName, double* x, double* y, double* z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(id);
+    std::string funcName = "Get" + std::string(entityName) + "Location";
+    Lua::LuaArgs_t returnVals = Plugin::Get()->CallLuaFunction(funcName.c_str(), &args);
+    *x = returnVals.at(0).GetValue<double>();
+    *y = returnVals.at(1).GetValue<double>();
+    *z = returnVals.at(2).GetValue<double>();
+}
+
+EXPORTED void SetEntityPosition(int id, const char* entityName, double x, double y, double z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(id, x, y, z);
+    std::string funcName = "Set" + std::string(entityName) + "Location";
+    Plugin::Get()->CallLuaFunction(funcName.c_str(), &args);
+}
+
+EXPORTED void ShutdownServer()
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList();
+    Plugin::Get()->CallLuaFunction("ServerExit", &args);
+}
+
 EXPORTED void RegisterRemoteEvent(const char* pluginId, const char* eventName)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(pluginId, eventName);

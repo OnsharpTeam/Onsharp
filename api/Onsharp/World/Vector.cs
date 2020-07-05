@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Onsharp.Dimension
+namespace Onsharp.World
 {
     /// <summary>
     /// This class represents an euclidean vector and gives some functionality.
@@ -20,19 +20,55 @@ namespace Onsharp.Dimension
         public static readonly Vector One = new Vector(1, 1, 1);
 
         /// <summary>
+        /// For internal use only: This callback gets triggered on change of one of the axis
+        /// and will force a sync of this vector.
+        /// </summary>
+        internal Action SyncCallback { get; set; }
+        
+        /// <summary>
         /// The x-value of the vector.
         /// </summary>
-        public double X { get; set; }
+        public double X
+        {
+            get => _x;
+            set
+            {
+                _x = value;
+                SyncCallback?.Invoke();
+            }
+        }
+
+        private double _x;
 
         /// <summary>
         /// The y-value of the vector.
         /// </summary>
-        public double Y { get; set; }
+        public double Y
+        {
+            get => _y;
+            set
+            {
+                _y = value;
+                SyncCallback?.Invoke();
+            }
+        }
 
+        private double _y;
+        
         /// <summary>
         /// The z-value of the vector.
         /// </summary>
-        public double Z { get; set; }
+        public double Z
+        {
+            get => _z;
+            set
+            {
+                _z = value;
+                SyncCallback?.Invoke();
+            }
+        }
+
+        private double _z;
 
         /// <summary>
         /// The overridden addition operator.

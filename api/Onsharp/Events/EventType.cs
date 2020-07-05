@@ -1,4 +1,6 @@
-﻿namespace Onsharp.Events
+﻿using Onsharp.World;
+
+namespace Onsharp.Events
 {
    /// <summary>
     /// All event types which can be listened to.
@@ -154,7 +156,7 @@
         PlayerDeath = 28,
         /// <summary>
         /// Called when a <see cref="Onsharp.Entities.Player"/> has shot their weapon.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Enums.Weapon"/> weapon, <see cref="Onsharp.Enums.HitType"/> hitType, <see cref="Onsharp.Entities.Entity"/> target, <see cref="Onsharp.Dimension.Vector"/> hitPos, <see cref="Onsharp.Dimension.Vector"/> startPos, <see cref="Onsharp.Dimension.Vector"/> impactPos)<br/>
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Enums.Weapon"/> weapon, <see cref="Onsharp.Enums.HitType"/> hitType, <see cref="Onsharp.Entities.Entity"/> target, <see cref="Vector"/> hitPos, <see cref="Vector"/> startPos, <see cref="Vector"/> impactPos)<br/>
         /// <returns>Returning false results in preventing the hit from further processing</returns>
         /// </summary>
         PlayerWeaponShot = 29,

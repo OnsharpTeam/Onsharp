@@ -24,7 +24,7 @@ namespace Onsharp.Entities
 
         internal bool Validate(Entity entity)
         {
-            if (Onset.IsEntityValid(Convert.ToInt64(entity.Id), entity.EntityName))
+            if (Onset.IsEntityValid(entity.Id, entity.EntityName))
                 return true;
             RemoveEntity(entity);
             return false;

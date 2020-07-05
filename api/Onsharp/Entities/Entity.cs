@@ -1,4 +1,7 @@
-﻿namespace Onsharp.Entities
+﻿using Onsharp.Native;
+using Onsharp.World;
+
+namespace Onsharp.Entities
 {
     /// <summary>
     /// The base class of every entity in the world of Onset.
@@ -28,6 +31,39 @@
         {
             Id = id;
             EntityName = entityName;
+        }
+
+        /// <summary>
+        /// Sets the current position of this entity to the given vector.
+        /// </summary>
+        /// <param name="vector">The vector to be set</param>
+        public virtual void SetPosition(Vector vector)
+        {
+            SetPosition(vector.X, vector.Y, vector.Z);
+        }
+
+        /// <summary>
+        /// Sets the current position of the entity to the given axis values.
+        /// </summary>
+        /// <param name="x">The x axis value</param>
+        /// <param name="y">The y axis value</param>
+        /// <param name="z">The z axis value</param>
+        public virtual void SetPosition(double x, double y, double z)
+        {
+            Onset.SetEntityPosition(Id, EntityName, x, y, z);
+        }
+        
+        /// <summary>
+        /// Gets the current position of this entity.
+        /// </summary>
+        /// <returns>The position as vector</returns>
+        public virtual Vector GetPosition()
+        {
+            double x = 0, y = 0, z = 0;
+            Onset.GetEntityPosition(Id, EntityName, ref x, ref y, ref z);
+            Vector vector = new Vector(x, y, z);
+            vector.SyncCallback = () => SetPosition(vector);
+            return vector;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Onsharp.Entities;
 using Onsharp.Entities.Factory;
+using Onsharp.Interop;
 
 namespace Onsharp
 {
@@ -108,5 +109,12 @@ namespace Onsharp
         /// </summary>
         /// <typeparam name="T">The type which will be searched through</typeparam>
         void RegisterCommands<T>();
+
+        /// <summary>
+        /// Imports the package from the given name and thus provides access to the functions exported there.
+        /// </summary>
+        /// <param name="packageName">The name of the wanted package</param>
+        /// <returns>The imported package pipeline</returns>
+        LuaPackage ImportPackage(string packageName);
     }
 }

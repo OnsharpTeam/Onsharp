@@ -11,6 +11,21 @@ namespace Onsharp.Native
     internal static class Onset
     {
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr[] InvokePackage([MarshalAs(UnmanagedType.LPStr)] string importId, [MarshalAs(UnmanagedType.LPStr)] string funcName, IntPtr[] nVals, int len);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void ImportPackage([MarshalAs(UnmanagedType.LPStr)] string packageName);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetEntityPosition(int id, [MarshalAs(UnmanagedType.LPStr)] string name, double x, double y, double z);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void GetEntityPosition(int id, [MarshalAs(UnmanagedType.LPStr)] string name, ref double x, ref double y, ref double z);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void ShutdownServer();
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void RegisterRemoteEvent([MarshalAs(UnmanagedType.LPStr)] string pluginId, [MarshalAs(UnmanagedType.LPStr)] string eventName);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
@@ -82,7 +97,7 @@ namespace Onsharp.Native
         internal static extern void ForceRuntimeRestart(bool complete);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool IsEntityValid(long id, [MarshalAs(UnmanagedType.LPStr)] string name);
+        internal static extern bool IsEntityValid(int id, [MarshalAs(UnmanagedType.LPStr)] string name);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int ReleaseIntArray(IntPtr ptr);

@@ -7,13 +7,12 @@ using System.Security;
 using Nett;
 using Onsharp.Commands;
 using Onsharp.Converters;
-using Onsharp.Dimension;
 using Onsharp.Entities;
 using Onsharp.Enums;
 using Onsharp.Events;
 using Onsharp.IO;
 using Onsharp.Plugins;
-using Object = System.Object;
+using Onsharp.World;
 
 namespace Onsharp.Native
 {
@@ -560,6 +559,12 @@ namespace Onsharp.Native
         public void OnHelpConsoleCommand()
         {
             ConsoleManager.PrintCommands();
+        }
+
+        [ConsoleCommand("exit", "", "Stops the server")]
+        public void OnExitConsoleCommand()
+        {
+            Onset.ShutdownServer();
         }
     }
 }
