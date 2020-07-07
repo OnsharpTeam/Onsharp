@@ -73,6 +73,27 @@ Plugin::Plugin()
         Lua::ReturnValues(L, argValues);
         return 1;
     });
+
+    LUA_DEFINE(CallOnsharp)
+    {
+        std::string pluginId;
+        std::string funcName;
+        Lua::LuaTable_t args_table;
+        Lua::ParseArguments(L, pluginId, funcName, args_table);
+        int len = args_table->Count();
+        void** args = new void*[len + 2];
+        args[0] = Plugin::Get()->CreatNValueByString(pluginId);
+        args[1] = Plugin::Get()->CreatNValueByString(funcName);
+        int idx = 2;
+        args_table->ForEach([args, &idx](Lua::LuaValue k, Lua::LuaValue v) {
+            args[idx] = Plugin::Get()->CreateNValueByLua(std::move(v));
+            idx++;
+        });
+        NValue* returnVal = Plugin::Get()->CallBridge("interop", args, len);
+        Lua::LuaArgs_t argValues = Lua::BuildArgumentList(returnVal->GetLuaValue());
+        Lua::ReturnValues(L, argValues);
+        return 1;
+    });
 }
 
 //region Native Bridge Functions

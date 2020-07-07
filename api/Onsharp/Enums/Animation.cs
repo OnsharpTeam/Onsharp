@@ -150,6 +150,26 @@
         Pushup_Idle,
         Pushup_End,
         Slap01,
-        Slap01_React
+        Slap01_React,
+        Dance21,
+        Dance22,
+        Dance23,
+        Dance24,
+        Dance25,
+        Dance26,
+        Dance27,
+        Dance28,
+        Dance29,
+        Dance30,
+        Dance31,
+        Dance32,
+        Dance33,
+        Dance34,
+        Dance35,
+        Dance36,
+        Dance37,
+        Dance38,
+        Dance39,
+        Dance40
     }
 }

@@ -38,9 +38,21 @@ EXPORT(void) OnPackageLoad(const char *PackageName, lua_State *L)
 {
     auto pn = new std::string(PackageName);
     if (*pn == "onsharp") {
-        for (auto const &f : Plugin::Get()->GetFunctions())
-            Lua::RegisterPluginFunction(L, std::get<0>(f), std::get<1>(f));
+        for (auto const &f : Plugin::Get()->GetFunctions()){
+            const char* funcName = std::get<0>(f);
+            auto stFuncName = new std::string(funcName);
+            if(*stFuncName == "CallOnsharp") continue;
+            Lua::RegisterPluginFunction(L, funcName, std::get<1>(f));
+        }
         Plugin::Get()->Setup(L);
+    }else{
+        for (auto const &f : Plugin::Get()->GetFunctions()){
+            const char* funcName = std::get<0>(f);
+            auto stFuncName = new std::string(funcName);
+            if(*stFuncName != "CallOnsharp") continue;
+            Lua::RegisterPluginFunction(L, funcName, std::get<1>(f));
+            break;
+        }
     }
 }
 

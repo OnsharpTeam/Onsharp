@@ -116,5 +116,21 @@ namespace Onsharp
         /// <param name="packageName">The name of the wanted package</param>
         /// <returns>The imported package pipeline</returns>
         LuaPackage ImportPackage(string packageName);
+
+        /// <summary>
+        /// Searches through the class of the given owner objects for <see cref="Interop.LuaExport"/> marked methods and registers them.
+        /// <see cref="IEntryPoint"/> classes will be registered automatically.
+        /// </summary>
+        /// <param name="owner">The owner object owning the marked methods</param>
+        void RegisterExportable(object owner);
+
+        /// <summary>
+        /// Searches through the class of the given owner objects for <see cref="Interop.LuaExport"/> marked methods and registers them.
+        /// <see cref="IEntryPoint"/> classes will be registered automatically.
+        /// The difference to the other method is that in this method no owner object is created,
+        /// instead only the static methods are registered as handlers. 
+        /// </summary>
+        /// <typeparam name="T">The type which will be searched through</typeparam>
+        void RegisterExportable<T>();
     }
 }

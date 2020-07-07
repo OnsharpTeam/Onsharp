@@ -10,6 +10,7 @@ using Onsharp.Converters;
 using Onsharp.Entities;
 using Onsharp.Enums;
 using Onsharp.Events;
+using Onsharp.Interop;
 using Onsharp.IO;
 using Onsharp.Plugins;
 using Onsharp.World;
@@ -264,6 +265,8 @@ namespace Onsharp.Native
                     {
                         PluginManager.GetDomain(plugin)?.Server.FireRemoteEvent(name, player, remoteArgs);
                     }
+
+                    return null;
                 }
 
                 if (key == "call-command")
@@ -277,6 +280,22 @@ namespace Onsharp.Native
                     {
                         PluginManager.GetDomain(plugin)?.Server.FireCommand(player, name, line);
                     }
+
+                    return null;
+                }
+
+                if (key == "interop")
+                {
+                    string pluginId = (string) args[0];
+                    string funcName = (string) args[1];
+                    object[] @params = new object[args.Length - 2];
+                    for (int i = 2; i < args.Length; i++)
+                    {
+                        @params[i - 2] = args[i];
+                    }
+                    
+                    Plugin plugin = PluginManager.GetPlugin(pluginId);
+                    return plugin != null ? PluginManager.GetDomain(plugin)?.Server.FireExportable(funcName, @params) : null;
                 }
             }
             catch (Exception ex)

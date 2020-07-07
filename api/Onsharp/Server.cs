@@ -62,6 +62,8 @@ namespace Onsharp
         private List<ServerEvent> ServerEvents { get; }
         
         private List<RemoteEvent> RemoteEvents { get; }
+       
+        private List<LuaExport> Exportables { get; }
 
         private readonly CommandManager _commandManager;
 
@@ -84,6 +86,7 @@ namespace Onsharp
             VehiclePool = new EntityPool("Vehicles", CreateVehicle);
             ServerEvents = new List<ServerEvent>();
             RemoteEvents = new List<RemoteEvent>();
+            Exportables = new List<LuaExport>();
             _commandManager = new CommandManager(this);
         }
 
@@ -252,6 +255,53 @@ namespace Onsharp
         {
             Onset.ImportPackage(packageName);
             return new LuaPackage(Owner.Plugin.Meta.Id, packageName);
+        }
+
+        public void RegisterExportable(object owner)
+        {
+            lock (Exportables)
+            {
+                foreach (MethodInfo method in owner.GetType().GetRuntimeMethods())
+                {
+                    if(method.IsStatic) continue;
+                    LuaExport export = method.GetCustomAttribute<LuaExport>();
+                    if (export == null) continue;
+                    export.SetHandler(owner, method);
+                    Exportables.Add(export);
+                }
+            }
+        }
+
+        public void RegisterExportable<T>()
+        {
+            lock (Exportables)
+            {
+                foreach (MethodInfo method in typeof(T).GetRuntimeMethods())
+                {
+                    if(!method.IsStatic) continue;
+                    LuaExport export = method.GetCustomAttribute<LuaExport>();
+                    if (export == null) continue;
+                    export.SetHandler(null, method);
+                    Exportables.Add(export);
+                }
+            }
+        }
+
+        internal object FireExportable(string funcName, object[] args)
+        {
+            lock (Exportables)
+            {
+                for (int i = Exportables.Count - 1; i >= 0; i--)
+                {
+                    LuaExport export = Exportables[i];
+                    if (export.Name == funcName)
+                    {
+                        return export.Execute(args);
+                    }
+                }
+
+                return null;
+            }
         }
 
         internal void FireRemoteEvent(string name, int player, object[] nArgs)

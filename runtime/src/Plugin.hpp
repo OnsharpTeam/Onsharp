@@ -95,7 +95,7 @@ public:
             return new Lua::LuaValue();
         }
 
-        void Debug()
+        void Debug() const
         {
             if(type == NTYPE::STRING)
             {
@@ -155,6 +155,12 @@ public:
     }
     NetBridge GetBridge() {
         return this->bridge;
+    }
+    NValue* CreatNValueByString(std::string val){
+        NValue* nVal = new NValue;
+        nVal->type = NTYPE::STRING;
+        nVal->sVal = std::move(val);
+        return nVal;
     }
     NValue* CreateNValueByLua(const Lua::LuaValue lVal)
     {
