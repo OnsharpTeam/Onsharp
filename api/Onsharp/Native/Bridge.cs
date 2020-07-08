@@ -450,6 +450,11 @@ namespace Onsharp.Native
                 return new NativeValue(Onset.CreateNValue(b));
             }
 
+            if (val is LuaTable t)
+            {
+                return t.NVal;
+            }
+            
             return new NativeValue(Onset.CreateNValue());
         }
 

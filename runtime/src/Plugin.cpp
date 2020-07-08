@@ -98,6 +98,52 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED Plugin::NValue** GetKeysFromTable(Plugin::NValue* table)
+{
+    auto rVals = new Plugin::NValue*[table->tVal->Count()];
+    int idx = 0;
+    table->tVal->ForEach([rVals, &idx](Lua::LuaValue k, Lua::LuaValue v) {
+        rVals[idx] = Plugin::Get()->CreateNValueByLua(std::move(k));
+        idx++;
+    });
+    return rVals;
+}
+
+EXPORTED void AddValueToTable(Plugin::NValue* table, Plugin::NValue* key, Plugin::NValue* val)
+{
+    table->tVal->Add(key->GetLuaValue(), val->GetLuaValue());
+}
+
+EXPORTED void RemoveTableKey(Plugin::NValue* table, Plugin::NValue* key)
+{
+    table->tVal->Remove(key->GetLuaValue());
+}
+
+EXPORTED bool ContainsTableKey(Plugin::NValue* table, Plugin::NValue* key)
+{
+    return table->tVal->Exists(key->GetLuaValue());
+}
+
+EXPORTED Plugin::NValue* GetValueFromTable(Plugin::NValue* table, Plugin::NValue* key)
+{
+    bool _break = false;
+    auto currVal = new Lua::LuaValue;
+    Lua::LuaValue k2 = key->GetLuaValue();
+    table->tVal->ForEach([&_break, &currVal, k2](Lua::LuaValue k, Lua::LuaValue v) {
+        if(_break) return;
+        if(k == k2) {
+            _break = true;
+            *currVal = std::move(v);
+        }
+    });
+    return Plugin::Get()->CreateNValueByLua(currVal);
+}
+
+EXPORTED int GetLengthOfTable(Plugin::NValue* table)
+{
+    return table->tVal->Count();
+}
+
 EXPORTED Plugin::NValue** InvokePackage(const char* importId, const char* funcName, Plugin::NValue* nVals[], int len)
 {
     Lua::LuaArgs_t arg_list = Lua::BuildArgumentList(importId, funcName);
@@ -186,6 +232,13 @@ EXPORTED Plugin::NValue* CreateNValue_b(bool val)
     auto nVal = new Plugin::NValue;
     nVal->type = Plugin::NTYPE::BOOLEAN;
     nVal->bVal = val;
+    return nVal;
+}
+
+EXPORTED Plugin::NValue* CreateNValue_t()
+{
+    auto nVal = new Plugin::NValue;
+    nVal->type = Plugin::NTYPE::TABLE;
     return nVal;
 }
 

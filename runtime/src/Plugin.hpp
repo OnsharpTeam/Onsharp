@@ -36,7 +36,8 @@ public:
         STRING = 1,
         DOUBLE = 2,
         INTEGER = 3,
-        BOOLEAN = 4
+        BOOLEAN = 4,
+        TABLE = 5
     };
 
     struct NValue {
@@ -46,27 +47,38 @@ public:
         double dVal = 0;
         bool bVal = false;
         std::string sVal;
+        Lua::LuaTable_t  tVal;
 
         void AddAsArg(Lua::LuaArgs_t* args)
         {
             if(type == NTYPE::STRING)
             {
                 args->emplace_back(sVal);
+                return;
             }
 
             if(type == NTYPE::INTEGER)
             {
                 args->emplace_back(iVal);
+                return;
             }
 
             if(type == NTYPE::DOUBLE)
             {
                 args->emplace_back(dVal);
+                return;
             }
 
             if(type == NTYPE::BOOLEAN)
             {
                 args->emplace_back(bVal);
+                return;
+            }
+
+            if(type == NTYPE::TABLE)
+            {
+                args->emplace_back(tVal);
+                return;
             }
         }
 
@@ -90,6 +102,11 @@ public:
             if(type == NTYPE::BOOLEAN)
             {
                 return new Lua::LuaValue(bVal);
+            }
+
+            if(type == NTYPE::TABLE)
+            {
+                return new Lua::LuaValue(tVal);
             }
 
             return new Lua::LuaValue();
@@ -193,6 +210,14 @@ public:
             NValue* nVal = new NValue;
             nVal->type = NTYPE::DOUBLE;
             nVal->dVal = lVal.GetValue<double>();
+            return nVal;
+        }
+
+        if(lVal.IsTable())
+        {
+            NValue* nVal = new NValue;
+            nVal->type = NTYPE::TABLE;
+            nVal->tVal = lVal.GetValue<Lua::LuaTable_t>();
             return nVal;
         }
 

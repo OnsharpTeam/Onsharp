@@ -52,7 +52,8 @@ namespace Onsharp.Native
             String,
             Double,
             Integer,
-            Boolean
+            Boolean,
+            Table
         }
     }
 }

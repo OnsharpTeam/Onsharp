@@ -11,6 +11,24 @@ namespace Onsharp.Native
     internal static class Onset
     {
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr[] GetKeysFromTable(IntPtr table);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void AddValueToTable(IntPtr table, IntPtr key, IntPtr val);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void RemoveTableKey(IntPtr table, IntPtr key);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool ContainsTableKey(IntPtr table, IntPtr key);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr GetValueFromTable(IntPtr table, IntPtr key);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int GetLengthOfTable(IntPtr table);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr[] InvokePackage([MarshalAs(UnmanagedType.LPStr)] string importId, [MarshalAs(UnmanagedType.LPStr)] string funcName, IntPtr[] nVals, int len);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
@@ -48,6 +66,9 @@ namespace Onsharp.Native
 
         [DllImport(Bridge.DllName, EntryPoint = "CreateNValue_n", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr CreateNValue();
+
+        [DllImport(Bridge.DllName, EntryPoint = "CreateNValue_t", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr CreateNValueTable();
 
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void FreeNValue(IntPtr ptr);
