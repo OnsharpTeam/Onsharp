@@ -228,4 +228,5 @@ public:
         return nVal;
     }
     Lua::LuaArgs_t CallLuaFunction(const char* LuaFunctionName, Lua::LuaArgs_t* Arguments);
+    void ClearLuaStack();
 };

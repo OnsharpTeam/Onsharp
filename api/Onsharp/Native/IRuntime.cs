@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Onsharp.Native
 {
@@ -51,5 +52,30 @@ namespace Onsharp.Native
         /// </summary>
         /// <typeparam name="T">The type which will be searched through</typeparam>
         void RegisterConsoleCommands<T>();
+
+        /// <summary>
+        /// Starts a lua package on the server.
+        /// </summary>
+        /// <param name="packageName">The name of the package which should be started</param>
+        void StartPackage(string packageName);
+        
+        /// <summary>
+        /// Stops a lua package currently running on the server.
+        /// </summary>
+        /// <param name="packageName">The name of the package which should be stopped</param>
+        void StopPackage(string packageName);
+
+        /// <summary>
+        /// Checks if the lua package by the given name is currently running on the server.
+        /// </summary>
+        /// <param name="packageName">The name of the package which should be checked</param>
+        /// <returns>True, if the package is started</returns>
+        bool IsPackageStarted(string packageName);
+
+        /// <summary>
+        /// Returns a list containing all lua packages currently running on the server.
+        /// </summary>
+        /// <returns>A list containing all packages names</returns>
+        List<string> GetAllPackages();
     }
 }

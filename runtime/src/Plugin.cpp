@@ -45,6 +45,14 @@ Lua::LuaArgs_t Plugin::CallLuaFunction(const char* LuaFunctionName, Lua::LuaArgs
     return ReturnValues;
 }
 
+void Plugin::ClearLuaStack()
+{
+    Lua::LuaArgs_t stack;
+    Lua::ParseArguments(Plugin::MainScriptVM, stack);
+    int stack_size = static_cast<int>(stack.size());
+    lua_pop(Plugin::MainScriptVM, stack_size);
+}
+
 Plugin::Plugin()
 {
     LUA_DEFINE(CallBridge)
@@ -59,13 +67,14 @@ Plugin::Plugin()
             args[idx] = Plugin::Get()->CreateNValueByLua(std::move(v));
             idx++;
         });
+        Plugin::Get()->ClearLuaStack();
         NValue* returnVal = Plugin::Get()->CallBridge(key.c_str(), args, len);
         if(key == "call-event") {
             Lua::LuaArgs_t argValues = Lua::BuildArgumentList(returnVal->GetLuaValue());
-            Lua::ReturnValues(L, argValues);
+            return Lua::ReturnValues(L, argValues);
         }
         delete returnVal;
-        return 1;
+        return 0;
     });
 
     LUA_DEFINE(InitRuntimeEntries)
@@ -74,7 +83,7 @@ Plugin::Plugin()
         Plugin::Get()->InitDelegates();
         Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
         Lua::ReturnValues(L, argValues);
-        return 1;
+        return 0;
     });
 
     LUA_DEFINE(CallOnsharp)
@@ -94,19 +103,36 @@ Plugin::Plugin()
         });
         NValue* returnVal = Plugin::Get()->CallBridge("interop", args, len);
         Lua::LuaArgs_t argValues = Lua::BuildArgumentList(returnVal->GetLuaValue());
-        Lua::ReturnValues(L, argValues);
-        return 1;
+        return Lua::ReturnValues(L, argValues);
     });
 }
 
 //region Native Bridge Functions
 
-Plugin::NValue* BuildReturnNVal(Lua::LuaArgs_t rVals)
+EXPORTED Plugin::NValue* GetAllPackages()
 {
-    auto sSrc = rVals.at(rVals.size() - 1);
-    int i = (int)rVals.size() - 1;
-    printf("idx : %d\n", i);
-    return Plugin::Get()->CreateNValueByLua(sSrc);
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetAllPackages", &argValues);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED bool IsPackageStarted(const char* name)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(name);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsPackageStarted", &argValues);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void StopPackage(const char* name)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(name);
+    Plugin::Get()->CallLuaFunction("StopPackage", &argValues);
+}
+
+EXPORTED void StartPackage(const char* name)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(name);
+    Plugin::Get()->CallLuaFunction("StartPackage", &argValues);
 }
 
 EXPORTED void SetPlayerName(int player, const char* name)
@@ -119,7 +145,7 @@ EXPORTED Plugin::NValue* GetPlayerName(int player)
 {
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerName", &argValues);
-    return BuildReturnNVal(returnValues);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
 }
 
 EXPORTED void SendPlayerChatMessage(int player, const char* message)

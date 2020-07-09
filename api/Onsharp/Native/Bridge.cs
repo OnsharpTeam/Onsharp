@@ -4,7 +4,6 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 using Nett;
 using Onsharp.Commands;
 using Onsharp.Converters;
@@ -245,6 +244,11 @@ namespace Onsharp.Native
 
                         if (!domain.Server.CallEvent(type, ParseEventArgs(domain, type, args)))
                             flag = false;
+
+                        if (type == EventType.PlayerQuit)
+                        {
+                            domain.Server.PlayerPool.RemoveEntity((Player) args[0]);
+                        }
                     });
             
                     return flag;
@@ -583,6 +587,26 @@ namespace Onsharp.Native
         public void RegisterConsoleCommands<T>()
         {
             ConsoleManager.Register<T>();
+        }
+
+        public void StartPackage(string packageName)
+        {
+            Onset.StartPackage(packageName);
+        }
+
+        public void StopPackage(string packageName)
+        {
+            Onset.StopPackage(packageName);
+        }
+
+        public bool IsPackageStarted(string packageName)
+        {
+            return Onset.IsPackageStarted(packageName);
+        }
+
+        public List<string> GetAllPackages()
+        {
+            
         }
 
         [ConsoleCommand("help", "", "Shows all console commands and how to use them")]

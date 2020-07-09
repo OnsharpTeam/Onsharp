@@ -11,11 +11,21 @@ namespace Onsharp.Native
     [SuppressUnmanagedCodeSecurity]
     internal static class Onset
     {
-        //NOT WORKING YET
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr IsPackageStarted([MarshalAs(UnmanagedType.LPStr)] string name);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool IsPackageStarted([MarshalAs(UnmanagedType.LPStr)] string name);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void StopPackage([MarshalAs(UnmanagedType.LPStr)] string name);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void StartPackage([MarshalAs(UnmanagedType.LPStr)] string name);
+        
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void SetPlayerName(int player, [MarshalAs(UnmanagedType.LPStr)] string name);
         
-        //NOT WORKING YET
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr GetPlayerName(int player);
         
