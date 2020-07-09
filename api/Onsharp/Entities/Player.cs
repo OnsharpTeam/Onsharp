@@ -11,10 +11,10 @@ namespace Onsharp.Entities
         /// </summary>
         public string Name
         {
-            get => (string) new NativeValue(Onset.GetPlayerName(Id)).GetValue();
+            get => Bridge.PtrToString(Onset.GetPlayerName(Id));
             set => Onset.SetPlayerName(Id, value);
         }
-        
+
         /// <summary>
         /// The steam of the player. Only available after the <see cref="EventType.PlayerSteamAuth"/> was called.
         ///

@@ -60,8 +60,11 @@ Plugin::Plugin()
             idx++;
         });
         NValue* returnVal = Plugin::Get()->CallBridge(key.c_str(), args, len);
-        Lua::LuaArgs_t argValues = Lua::BuildArgumentList(returnVal->GetLuaValue());
-        Lua::ReturnValues(L, argValues);
+        if(key == "call-event") {
+            Lua::LuaArgs_t argValues = Lua::BuildArgumentList(returnVal->GetLuaValue());
+            Lua::ReturnValues(L, argValues);
+        }
+        delete returnVal;
         return 1;
     });
 
@@ -97,6 +100,33 @@ Plugin::Plugin()
 }
 
 //region Native Bridge Functions
+
+Plugin::NValue* BuildReturnNVal(Lua::LuaArgs_t rVals)
+{
+    auto sSrc = rVals.at(rVals.size() - 1);
+    int i = (int)rVals.size() - 1;
+    printf("idx : %d\n", i);
+    return Plugin::Get()->CreateNValueByLua(sSrc);
+}
+
+EXPORTED void SetPlayerName(int player, const char* name)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player, name);
+    Plugin::Get()->CallLuaFunction("SetPlayerName", &argValues);
+}
+
+EXPORTED Plugin::NValue* GetPlayerName(int player)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerName", &argValues);
+    return BuildReturnNVal(returnValues);
+}
+
+EXPORTED void SendPlayerChatMessage(int player, const char* message)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player, message);
+    Plugin::Get()->CallLuaFunction("AddPlayerChat", &argValues);
+}
 
 EXPORTED Plugin::NValue** GetKeysFromTable(Plugin::NValue* table)
 {
@@ -277,29 +307,6 @@ EXPORTED void FreeNValue(Plugin::NValue* nPtr)
 EXPORTED Plugin::NTYPE GetNType(Plugin::NValue* nPtr)
 {
     return nPtr->type;
-}
-
-EXPORTED void SetPlayerName(int player, const char* name)
-{
-    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player, name);
-    Plugin::Get()->CallLuaFunction("SetPlayerName", &argValues);
-}
-
-EXPORTED Plugin::NValue* GetPlayerName(int player)
-{
-    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player);
-    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerName", &argValues);
-    auto name = returnValues.at(0).GetValue<std::string>();
-    Plugin::NValue* nVal = new Plugin::NValue;
-    nVal->type = Plugin::NTYPE::STRING;
-    nVal->sVal = name;
-    return nVal;
-}
-
-EXPORTED void SendPlayerChatMessage(int player, const char* message)
-{
-    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player, message);
-    Plugin::Get()->CallLuaFunction("AddPlayerChat", &argValues);
 }
 
 EXPORTED int* GetEntities(const char* entityName, int* len)

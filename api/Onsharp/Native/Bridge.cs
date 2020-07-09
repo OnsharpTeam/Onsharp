@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
 using Nett;
 using Onsharp.Commands;
 using Onsharp.Converters;
@@ -313,7 +314,7 @@ namespace Onsharp.Native
         /// <returns>The converted string</returns>
         internal static string PtrToString(IntPtr ptr)
         {
-            return Marshal.PtrToStringUTF8(ptr);
+            return new NativeValue(ptr).GetValue() as string;
         }
         
         /// <summary>

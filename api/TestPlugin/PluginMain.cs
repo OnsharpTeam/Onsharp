@@ -1,4 +1,5 @@
-﻿using Onsharp.Commands;
+﻿using System;
+using Onsharp.Commands;
 using Onsharp.Entities;
 using Onsharp.Events;
 using Onsharp.Plugins;
@@ -10,11 +11,14 @@ namespace TestPlugin
     [PluginMeta("test-plugin", "TestPlugin", "1.1", "OnsharpTeam", IsDebug = true)]
     public class PluginMain : Plugin
     {
+        public static readonly Random Random = new Random();
+        
         public override void OnStart()
         {
             var config = Data.Config<MyConfig>();
             Logger.SetDebug(config.IsDebug);
             Logger.Debug("Debug mode is {STATE}!", "enabled");
+            Server.OverrideEntityFactory(new MyPlayerFactory());
         }
 
         public override void OnStop()
@@ -34,10 +38,17 @@ namespace TestPlugin
             Logger.Debug("incoming request {IP}:{PORT}", ip, port);
         }
 
+        [ServerEvent(EventType.PlayerSpawn)]
+        public void OnPlayerSpawn(MyPlayer player)
+        {
+            Logger.Debug("Player has got Number " + player.MyID + " -> " + player.Name);
+            player.SetPosition(125773.000000, 80246.000000, 1645.000000);
+        }
+
         [Command("hello")]
         public void OnHelloCommand(Player player)
         {
-            player.CallRemote("trigger-val", "Hallo ");
+            player.SendMessage("Hallo, " + player.Name + "!");
         }
     }
 }

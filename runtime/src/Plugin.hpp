@@ -179,13 +179,15 @@ public:
         nVal->sVal = std::move(val);
         return nVal;
     }
-    NValue* CreateNValueByLua(const Lua::LuaValue lVal)
+    NValue* CreateNValueByLua(Lua::LuaValue lVal)
     {
         if(lVal.IsString())
         {
             NValue* nVal = new NValue;
             nVal->type = NTYPE::STRING;
-            nVal->sVal = std::move(lVal.GetValue<std::string>());
+            auto str  = lVal.GetValue<std::string>();
+            const char* cstr = str.c_str();
+            nVal->sVal = std::string(cstr);
             return nVal;
         }
 

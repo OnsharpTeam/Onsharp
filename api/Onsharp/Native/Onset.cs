@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
 
 namespace Onsharp.Native
 {
@@ -10,6 +11,20 @@ namespace Onsharp.Native
     [SuppressUnmanagedCodeSecurity]
     internal static class Onset
     {
+        //NOT WORKING YET
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetPlayerName(int player, [MarshalAs(UnmanagedType.LPStr)] string name);
+        
+        //NOT WORKING YET
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr GetPlayerName(int player);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SendPlayerChatMessage(int player, [MarshalAs(UnmanagedType.LPStr)] string message);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool IsEntityValid(int id, [MarshalAs(UnmanagedType.LPStr)] string name);
+        
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr[] GetKeysFromTable(IntPtr table);
         
@@ -103,22 +118,8 @@ namespace Onsharp.Native
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr GetVString(IntPtr ptr);
         
-        //NOT WORKING YET
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void SetPlayerName(int player, [MarshalAs(UnmanagedType.LPStr)] string name);
-        
-        //NOT WORKING YET
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr GetPlayerName(int player);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void SendPlayerChatMessage(int player, [MarshalAs(UnmanagedType.LPStr)] string message);
-        
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void ForceRuntimeRestart(bool complete);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool IsEntityValid(int id, [MarshalAs(UnmanagedType.LPStr)] string name);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int ReleaseIntArray(IntPtr ptr);
