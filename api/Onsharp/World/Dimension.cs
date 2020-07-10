@@ -1,4 +1,5 @@
 ﻿using System;
+using Onsharp.Entities;
 using Onsharp.Native;
 
 namespace Onsharp.World
@@ -15,6 +16,45 @@ namespace Onsharp.World
             Value = value;
         }
 
+        /// <summary>
+        /// Creates a NPC in this dimension.
+        /// </summary>
+        /// <param name="pos">The position of the NPC</param>
+        /// <param name="heading">The yaw rotation of the NPC</param>
+        /// <returns>The wrapped NPC object</returns>
+        public NPC CreateNPC(Vector pos, double heading)
+        {
+            NPC npc = _server.CreateNPC(Onset.CreateNPC(pos.X, pos.Y, pos.Z, heading));
+            npc.SetDimension(Value);
+            return npc;
+        }
+        
+        /// <summary>
+        /// Creates a door in this dimension.
+        /// </summary>
+        /// <param name="model">The model of the door</param>
+        /// <param name="pos">The position of the door</param>
+        /// <param name="yaw">The yaw of the door</param>
+        /// <param name="enableInteract">True enables the interaction with this door when pressing 'E'</param>
+        /// <returns>The wrapped door object</returns>
+        public Door CreateDoor(int model, Vector pos, double yaw, bool enableInteract = true)
+        {
+            Door door = _server.CreateDoor(Onset.CreateDoor(model, pos.X, pos.Y, pos.Z, yaw, enableInteract));
+            door.SetDimension(Value);
+            return door;
+        }
+
+        /// <summary>
+        /// Creates an explosion in the current dimension.
+        /// </summary>
+        /// <param name="id">The id of the explosion (between 1 and 20)</param>
+        /// <param name="pos">The position where the explosion will spawn</param>
+        /// <param name="soundEnabled">If the explosion sound is enabled</param>
+        /// <param name="camShakeRadius">How much the camera should shake</param>
+        /// <param name="radialForce">The radial force of the explosion</param>
+        /// <param name="damageRadius">The radius in which is explosion causes damage</param>
+        /// <returns>True, if the explosion could be successfully spawned</returns>
+        /// <exception cref="ArgumentException">If the id is out of the id range</exception>
         public bool CreateExplosion(byte id, Vector pos, bool soundEnabled = true, double camShakeRadius = 1000,
             double radialForce = 500_000, double damageRadius = 600)
         {

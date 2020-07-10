@@ -1,6 +1,6 @@
 ﻿namespace Onsharp.Entities
 {
-    public class Vehicle : Entity
+    public class Vehicle : LifelessEntity
     {
         public Vehicle(int id) : base(id, "Vehicle")
         {

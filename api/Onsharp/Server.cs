@@ -119,19 +119,19 @@ namespace Onsharp
             _globalDim = new Dimension(this, 0);
             Dimensions = new List<Dimension>();
             PlayerFactory = new PlayerFactory();
-            PlayerPool = new EntityPool(null, CreatePlayer);
+            PlayerPool = new EntityPool(this, null, CreatePlayer);
             DoorFactory = new DoorFactory();
-            DoorPool = new EntityPool("Doors", CreateDoor);
+            DoorPool = new EntityPool(this, "Doors", CreateDoor);
             NPCFactory = new NPCFactory();
-            NPCPool = new EntityPool("NPC", CreateNPC);
+            NPCPool = new EntityPool(this, "NPC", CreateNPC);
             ObjectFactory = new ObjectFactory();
-            ObjectPool = new EntityPool("Objects", CreateObject);
+            ObjectPool = new EntityPool(this, "Objects", CreateObject);
             PickupFactory = new PickupFactory();
-            PickupPool = new EntityPool("Pickups", CreatePickup);
+            PickupPool = new EntityPool(this, "Pickups", CreatePickup);
             Text3DFactory = new Text3DFactory();
-            Text3DPool = new EntityPool("Text3D", CreateText3D);
+            Text3DPool = new EntityPool(this, "Text3D", CreateText3D);
             VehicleFactory = new VehicleFactory();
-            VehiclePool = new EntityPool("Vehicles", CreateVehicle);
+            VehiclePool = new EntityPool(this, "Vehicles", CreateVehicle);
             ServerEvents = new List<ServerEvent>();
             RemoteEvents = new List<RemoteEvent>();
             Exportables = new List<LuaExport>();
@@ -369,6 +369,16 @@ namespace Onsharp
         public Dimension GetDimension(uint val)
         {
             return CreateDimension(val);
+        }
+
+        public Door CreateDoor(int model, Vector pos, double yaw, bool enableInteract = true)
+        {
+            return _globalDim.CreateDoor(model, pos, yaw, enableInteract);
+        }
+
+        public NPC CreateNPC(Vector pos, double heading)
+        {
+            return _globalDim.CreateNPC(pos, heading);
         }
 
         internal object FireExportable(string funcName, object[] args)

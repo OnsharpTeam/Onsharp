@@ -10,6 +10,62 @@ namespace Onsharp.Native
     [SuppressUnmanagedCodeSecurity]
     internal static class Onset
     {
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetNPCFollowVehicle(int npc, int vehicle, double speed);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetNPCFollowPlayer(int npc, int player, double speed);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetNPCTargetLocation(int npc, double x, double y, double z, double speed);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetNPCHeading(int npc, double heading);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern double GetNPCHeading(int npc);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetNPCAnimation(int npc, [MarshalAs(UnmanagedType.LPStr)] string animation, bool loop);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetNPCHealth(int npc, double health);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern double GetNPCHealth(int npc);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool IsStreamedIn([MarshalAs(UnmanagedType.LPStr)] string name, int player, int entity);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int CreateNPC(double x, double y, double z, double heading);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetNPCRagdoll(int npc, bool enable);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int GetDoorModel(int door);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetDoorOpen(int door, bool open);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool GetDoorOpen(int door);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int CreateDoor(int model, double x, double y, double z, double yaw, bool enableInteract);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void DestroyEntity([MarshalAs(UnmanagedType.LPStr)] string entityName, int id);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetEntityDimension([MarshalAs(UnmanagedType.LPStr)] string entityName, int id,
+            uint dim);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern uint GetEntityDimension([MarshalAs(UnmanagedType.LPStr)] string entityName, int id);
+        
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void GetNetworkStats(ref int totalPacketLoss, ref int lastSecondPacketLoss,
             ref int messagesInResendBuffer,

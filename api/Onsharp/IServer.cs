@@ -172,5 +172,23 @@ namespace Onsharp
         /// <param name="val">The id of the dimension</param>
         /// <returns>The wrapped dimension object</returns>
         Dimension GetDimension(uint val);
+
+        /// <summary>
+        /// Creates a door in the global dimension.
+        /// </summary>
+        /// <param name="model">The model of the door</param>
+        /// <param name="pos">The position of the door</param>
+        /// <param name="yaw">The yaw of the door</param>
+        /// <param name="enableInteract">True enables the interaction with this door when pressing 'E'</param>
+        /// <returns>The wrapped door object</returns>
+        Door CreateDoor(int model, Vector pos, double yaw, bool enableInteract = true);
+
+        /// <summary>
+        /// Creates a NPC in this dimension.
+        /// </summary>
+        /// <param name="pos">The position of the NPC</param>
+        /// <param name="heading">The yaw rotation of the NPC</param>
+        /// <returns>The wrapped NPC object</returns>
+        public NPC CreateNPC(Vector pos, double heading);
     }
 }

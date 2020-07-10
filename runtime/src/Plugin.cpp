@@ -110,6 +110,126 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED void SetNPCFollowVehicle(int npc, int vehicle, double speed)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(npc, vehicle, speed);
+    Plugin::Get()->CallLuaFunction("SetNPCFollowVehicle", &args);
+}
+
+EXPORTED void SetNPCFollowPlayer(int npc, int player, double speed)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(npc, player, speed);
+    Plugin::Get()->CallLuaFunction("SetNPCFollowPlayer", &args);
+}
+
+EXPORTED void SetNPCTargetLocation(int npc, double x, double y, double z, double speed)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(npc, x, y, z, speed);
+    Plugin::Get()->CallLuaFunction("SetNPCTargetLocation", &args);
+}
+
+EXPORTED double GetNPCHeading(int npc)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(npc);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetNPCHeading", &args);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED void SetNPCHeading(int npc, double heading)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(npc, heading);
+    Plugin::Get()->CallLuaFunction("SetNPCHeading", &args);
+}
+
+EXPORTED void SetNPCAnimation(int npc, const char* animation, bool loop)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(npc, animation, loop);
+    Plugin::Get()->CallLuaFunction("SetNPCAnimation", &args);
+}
+
+EXPORTED double GetNPCHealth(int npc)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(npc);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetNPCHealth", &args);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED void SetNPCHealth(int npc, double health)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(npc, health);
+    Plugin::Get()->CallLuaFunction("SetNPCHealth", &args);
+}
+
+EXPORTED bool IsStreamedIn(const char* name, int player, int entity)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, entity);
+    std::string funcName = "Is" + std::string(name) + "StreamedIn";
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction(funcName.c_str(), &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED int CreateNPC(double x, double y, double z, double heading)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(x, y, z, heading);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("CreateNPC", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED void SetNPCRagdoll(int npc, bool enable)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(npc, enable);
+    Plugin::Get()->CallLuaFunction("SetNPCRagdoll", &args);
+}
+
+EXPORTED int GetDoorModel(int door)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(door);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetDoorModel", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED bool GetDoorOpen(int door)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(door);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsDoorOpen", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void SetDoorOpen(int door, bool open)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(door, open);
+    Plugin::Get()->CallLuaFunction("SetDoorOpen", &args);
+}
+
+EXPORTED int CreateDoor(int model, double x, double y, double z, double yaw, bool enableInteract)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(model, x, y, z, yaw, enableInteract);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("CreateDoor", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED unsigned int GetEntityDimension(const char* entityName, int id)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(id);
+    std::string funcName = "Get" + std::string(entityName) + "Dimension";
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction(funcName.c_str(), &args);
+    return returnValues.at(0).GetValue<unsigned int>();
+}
+
+EXPORTED void SetEntityDimension(const char* entityName, int id, unsigned int dim)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(id, dim);
+    std::string funcName = "Set" + std::string(entityName) + "Dimension";
+    Plugin::Get()->CallLuaFunction(funcName.c_str(), &args);
+}
+
+EXPORTED void DestroyEntity(const char* entityName, int id)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(id);
+    std::string funcName = "Destroy" + std::string(entityName);
+    Plugin::Get()->CallLuaFunction(funcName.c_str(), &args);
+}
+
 EXPORTED void GetNetworkStats(int* totalPacketLoss, int* lastSecondPacketLoss, int* messagesInResendBuffer,
         int* bytesInResendBuffer, int* bytesSend, int* bytesReceived, int* bytesResend, int* totalBytesSend,
         int* totalBytesReceived, bool* isLimitedByCongestionControl, bool* isLimitedByOutgoingBandwidthLimit) {

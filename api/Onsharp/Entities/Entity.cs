@@ -19,11 +19,22 @@ namespace Onsharp.Entities
         /// Checks if the entity is valid or not.
         /// </summary>
         public bool IsValid => Pool.Validate(this);
-        
+
+        /// <summary>
+        /// The dimension of the entity.
+        /// </summary>
+        public Dimension Dimension
+        {
+            get => Owner.GetDimension(Onset.GetEntityDimension(EntityName, Id));
+            set => Onset.SetEntityDimension(EntityName, Id, value.Value);
+        }
+
         /// <summary>
         /// The entity name of the entity which will be needed for calling specific native methods.
         /// </summary>
         internal string EntityName { get; }
+        
+        internal Server Owner { get; set; }
         
         internal EntityPool Pool { get; set; }
 
@@ -64,6 +75,15 @@ namespace Onsharp.Entities
             Vector vector = new Vector(x, y, z);
             vector.SyncCallback = () => SetPosition(vector);
             return vector;
+        }
+
+        /// <summary>
+        /// Sets the dimension of this entity by the given dimension id.
+        /// </summary>
+        /// <param name="id">The id of the wanted dimension</param>
+        public void SetDimension(uint id)
+        {
+            Dimension = Owner[id];
         }
     }
 }

@@ -14,9 +14,11 @@ namespace Onsharp.Entities
         private List<Entity> _entities;
         private readonly string _entityName;
         private readonly Func<int, Entity> _creator;
+        private readonly Server _server;
         
-        public EntityPool(string entityName, Func<int, Entity> creator)
+        public EntityPool(Server server, string entityName, Func<int, Entity> creator)
         {
+            _server = server;
             _entityName = entityName;
             _creator = creator;
             _entities = new List<Entity>();
@@ -51,6 +53,7 @@ namespace Onsharp.Entities
 
                 T newEntity = creator.Invoke();
                 newEntity.Pool = this;
+                newEntity.Owner = _server;
                 _entities.Add(newEntity);
                 return newEntity;
             }

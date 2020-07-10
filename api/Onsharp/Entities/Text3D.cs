@@ -3,7 +3,7 @@ using Onsharp.World;
 
 namespace Onsharp.Entities
 {
-    public class Text3D : Entity
+    public class Text3D : LifelessEntity
     {
         public Text3D(int id) : base(id, "Text3D")
         {
