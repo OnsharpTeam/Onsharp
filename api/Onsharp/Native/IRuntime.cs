@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Onsharp.Native
 {
@@ -8,6 +9,31 @@ namespace Onsharp.Native
     /// </summary>
     public interface IRuntime
     {
+        /// <summary>
+        /// The version of the currently running instance of the game.
+        /// </summary>
+        int GameVersion { get; }
+        
+        /// <summary>
+        /// The version of the game as string.
+        /// </summary>
+        string GameVersionString { get; }
+        
+        /// <summary>
+        /// The servers uptime in seconds.
+        /// </summary>
+        double UptimeSeconds { get; }
+        
+        /// <summary>
+        /// The servers uptime in milliseconds.
+        /// </summary>
+        double UptimeMillis { get; }
+        
+        /// <summary>
+        /// The delta time in seconds.
+        /// </summary>
+        double DeltaSeconds { get; }
+        
         /// <summary>
         /// Calls a custom event on all current running plugin instances. If the event gets cancelled, this event is returning false.
         /// </summary>
@@ -77,7 +103,7 @@ namespace Onsharp.Native
         /// </summary>
         /// <returns>A list containing all packages names</returns>
         List<string> GetAllPackages();
-        
+
         int CreateObject(int model, double x, double y, double z, double rx, double ry,
             double rz, double sx, double sy, double sz);
     }

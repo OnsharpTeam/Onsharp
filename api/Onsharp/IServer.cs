@@ -2,6 +2,8 @@
 using Onsharp.Entities;
 using Onsharp.Entities.Factory;
 using Onsharp.Interop;
+using Onsharp.Native;
+using Onsharp.World;
 
 namespace Onsharp
 {
@@ -12,6 +14,32 @@ namespace Onsharp
     /// </summary>
     public interface IServer
     {
+        /// <summary>
+        /// The name of the server.
+        /// </summary>
+        string Name { get; set; }
+        
+        /// <summary>
+        /// The tick rate of the server.
+        /// </summary>
+        double TickRate { get; }
+        
+        /// <summary>
+        /// The count of the maximum value of players which can enter the server.
+        /// </summary>
+        int MaxPlayers { get; }
+        
+        /// <summary>
+        /// The current statistics of the network.
+        /// </summary>
+        NetworkStats NetworkStats { get; }
+        
+        /// <summary>
+        /// Returns the wrapped dimension from the given id. 
+        /// </summary>
+        /// <param name="val">The dimension id</param>
+        Dimension this[uint val] { get; }
+        
         /// <summary>
         /// A list containing all players currently on the server.
         /// </summary>
@@ -132,5 +160,17 @@ namespace Onsharp
         /// </summary>
         /// <typeparam name="T">The type which will be searched through</typeparam>
         void RegisterExportable<T>();
+
+        /// <summary>
+        /// Shuts down the server.
+        /// </summary>
+        void ShutdownServer();
+
+        /// <summary>
+        /// Returns the wrapped dimension object to the given id.
+        /// </summary>
+        /// <param name="val">The id of the dimension</param>
+        /// <returns>The wrapped dimension object</returns>
+        Dimension GetDimension(uint val);
     }
 }

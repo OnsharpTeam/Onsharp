@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Threading;
 using Onsharp.Commands;
 using Onsharp.Entities;
 using Onsharp.Events;
 using Onsharp.Plugins;
 using Onsharp.Updater;
 using Onsharp.World;
+using Timer = Onsharp.Threading.Timer;
 
 namespace TestPlugin
 {
@@ -55,8 +57,13 @@ namespace TestPlugin
         [Command("obj")]
         public void OnObjCommand(Player player)
         {
-            Vector pos = player.GetPosition();
-            Runtime.CreateObject(1, pos.X, pos.Y, pos.Z, 0, 0, 0, 1, 1, 1);
+            player.SendMessage("Waiting...");
+            Timer.Delay(5000, () =>
+            {
+                Vector pos = player.GetPosition();
+                Runtime.CreateObject(1, pos.X, pos.Y, pos.Z, 0, 0, 0, 1, 1, 1);
+                player.SendMessage("Working!");
+            });
         }
     }
 }

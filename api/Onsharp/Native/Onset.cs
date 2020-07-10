@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 
 namespace Onsharp.Native
 {
@@ -11,6 +10,66 @@ namespace Onsharp.Native
     [SuppressUnmanagedCodeSecurity]
     internal static class Onset
     {
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void GetNetworkStats(ref int totalPacketLoss, ref int lastSecondPacketLoss,
+            ref int messagesInResendBuffer,
+            ref int bytesInResendBuffer, ref int bytesSend, ref int bytesReceived, ref int bytesResend,
+            ref int totalBytesSend,
+            ref int totalBytesReceived, ref bool isLimitedByCongestionControl,
+            ref bool isLimitedByOutgoingBandwidthLimit);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool IsTimerValid(int id);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void DestroyTimer(int id);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void PauseTimer(int id);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void UnpauseTimer(int id);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern double GetTimerRemainingTime(int id);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int CreateTimer([MarshalAs(UnmanagedType.LPStr)] string id, double interval);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void Delay([MarshalAs(UnmanagedType.LPStr)] string name, long millis);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool CreateExplosion(byte id, double x, double y, double z, uint dim, bool soundEnabled,
+            double camShakeRadius, double radialForce, double damageRadius);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int GetMaxPlayers();
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetServerName([MarshalAs(UnmanagedType.LPStr)] string name);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr GetServerName();
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern double GetServerTickRate();
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern double GetTheTickCount();
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern double GetTimeSeconds();
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern double GetDeltaSeconds();
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int GetGameVersion();
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr GetGameVersionAsString();
+        
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int CreateObject(int model, double x, double y, double z, double rx, double ry,
             double rz, double sx, double sy, double sz);

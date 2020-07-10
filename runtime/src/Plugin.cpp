@@ -101,6 +101,7 @@ Plugin::Plugin()
             args[idx] = Plugin::Get()->CreateNValueByLua(std::move(v));
             idx++;
         });
+        Plugin::Get()->ClearLuaStack();
         NValue* returnVal = Plugin::Get()->CallBridge("interop", args, len);
         Lua::LuaArgs_t argValues = Lua::BuildArgumentList(returnVal->GetLuaValue());
         return Lua::ReturnValues(L, argValues);
@@ -108,6 +109,139 @@ Plugin::Plugin()
 }
 
 //region Native Bridge Functions
+
+EXPORTED void GetNetworkStats(int* totalPacketLoss, int* lastSecondPacketLoss, int* messagesInResendBuffer,
+        int* bytesInResendBuffer, int* bytesSend, int* bytesReceived, int* bytesResend, int* totalBytesSend,
+        int* totalBytesReceived, bool* isLimitedByCongestionControl, bool* isLimitedByOutgoingBandwidthLimit) {
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetNetworkStats", &argValues);
+    *totalPacketLoss = returnValues.at(0).GetValue<int>();
+    *lastSecondPacketLoss = returnValues.at(1).GetValue<int>();
+    *messagesInResendBuffer = returnValues.at(2).GetValue<int>();
+    *bytesInResendBuffer = returnValues.at(3).GetValue<int>();
+    *bytesSend = returnValues.at(4).GetValue<int>();
+    *bytesReceived = returnValues.at(5).GetValue<int>();
+    *bytesResend = returnValues.at(6).GetValue<int>();
+    *totalBytesSend = returnValues.at(7).GetValue<int>();
+    *totalBytesReceived = returnValues.at(8).GetValue<int>();
+    *isLimitedByCongestionControl = returnValues.at(9).GetValue<bool>();
+    *isLimitedByOutgoingBandwidthLimit = returnValues.at(10).GetValue<bool>();
+}
+
+EXPORTED void DestroyTimer(int id)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id);
+    Plugin::Get()->CallLuaFunction("DestroyTimer", &argValues);
+}
+
+EXPORTED void PauseTimer(int id)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id);
+    Plugin::Get()->CallLuaFunction("PauseTimer", &argValues);
+}
+
+EXPORTED void UnpauseTimer(int id)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id);
+    Plugin::Get()->CallLuaFunction("UnpauseTimer", &argValues);
+}
+
+EXPORTED double GetTimerRemainingTime(int id)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetTimerRemainingTime", &argValues);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED bool IsTimerValid(int id)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsValidTimer", &argValues);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED int CreateTimer(const char* id, double interval)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id, interval);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("Onsharp_CreateTimer", &argValues);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED void Delay(const char* id, long millis)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id, millis);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("Onsharp_Delay", &argValues);
+}
+
+EXPORTED bool CreateExplosion(byte id, double x, double y, double z, unsigned int dim, bool soundEnabled,
+                              double camShakeRadius, double radialForce, double damageRadius)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id, x, y, z, dim, soundEnabled, camShakeRadius, radialForce, damageRadius);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetMaxPlayers", &argValues);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void SetServerName(const char* name)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(name);
+    Plugin::Get()->CallLuaFunction("SetServerName", &argValues);
+}
+
+EXPORTED Plugin::NValue* GetServerName()
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetServerName", &argValues);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED int GetMaxPlayers()
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetMaxPlayers", &argValues);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED double GetServerTickRate()
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetServerTickRate", &argValues);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED double GetTheTickCount()
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetTickCount", &argValues);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED double GetTimeSeconds()
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetTimeSeconds", &argValues);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED double GetDeltaSeconds()
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetDeltaSeconds", &argValues);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED Plugin::NValue* GetGameVersionAsString()
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetGameVersionString", &argValues);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED int GetGameVersion()
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetGameVersion", &argValues);
+    return returnValues.at(0).GetValue<int>();
+}
 
 EXPORTED int CreateObject(int model, double x, double y, double z, double rx, double ry, double rz, double sx, double sy, double sz)
 {

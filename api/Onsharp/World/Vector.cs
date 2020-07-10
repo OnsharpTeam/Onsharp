@@ -397,6 +397,20 @@ namespace Onsharp.World
         }
 
         /// <summary>
+        /// Interpolates the current vector with the other given vector by the given sensitivity value.
+        /// </summary>
+        /// <param name="o">The other vector</param>
+        /// <param name="by">The sensitivity value</param>
+        /// <returns></returns>
+        public Vector Lerp(Vector o, double by)
+        {
+            X = Lerp(X, o.X, by);
+            Y = Lerp(Y, o.Y, by);
+            Z = Lerp(Z, o.Z, by);
+            return this;
+        }
+
+        /// <summary>
         /// Calculates a direction vector between the given vectors.
         /// </summary>
         /// <param name="from">The starting vector where the vector will be coming from</param>
@@ -405,6 +419,30 @@ namespace Onsharp.World
         public static Vector Direction(Vector from, Vector to)
         {
             return new Vector(to.X - from.X, to.Y - from.Y, to.Z - from.Z);
+        }
+
+        /// <summary>
+        /// Calculates an interpolation of the two values by the given sensitivity value.
+        /// </summary>
+        /// <param name="d1">The first value</param>
+        /// <param name="d2">The second value</param>
+        /// <param name="by">The sensitivity value</param>
+        /// <returns>The interpolated value</returns>
+        public static double Lerp(double d1, double d2, double by)
+        {
+            return d1 * (1 - by) + d2 * by;
+        }
+
+        /// <summary>
+        /// Calculates an interpolation of the two vectors by the given sensitivity value.
+        /// </summary>
+        /// <param name="v1">The first value</param>
+        /// <param name="v2">The second value</param>
+        /// <param name="by">The sensitivity value</param>
+        /// <returns>The interpolated value</returns>
+        public static Vector Lerp(Vector v1, Vector v2, double by)
+        {
+            return new Vector(Lerp(v1.X, v2.X, by), Lerp(v1.Y, v2.Y, by), Lerp(v1.Z, v2.Z, by));
         }
     }
 }

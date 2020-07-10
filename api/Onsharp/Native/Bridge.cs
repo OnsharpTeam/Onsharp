@@ -4,6 +4,8 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Threading;
+using System.Threading.Tasks;
 using Nett;
 using Onsharp.Commands;
 using Onsharp.Converters;
@@ -14,6 +16,7 @@ using Onsharp.Interop;
 using Onsharp.IO;
 using Onsharp.Plugins;
 using Onsharp.World;
+using Timer = Onsharp.Threading.Timer;
 
 namespace Onsharp.Native
 {
@@ -125,7 +128,7 @@ namespace Onsharp.Native
         internal static bool IsEntityRefreshingEnabled => Runtime._isEntityRefreshingEnabled;
 
         private bool _isEntityRefreshingEnabled = true;
-        
+
         /// <summary>
         /// Gets called by the native runtime when Onsharp should load itself.
         /// <param name="appPath">The path to the server given from the coreclr host</param>
@@ -286,6 +289,20 @@ namespace Onsharp.Native
                         PluginManager.GetDomain(plugin)?.Server.FireCommand(player, name, line);
                     }
 
+                    return null;
+                }
+
+                if (key == "call-timer")
+                {
+                    string id = (string) args[0];
+                    Timer.CallTimer(id);
+                    return null;
+                }
+
+                if (key == "call-delay")
+                {
+                    string id = (string) args[0];
+                    Timer.CallDelay(id);
                     return null;
                 }
 
@@ -545,6 +562,16 @@ namespace Onsharp.Native
                     return null;
             }
         }
+
+        public int GameVersion => Onset.GetGameVersion();
+        
+        public string GameVersionString => PtrToString(Onset.GetGameVersionAsString());
+
+        public double UptimeSeconds => Onset.GetTimeSeconds();
+
+        public double UptimeMillis => Onset.GetTheTickCount();
+
+        public double DeltaSeconds => Onset.GetDeltaSeconds();
 
         public bool CallEvent(string name, params object[] args)
         {
