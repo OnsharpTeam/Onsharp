@@ -189,6 +189,34 @@ namespace Onsharp
         /// <param name="pos">The position of the NPC</param>
         /// <param name="heading">The yaw rotation of the NPC</param>
         /// <returns>The wrapped NPC object</returns>
-        public NPC CreateNPC(Vector pos, double heading);
+        NPC CreateNPC(Vector pos, double heading);
+
+        /// <summary>
+        /// Creates an object in this dimension.
+        /// </summary>
+        /// <param name="model">The model of the object</param>
+        /// <param name="pos">The position of the object</param>
+        /// <param name="rot">The rotation of the object</param>
+        /// <param name="scale">The scale of the object</param>
+        /// <returns>The wrapped object</returns>
+        Object CreateObject(int model, Vector pos, Vector rot = null, Vector scale = null);
+
+        /// <summary>
+        /// Creates a pickup in this dimension.
+        /// </summary>
+        /// <param name="model">The model of the pickup</param>
+        /// <param name="pos">The position of the pickup</param>
+        /// <returns>The wrapped pickup object</returns>
+        Pickup CreatePickup(int model, Vector pos);
+
+        /// <summary>
+        /// Creates a 3D text in this dimension.
+        /// </summary>
+        /// <param name="text">The content of the 3D text</param>
+        /// <param name="size">The size of the 3D text</param>
+        /// <param name="pos">The position of the 3D text</param>
+        /// <param name="rot">The rotation of the 3D text</param>
+        /// <returns>The wrapped 3D text object</returns>
+        Text3D CreateText3D(string text, int size, Vector pos, Vector rot = null);
     }
 }

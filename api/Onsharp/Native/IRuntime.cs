@@ -103,8 +103,5 @@ namespace Onsharp.Native
         /// </summary>
         /// <returns>A list containing all packages names</returns>
         List<string> GetAllPackages();
-
-        int CreateObject(int model, double x, double y, double z, double rx, double ry,
-            double rz, double sx, double sy, double sz);
     }
 }

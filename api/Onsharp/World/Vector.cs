@@ -4,8 +4,6 @@ namespace Onsharp.World
 {
     /// <summary>
     /// This class represents an euclidean vector and gives some functionality.
-    /// <br/><br/>
-    /// <b>!IMPORTANT NOTE!</b><i> When setting an axis, the vector won't synced to the given entities. You need to set the complete vector, to sync the values with Onset.</i>
     /// </summary>
     public class Vector : IEquatable<Vector>
     {

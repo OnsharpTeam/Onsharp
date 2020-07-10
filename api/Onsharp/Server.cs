@@ -381,6 +381,21 @@ namespace Onsharp
             return _globalDim.CreateNPC(pos, heading);
         }
 
+        public Object CreateObject(int model, Vector pos, Vector rot = null, Vector scale = null)
+        {
+            return _globalDim.CreateObject(model, pos, rot, scale);
+        }
+
+        public Pickup CreatePickup(int model, Vector pos)
+        {
+            return _globalDim.CreatePickup(model, pos);
+        }
+
+        public Text3D CreateText3D(string text, int size, Vector pos, Vector rot = null)
+        {
+            return _globalDim.CreateText3D(text, size, pos, rot);
+        }
+
         internal object FireExportable(string funcName, object[] args)
         {
             lock (Exportables)
@@ -442,6 +457,32 @@ namespace Onsharp
             }
 
             return flag;
+        }
+
+        /// <summary>
+        /// Creates an entity which will fit the needed attach type.
+        /// </summary>
+        /// <param name="type">The attach type to which the entity needs to fit</param>
+        /// <param name="id">The id of the entity</param>
+        /// <returns>The wrapped entity which was attached or null if none was hit</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        internal Entity CreateAttachEntity(AttachType type, int id)
+        {
+            switch (type)
+            {
+                case AttachType.None:
+                    return null;
+                case AttachType.Player:
+                    return CreatePlayer(id);
+                case AttachType.Vehicle:
+                    return CreateVehicle(id);
+                case AttachType.Object:
+                    return CreateObject(id);
+                case AttachType.NPC:
+                    return CreateNPC(id);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
         }
 
         /// <summary>

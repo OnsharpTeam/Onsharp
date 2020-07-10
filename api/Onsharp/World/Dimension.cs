@@ -1,6 +1,7 @@
 ﻿using System;
 using Onsharp.Entities;
 using Onsharp.Native;
+using Object = Onsharp.Entities.Object;
 
 namespace Onsharp.World
 {
@@ -14,6 +15,55 @@ namespace Onsharp.World
         {
             _server = server;
             Value = value;
+        }
+
+        /// <summary>
+        /// Creates a 3D text in this dimension.
+        /// </summary>
+        /// <param name="text">The content of the 3D text</param>
+        /// <param name="size">The size of the 3D text</param>
+        /// <param name="pos">The position of the 3D text</param>
+        /// <param name="rot">The rotation of the 3D text</param>
+        /// <returns>The wrapped 3D text object</returns>
+        public Text3D CreateText3D(string text, int size, Vector pos, Vector rot = null)
+        {
+            rot ??= Vector.Empty;
+            Text3D text3d =
+                _server.CreateText3D(Onset.CreateText3D(text, size, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z));
+            text3d.InternalText = text;
+            text3d.SetDimension(Value);
+            return text3d;
+        }
+
+        /// <summary>
+        /// Creates a pickup in this dimension.
+        /// </summary>
+        /// <param name="model">The model of the pickup</param>
+        /// <param name="pos">The position of the pickup</param>
+        /// <returns>The wrapped pickup object</returns>
+        public Pickup CreatePickup(int model, Vector pos)
+        {
+            Pickup pickup = _server.CreatePickup(Onset.CreatePickup(model, pos.X, pos.Y, pos.Z));
+            pickup.SetDimension(Value);
+            return pickup;
+        }
+
+        /// <summary>
+        /// Creates an object in this dimension.
+        /// </summary>
+        /// <param name="model">The model of the object</param>
+        /// <param name="pos">The position of the object</param>
+        /// <param name="rot">The rotation of the object</param>
+        /// <param name="scale">The scale of the object</param>
+        /// <returns>The wrapped object</returns>
+        public Object CreateObject(int model, Vector pos, Vector rot = null, Vector scale = null)
+        {
+            rot ??= Vector.Empty;
+            scale ??= Vector.One;
+            Object obj = _server.CreateObject(Onset.CreateObject(model, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z,
+                scale.X, scale.Y, scale.Z));
+            obj.SetDimension(Value);
+            return obj;
         }
 
         /// <summary>

@@ -16,6 +16,7 @@ using Onsharp.Interop;
 using Onsharp.IO;
 using Onsharp.Plugins;
 using Onsharp.World;
+using Object = Onsharp.Entities.Object;
 using Timer = Onsharp.Threading.Timer;
 
 namespace Onsharp.Native
@@ -399,6 +400,23 @@ namespace Onsharp.Native
                 return null;
             }
         }
+
+        /// <summary>
+        /// Gets the attach type of the given entity. If the entity is invalid <see cref="AttachType.None"/> is returned.
+        /// </summary>
+        /// <param name="entity">The wanted attach target entity</param>
+        /// <returns>The associated attach type</returns>
+        internal static AttachType GetTypeByEntity(Entity entity)
+        {
+            return entity switch
+            {
+                Player _ => AttachType.Player,
+                Vehicle _ => AttachType.Vehicle,
+                Object _ => AttachType.Object,
+                NPC _ => AttachType.NPC,
+                _ => AttachType.None
+            };
+        }
         
         /// <summary>
         /// Converts the given string list to an object parameter fitting array.
@@ -641,12 +659,6 @@ namespace Onsharp.Native
             }
 
             return list;
-        }
-
-        public int CreateObject(int model, double x, double y, double z, double rx, double ry, double rz, double sx, double sy,
-            double sz)
-        {
-            return Onset.CreateObject(model, x, y, z, rx, ry, rz, sx, sy, sz);
         }
 
         [ConsoleCommand("help", "", "Shows all console commands and how to use them")]

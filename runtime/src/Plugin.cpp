@@ -110,6 +110,169 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED void SetText3DText(int text3d, const char* text)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(text3d, text);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetText3DText", &args);
+}
+
+EXPORTED void SetText3DVisibility(int text3d, int player, bool visible)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(text3d, player, visible);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetText3DVisibility", &args);
+}
+
+EXPORTED void SetText3DAttached(int text3d, int attachType, int entity, double x, double y, double z,
+                                double rx, double ry, double rz, const char* socketName)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(text3d, attachType, entity, x, y, z, rx, ry, rz, socketName);
+    Plugin::Get()->CallLuaFunction("SetText3DAttached", &args);
+}
+
+EXPORTED int CreateText3D(const char* text, int size, double x, double y, double z, double rx, double ry, double rz)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(text, size, x, y, z, rx, ry, rz);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("CreateText3D", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED void SetPickupVisibility(int pickup, int player, bool visible)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(pickup, player, visible);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetPickupVisibility", &args);
+}
+
+EXPORTED void GetPickupScale(int pickup, double* x, double* y, double* z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(pickup);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPickupScale", &args);
+    *x = returnValues.at(0).GetValue<double>();
+    *y = returnValues.at(1).GetValue<double>();
+    *z = returnValues.at(2).GetValue<double>();
+}
+
+EXPORTED void SetPickupScale(int pickup, double x, double y, double z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(pickup, x, y, z);
+    Plugin::Get()->CallLuaFunction("SetPickupScale", &args);
+}
+
+EXPORTED int CreatePickup(int model, double x, double y, double z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(model, x, y, z);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("CreatePickup", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED int GetObjectModel(int obj)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetObjectModel", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED void SetObjectModel(int obj, int model)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj, model);
+    Plugin::Get()->CallLuaFunction("SetObjectModel", &args);
+}
+
+EXPORTED void SetObjectRotateAxis(int obj, double x, double y, double z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj, x, y, z);
+    Plugin::Get()->CallLuaFunction("SetObjectRotateAxis", &args);
+}
+
+EXPORTED void StopObjectMove(int obj)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj);
+    Plugin::Get()->CallLuaFunction("StopObjectMove", &args);
+}
+
+EXPORTED void SetObjectMoveTo(int obj, double x, double y, double z, double speed)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj, x, y, z, speed);
+    Plugin::Get()->CallLuaFunction("SetObjectMoveTo", &args);
+}
+
+EXPORTED bool IsObjectMoving(int obj)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsObjectMoving", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void GetObjectAttachmentInfo(int obj, int* attachType, int* entity)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetObjectAttachmentInfo", &args);
+    *attachType = returnValues.at(0).GetValue<int>();
+    *entity = returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED bool IsObjectAttached(int obj)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsObjectAttached", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void SetObjectDetached(int obj)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj);
+    Plugin::Get()->CallLuaFunction("SetObjectDetached", &args);
+}
+
+EXPORTED void SetObjectAttached(int obj, int attachType, int entity, double x, double y, double z,
+                                double rx, double ry, double rz, const char* socketName)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj, attachType, entity, x, y, z, rx, ry, rz, socketName);
+    Plugin::Get()->CallLuaFunction("SetObjectAttached", &args);
+}
+
+EXPORTED void GetObjectScale(int obj, double* x, double* y, double* z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetObjectScale", &args);
+    *x = returnValues.at(0).GetValue<double>();
+    *y = returnValues.at(1).GetValue<double>();
+    *z = returnValues.at(2).GetValue<double>();
+}
+
+EXPORTED void SetObjectScale(int obj, double x, double y, double z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj, x, y, z);
+    Plugin::Get()->CallLuaFunction("SetObjectScale", &args);
+}
+
+EXPORTED void GetObjectRotation(int obj, double* x, double* y, double* z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetObjectRotation", &args);
+    *x = returnValues.at(0).GetValue<double>();
+    *y = returnValues.at(1).GetValue<double>();
+    *z = returnValues.at(2).GetValue<double>();
+}
+
+EXPORTED void SetObjectRotation(int obj, double x, double y, double z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj, x, y, z);
+    Plugin::Get()->CallLuaFunction("SetObjectRotation", &args);
+}
+
+EXPORTED void SetObjectStreamDistance(int obj, double distance)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(obj, distance);
+    Plugin::Get()->CallLuaFunction("SetObjectStreamDistance", &args);
+}
+
+EXPORTED int CreateObject(int model, double x, double y, double z, double rx, double ry, double rz, double sx, double sy, double sz)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(model, x, y, z, rx, ry, rz, sx, sy, sz);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("CreateObject", &argValues);
+    return returnValues.at(0).GetValue<int>();
+}
+
 EXPORTED void SetNPCFollowVehicle(int npc, int vehicle, double speed)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(npc, vehicle, speed);
@@ -360,13 +523,6 @@ EXPORTED int GetGameVersion()
 {
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetGameVersion", &argValues);
-    return returnValues.at(0).GetValue<int>();
-}
-
-EXPORTED int CreateObject(int model, double x, double y, double z, double rx, double ry, double rz, double sx, double sy, double sz)
-{
-    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(model, x, y, z, rx, ry, rz, sx, sy, sz);
-    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("CreateObject", &argValues);
     return returnValues.at(0).GetValue<int>();
 }
 

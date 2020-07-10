@@ -1,4 +1,5 @@
-﻿using Onsharp.Native;
+﻿using Onsharp.Enums;
+using Onsharp.Native;
 using Onsharp.World;
 
 namespace Onsharp.Entities

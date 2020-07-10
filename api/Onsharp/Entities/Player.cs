@@ -1,6 +1,7 @@
 ﻿using System;
 using Onsharp.Events;
 using Onsharp.Native;
+using Onsharp.World;
 
 namespace Onsharp.Entities
 {
@@ -54,6 +55,50 @@ namespace Onsharp.Entities
             }
             
             Onset.CallRemote(Id, name, argsArr, argsArr.Length);
+        }
+        
+        /// <summary>
+        /// Attaches the given object to the entity.
+        /// </summary>
+        /// <param name="obj">The object which gets attached</param>
+        /// <param name="pos">The relative position</param>
+        /// <param name="rot">The relative rotation</param>
+        /// <param name="socketName">The socket where to attach to. See https://dev.playonset.com/wiki/PlayerBones</param>
+        public void Attach(Object obj, Vector pos, Vector rot, string socketName = "")
+        {
+            obj.Attach(this, pos, rot, socketName);
+        }
+        
+        /// <summary>
+        /// Attaches the given object to the entity.
+        /// </summary>
+        /// <param name="text3d">The object which gets attached</param>
+        /// <param name="pos">The relative position</param>
+        /// <param name="rot">The relative rotation</param>
+        /// <param name="socketName">The socket where to attach to. See https://dev.playonset.com/wiki/PlayerBones</param>
+        public void Attach(Text3D text3d, Vector pos, Vector rot, string socketName = "")
+        {
+            text3d.Attach(this, pos, rot, socketName);
+        }
+
+        /// <summary>
+        /// Sets the visibility of the given pickup for the player.
+        /// </summary>
+        /// <param name="pickup">The pickup for which the visibility should be changed</param>
+        /// <param name="visible">True, if the pickup should be visible</param>
+        public void SetPickupVisibility(Pickup pickup, bool visible)
+        {
+            Onset.SetPickupVisibility(pickup.Id, Id, visible);
+        }
+
+        /// <summary>
+        /// Sets the visibility of the given 3D text for the player.
+        /// </summary>
+        /// <param name="text3d">The 3D text for which the visibility should be changed</param>
+        /// <param name="visible">True, if the pickup should be visible</param>
+        public void SetText3DVisibility(Text3D text3d, bool visible)
+        {
+            Onset.SetText3DVisibility(text3d.Id, Id, visible);
         }
     }
 }
