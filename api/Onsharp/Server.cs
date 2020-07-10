@@ -9,6 +9,7 @@ using Onsharp.Events;
 using Onsharp.Interop;
 using Onsharp.Native;
 using Onsharp.Plugins;
+using Onsharp.World;
 using Object = Onsharp.Entities.Object;
 
 namespace Onsharp
@@ -64,12 +65,17 @@ namespace Onsharp
         private List<RemoteEvent> RemoteEvents { get; }
        
         private List<LuaExport> Exportables { get; }
+        
+        private List<Dimension> Dimensions { get; }
 
         private readonly CommandManager _commandManager;
+        private readonly Dimension _globalDim;
 
         internal Server(PluginDomain owner)
         {
             Owner = owner;
+            _globalDim = new Dimension(this, 0);
+            Dimensions = new List<Dimension>();
             PlayerFactory = new PlayerFactory();
             PlayerPool = new EntityPool(null, CreatePlayer);
             DoorFactory = new DoorFactory();
@@ -88,6 +94,32 @@ namespace Onsharp
             RemoteEvents = new List<RemoteEvent>();
             Exportables = new List<LuaExport>();
             _commandManager = new CommandManager(this);
+        }
+
+        /// <summary>
+        /// Returns the wrapped dimension object of the given dimension value from the pool.
+        /// If no dimension object is found, a new one is getting created.
+        /// </summary>
+        /// <param name="id">The id of the dimension</param>
+        /// <returns>The wrapped dimension</returns>
+        internal Dimension CreateDimension(uint id)
+        {
+            if (id == 0) return _globalDim;
+            lock (Dimensions)
+            {
+                for (int i = Dimensions.Count - 1; i >= 0; i--)
+                {
+                    Dimension dimension = Dimensions[i];
+                    if (dimension.Value == id)
+                    {
+                        return dimension;
+                    }
+                }
+
+                Dimension newDim = new Dimension(this, id);
+                Dimensions.Add(newDim);
+                return newDim;
+            }
         }
 
         public void OverrideEntityFactory<T>(IEntityFactory<T> factory) where T : Entity

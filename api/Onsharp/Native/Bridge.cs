@@ -606,7 +606,20 @@ namespace Onsharp.Native
 
         public List<string> GetAllPackages()
         {
-            
+            LuaTable table = new LuaTable(Onset.GetAllPackages());
+            List<string> list = new List<string>();
+            foreach (object key in table.Keys)
+            {
+                list.Add(table[key] as string);
+            }
+
+            return list;
+        }
+
+        public int CreateObject(int model, double x, double y, double z, double rx, double ry, double rz, double sx, double sy,
+            double sz)
+        {
+            return Onset.CreateObject(model, x, y, z, rx, ry, rz, sx, sy, sz);
         }
 
         [ConsoleCommand("help", "", "Shows all console commands and how to use them")]

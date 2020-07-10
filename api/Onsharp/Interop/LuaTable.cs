@@ -48,6 +48,11 @@ namespace Onsharp.Interop
             NVal = new NativeValue(Onset.CreateNValueTable());
         }
 
+        internal LuaTable(IntPtr ptr)
+        {
+            NVal = new NativeValue(ptr);
+        }
+
         /// <summary>
         /// Checks if the given key is present in this table.
         /// </summary>

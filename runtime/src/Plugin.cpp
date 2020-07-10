@@ -109,6 +109,13 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED int CreateObject(int model, double x, double y, double z, double rx, double ry, double rz, double sx, double sy, double sz)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(model, x, y, z, rx, ry, rz, sx, sy, sz);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("CreateObject", &argValues);
+    return returnValues.at(0).GetValue<int>();
+}
+
 EXPORTED Plugin::NValue* GetAllPackages()
 {
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList();

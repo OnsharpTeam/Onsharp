@@ -12,7 +12,11 @@ namespace Onsharp.Native
     internal static class Onset
     {
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr IsPackageStarted([MarshalAs(UnmanagedType.LPStr)] string name);
+        internal static extern int CreateObject(int model, double x, double y, double z, double rx, double ry,
+            double rz, double sx, double sy, double sz);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr GetAllPackages();
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool IsPackageStarted([MarshalAs(UnmanagedType.LPStr)] string name);

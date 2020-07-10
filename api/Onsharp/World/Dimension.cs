@@ -4,18 +4,21 @@ namespace Onsharp.World
 {
     public class Dimension : IEquatable<Dimension>
     {
-        private readonly uint _value;
+        private readonly Server _server;
+        
+        internal uint Value { get; }
 
-        internal Dimension(uint value)
+        internal Dimension(Server server, uint value)
         {
-            _value = value;
+            _server = server;
+            Value = value;
         }
 
         public bool Equals(Dimension other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return _value == other._value;
+            return Value == other.Value;
         }
 
         public override bool Equals(object obj)
@@ -27,7 +30,7 @@ namespace Onsharp.World
 
         public override int GetHashCode()
         {
-            return (int) _value;
+            return (int) Value;
         }
 
         public static bool operator ==(Dimension left, Dimension right)

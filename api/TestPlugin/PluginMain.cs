@@ -4,6 +4,7 @@ using Onsharp.Entities;
 using Onsharp.Events;
 using Onsharp.Plugins;
 using Onsharp.Updater;
+using Onsharp.World;
 
 namespace TestPlugin
 {
@@ -49,6 +50,13 @@ namespace TestPlugin
         public void OnHelloCommand(Player player)
         {
             player.SendMessage("Hallo, " + player.Name + "!");
+        }
+
+        [Command("obj")]
+        public void OnObjCommand(Player player)
+        {
+            Vector pos = player.GetPosition();
+            Runtime.CreateObject(1, pos.X, pos.Y, pos.Z, 0, 0, 0, 1, 1, 1);
         }
     }
 }
