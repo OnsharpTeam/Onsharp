@@ -72,7 +72,7 @@ namespace Onsharp.Interop
         /// <summary>
         /// Adds the given key and value to the table.
         /// </summary>
-        /// <param name="key">The key to be added</param>
+        /// <param name="key">The key to be added. If the key is an index, start at 1 because LUA can't work with indexes at 0</param>
         /// <param name="val">The value to be added</param>
         public void Add(object key, object val)
         {
