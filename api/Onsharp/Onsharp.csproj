@@ -4,6 +4,24 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Company>OnsharpTeam</Company>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <FileVersion>1.0.0</FileVersion>
+
+        <PackageId>Onsharp</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>OnsharpTeam</Authors>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>Onsharp</Title>
+        <Description>Onsharp is C# wrapper for the Onset Game. </Description>
+        <Copyright>(c) 2020 DasDarki &amp; OnsharpTeam.</Copyright>
+        <PackageProjectUrl>https://github.com/OnsharpTeam/Onsharp</PackageProjectUrl>
+        <PackageLicenseUrl>https://raw.githubusercontent.com/OnsharpTeam/Onsharp/master/LICENSE</PackageLicenseUrl>
+        <PackageIconUrl>https://avatars1.githubusercontent.com/u/67421937?s=200&amp;v=4</PackageIconUrl>
+        <RepositoryUrl>https://github.com/OnsharpTeam/Onsharp.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>Wrapper </PackageTags>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
 
     <ItemGroup>
