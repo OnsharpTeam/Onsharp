@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Onsharp.Interop;
 
 namespace Onsharp.Native
 {
@@ -33,6 +34,8 @@ namespace Onsharp.Native
                     return Onset.GetNInt(NativePtr);
                 case Type.Boolean:
                     return Onset.GetNBoolean(NativePtr);
+                case Type.Table:
+                    return new LuaTable(this);
                 default:
                     return null;
             }

@@ -24,6 +24,7 @@ namespace TestPlugin
             Logger.SetDebug(config.IsDebug);
             Logger.Debug("Debug mode is {STATE}!", "enabled");
             Server.OverrideEntityFactory(new MyPlayerFactory());
+            
             Runtime.DisableEntityPoolRefreshing();
         }
 
@@ -75,9 +76,12 @@ namespace TestPlugin
             Vehicle vehicle = Server.CreateVehicle(model, player.GetPosition());
             vehicle.SetPassenger(player, 0);
         }
-        
-        [LuaExport("justName")]
-        public void 
+
+        [LuaExport("add")]
+        public int Add(int i1, int i2)
+        {
+            return i1 + i2;
+        }
 
         [ConsoleCommand("name", "usage: name <Param1>", "Does something")]
         public void OnConsoleCommand(string param1)
