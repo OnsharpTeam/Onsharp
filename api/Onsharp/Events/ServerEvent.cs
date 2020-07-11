@@ -41,6 +41,7 @@ namespace Onsharp.Events
         public ServerEvent(string name)
         {
             Specification = name;
+            Type = EventType.Custom;
         }
 
         /// <summary>

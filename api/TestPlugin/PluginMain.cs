@@ -4,6 +4,7 @@ using Onsharp.Commands;
 using Onsharp.Entities;
 using Onsharp.Enums;
 using Onsharp.Events;
+using Onsharp.Interop;
 using Onsharp.Plugins;
 using Onsharp.Updater;
 using Onsharp.World;
@@ -65,7 +66,6 @@ namespace TestPlugin
                 Vector pos = player.GetPosition();
                 Server.CreateObject(1, pos);
                 player.SendMessage("Working!");
-                Runtime.RegisterConverter<>();
             });
         }
         
@@ -74,6 +74,15 @@ namespace TestPlugin
         {
             Vehicle vehicle = Server.CreateVehicle(model, player.GetPosition());
             vehicle.SetPassenger(player, 0);
-        } 
+        }
+        
+        [LuaExport("justName")]
+        public void 
+
+        [ConsoleCommand("name", "usage: name <Param1>", "Does something")]
+        public void OnConsoleCommand(string param1)
+        {
+            // Does something
+        }
     }
 }

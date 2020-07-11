@@ -2,7 +2,7 @@
 
 namespace TestPlugin
 {
-    [Config("myconfig")]
+    [Config("myconfig", "")]
     public class MyConfig
     {
         public bool IsDebug { get; set; } = false;
