@@ -110,16 +110,273 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED void EnableVehicleBackfire(int vehicle, bool enable)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, enable);
+    Plugin::Get()->CallLuaFunction("EnableVehicleBackfire", &args);
+}
+
+EXPORTED void AttachVehicleNitro(int vehicle, bool attach)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, attach);
+    Plugin::Get()->CallLuaFunction("AttachVehicleNitro", &args);
+}
+
+EXPORTED bool SetVehicleDamage(int vehicle, byte index, float damage)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, index, damage);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetVehicleDamage", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED bool GetVehicleLightEnabled(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleLightEnabled", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void SetVehicleLightEnabled(int vehicle, bool enabled)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, enabled);
+    Plugin::Get()->CallLuaFunction("SetVehicleLightEnabled", &args);
+}
+
+EXPORTED bool GetVehicleEngineState(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleEngineState", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void StopVehicleEngine(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Plugin::Get()->CallLuaFunction("StopVehicleEngine", &args);
+}
+
+EXPORTED void StartVehicleEngine(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Plugin::Get()->CallLuaFunction("StartVehicleEngine", &args);
+}
+
+EXPORTED void SetVehicleTrunkRatio(int vehicle, double ratio)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, ratio);
+    Plugin::Get()->CallLuaFunction("SetVehicleTrunkRatio", &args);
+}
+
+EXPORTED double GetVehicleTrunkRatio(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleTrunkRatio", &args);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED void SetVehicleHoodRatio(int vehicle, double ratio)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, ratio);
+    Plugin::Get()->CallLuaFunction("SetVehicleHoodRatio", &args);
+}
+
+EXPORTED double GetVehicleHoodRatio(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleHoodRatio", &args);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED int GetVehicleGear(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleGear", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED void SetVehicleAngularVelocity(int vehicle, double x, double y, double z, bool reset)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, x, y, z, reset);
+    Plugin::Get()->CallLuaFunction("SetVehicleAngularVelocity", &args);
+}
+
+EXPORTED void SetVehicleLinearVelocity(int vehicle, double x, double y, double z, bool reset)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, x, y, z, reset);
+    Plugin::Get()->CallLuaFunction("SetVehicleLinearVelocity", &args);
+}
+
+EXPORTED Plugin::NValue* GetVehicleColor(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleColor", &args);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED bool SetVehicleColor(int vehicle, const char* hexColor)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, hexColor);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetVehicleColor", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED int GetVehicleNumberOfSeats(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleNumberOfSeats", &args);
+    Lua::LuaValue val = returnValues.at(0);
+    if(val.IsBoolean()) return 0;
+    return val.GetValue<int>();
+}
+
+EXPORTED int GetVehiclePassenger(int vehicle, int seat)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, seat);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehiclePassenger", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED int GetVehicleDriver(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleDriver", &args);
+    Lua::LuaValue val = returnValues.at(0);
+    if(val.IsBoolean()) return 0;
+    return val.GetValue<int>();
+}
+
+EXPORTED void GetVehicleVelocity(int vehicle, double* x, double* y, double* z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleVelocity", &args);
+    *x = returnValues.at(0).GetValue<double>();
+    *y = returnValues.at(1).GetValue<double>();
+    *z = returnValues.at(2).GetValue<double>();
+}
+
+EXPORTED double GetVehicleHealth(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleHealth", &args);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED void SetVehicleHealth(int vehicle, double health)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, health);
+    Plugin::Get()->CallLuaFunction("SetVehicleHealth", &args);
+}
+
+EXPORTED double GetVehicleHeading(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleHeading", &args);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED void SetVehicleHeading(int vehicle, double heading)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, heading);
+    Plugin::Get()->CallLuaFunction("SetVehicleHeading", &args);
+}
+
+EXPORTED void GetVehicleRotation(int vehicle, double* x, double* y, double* z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleRotation", &args);
+    *x = returnValues.at(0).GetValue<double>();
+    *y = returnValues.at(1).GetValue<double>();
+    *z = returnValues.at(2).GetValue<double>();
+}
+
+EXPORTED void SetVehicleRotation(int vehicle, double x, double y, double z)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, x, y, z);
+    Plugin::Get()->CallLuaFunction("SetVehicleRotation", &args);
+}
+
+EXPORTED bool SetVehicleRespawnParams(int vehicle, bool enableRespawn, long respawnTime, bool repairOnRespawn)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, enableRespawn, respawnTime, repairOnRespawn);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetVehicleRespawnParams", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void GetColorValuesFromHex(const char* hex, int* red, int* green, int* blue, int* alpha)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(hex);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("HexToRGBA", &args);
+    *red = returnValues.at(0).GetValue<int>();
+    *green = returnValues.at(1).GetValue<int>();
+    *blue = returnValues.at(2).GetValue<int>();
+    *alpha = returnValues.at(3).GetValue<int>();
+}
+
+EXPORTED Plugin::NValue* GetColorHex(int red, int green, int blue, int alpha, bool withAlpha)
+{
+    if(withAlpha)
+    {
+        Lua::LuaArgs_t args = Lua::BuildArgumentList(red, green, blue, alpha);
+        Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("RGBA", &args);
+        return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+    }
+
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(red, green, blue);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("RGB", &args);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED Plugin::NValue* GetVehicleModelName(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleModelName", &args);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED int GetVehicleModel(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleModel", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED void SetVehicleLicensePlate(int vehicle, const char* text)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, text);
+    Plugin::Get()->CallLuaFunction("SetVehicleLicensePlate", &args);
+}
+
+EXPORTED Plugin::NValue* GetVehicleLicensePlate(int vehicle)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleLicensePlate", &args);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED float GetVehicleDamage(int vehicle, byte index)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, index);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleDamage", &args);
+    return returnValues.at(0).GetValue<float>();
+}
+
+EXPORTED int CreateVehicle(int model, double x, double y, double z, double heading)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(model, x, y, z, heading);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("CreateVehicle", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
 EXPORTED void SetText3DText(int text3d, const char* text)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(text3d, text);
-    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetText3DText", &args);
+    Plugin::Get()->CallLuaFunction("SetText3DText", &args);
 }
 
 EXPORTED void SetText3DVisibility(int text3d, int player, bool visible)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(text3d, player, visible);
-    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetText3DVisibility", &args);
+    Plugin::Get()->CallLuaFunction("SetText3DVisibility", &args);
 }
 
 EXPORTED void SetText3DAttached(int text3d, int attachType, int entity, double x, double y, double z,
@@ -139,7 +396,7 @@ EXPORTED int CreateText3D(const char* text, int size, double x, double y, double
 EXPORTED void SetPickupVisibility(int pickup, int player, bool visible)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(pickup, player, visible);
-    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetPickupVisibility", &args);
+    Plugin::Get()->CallLuaFunction("SetPickupVisibility", &args);
 }
 
 EXPORTED void GetPickupScale(int pickup, double* x, double* y, double* z)

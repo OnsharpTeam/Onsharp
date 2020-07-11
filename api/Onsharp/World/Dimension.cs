@@ -1,5 +1,6 @@
 ﻿using System;
 using Onsharp.Entities;
+using Onsharp.Enums;
 using Onsharp.Native;
 using Object = Onsharp.Entities.Object;
 
@@ -15,6 +16,20 @@ namespace Onsharp.World
         {
             _server = server;
             Value = value;
+        }
+
+        /// <summary>
+        /// Creates a vehicle in this dimension.
+        /// </summary>
+        /// <param name="model">The mode of the vehicle</param>
+        /// <param name="pos">The position of the vehicle</param>
+        /// <param name="heading">The heading of the vehicle</param>
+        /// <returns>The wrapped vehicle object</returns>
+        public Vehicle CreateVehicle(VehicleModel model, Vector pos, double heading = 0)
+        {
+            Vehicle vehicle = _server.CreateVehicle(Onset.CreateVehicle((int) model, pos.X, pos.Y, pos.Z, heading));
+            vehicle.SetDimension(Value);
+            return vehicle;
         }
 
         /// <summary>
@@ -72,7 +87,7 @@ namespace Onsharp.World
         /// <param name="pos">The position of the NPC</param>
         /// <param name="heading">The yaw rotation of the NPC</param>
         /// <returns>The wrapped NPC object</returns>
-        public NPC CreateNPC(Vector pos, double heading)
+        public NPC CreateNPC(Vector pos, double heading = 0)
         {
             NPC npc = _server.CreateNPC(Onset.CreateNPC(pos.X, pos.Y, pos.Z, heading));
             npc.SetDimension(Value);

@@ -396,6 +396,11 @@ namespace Onsharp
             return _globalDim.CreateText3D(text, size, pos, rot);
         }
 
+        public Vehicle CreateVehicle(VehicleModel model, Vector pos, double heading = 0)
+        {
+            return _globalDim.CreateVehicle(model, pos, heading);
+        }
+
         internal object FireExportable(string funcName, object[] args)
         {
             lock (Exportables)

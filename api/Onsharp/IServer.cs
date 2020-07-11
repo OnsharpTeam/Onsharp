@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Onsharp.Entities;
 using Onsharp.Entities.Factory;
+using Onsharp.Enums;
 using Onsharp.Interop;
 using Onsharp.Native;
 using Onsharp.World;
@@ -218,5 +219,14 @@ namespace Onsharp
         /// <param name="rot">The rotation of the 3D text</param>
         /// <returns>The wrapped 3D text object</returns>
         Text3D CreateText3D(string text, int size, Vector pos, Vector rot = null);
+
+        /// <summary>
+        /// Creates a vehicle in this dimension.
+        /// </summary>
+        /// <param name="model">The mode of the vehicle</param>
+        /// <param name="pos">The position of the vehicle</param>
+        /// <param name="heading">The heading of the vehicle</param>
+        /// <returns>The wrapped vehicle object</returns>
+        Vehicle CreateVehicle(VehicleModel model, Vector pos, double heading = 0);
     }
 }
