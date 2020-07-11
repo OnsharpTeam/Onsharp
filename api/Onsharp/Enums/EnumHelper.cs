@@ -8,6 +8,7 @@ namespace Onsharp.Enums
     public static class EnumHelper
     {
         private static readonly Type AnimationType = typeof(Animation);
+        private static readonly Type WeaponStatType = typeof(WeaponStat);
 
         /// <summary>
         /// Returns the name of the given animation, or null.
@@ -17,6 +18,16 @@ namespace Onsharp.Enums
         public static string GetName(this Animation animation)
         {
             return Enum.GetName(AnimationType, animation)?.ToUpper();
+        }
+
+        /// <summary>
+        /// Returns the name of the given weapon stat, or null.
+        /// </summary>
+        /// <param name="stat">The weapon stat</param>
+        /// <returns>The weapon stat name or null if it fails</returns>
+        public static string GetName(this WeaponStat stat)
+        {
+            return Enum.GetName(WeaponStatType, stat)?.ToUpper();
         }
     }
 }

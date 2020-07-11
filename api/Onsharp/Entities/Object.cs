@@ -155,6 +155,16 @@ namespace Onsharp.Entities
         }
 
         /// <summary>
+        /// Checks if the object is streamed in for the player.
+        /// </summary>
+        /// <param name="player">The player</param>
+        /// <returns>True, if the object is streamed in for the player</returns>
+        public bool IsStreamedFor(Player player)
+        {
+            return Onset.IsStreamedIn(EntityName, player.Id, Id);
+        }
+
+        /// <summary>
         /// Stops the object from moving.
         /// </summary>
         public void StopMoving()

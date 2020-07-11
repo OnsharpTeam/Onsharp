@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using Onsharp.Native;
 
-namespace Onsharp
+namespace Onsharp.Utils
 {
     /// <summary>
     /// An utility class for color converting.

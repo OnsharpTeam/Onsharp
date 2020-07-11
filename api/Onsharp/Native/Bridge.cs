@@ -417,6 +417,38 @@ namespace Onsharp.Native
                 _ => AttachType.None
             };
         }
+
+        /// <summary>
+        /// Returns the network stats from the wanted source.
+        /// </summary>
+        /// <param name="source">The source can either be 0 and less, so its the server, or greater 0 than its a player</param>
+        /// <returns>The current network stats</returns>
+        internal static NetworkStats GetNetworkStats(int source)
+        {
+            int totalPacketLoss = 0;
+            int lastSecondPacketLoss = 0;
+            int messagesInResendBuffer = 0;
+            int bytesInResendBuffer = 0;
+            int bytesSend = 0;
+            int bytesReceived = 0;
+            int bytesResend = 0;
+            int totalBytesSend = 0;
+            int totalBytesReceived = 0;
+            bool isLimitedByCongestionControl = false;
+            bool isLimitedByOutgoingBandwidthLimit = false;
+            Onset.GetNetworkStats(source, ref totalPacketLoss, ref lastSecondPacketLoss,
+                ref messagesInResendBuffer,
+                ref bytesInResendBuffer, ref bytesSend, ref bytesReceived, ref bytesResend,
+                ref totalBytesSend,
+                ref totalBytesReceived, ref isLimitedByCongestionControl,
+                ref isLimitedByOutgoingBandwidthLimit);
+            return new NetworkStats(totalPacketLoss, lastSecondPacketLoss,
+                messagesInResendBuffer,
+                bytesInResendBuffer, bytesSend, bytesReceived, bytesResend,
+                totalBytesSend,
+                totalBytesReceived, isLimitedByCongestionControl,
+                isLimitedByOutgoingBandwidthLimit);
+        }
         
         /// <summary>
         /// Converts the given string list to an object parameter fitting array.

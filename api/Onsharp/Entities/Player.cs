@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using Onsharp.Enums;
 using Onsharp.Events;
 using Onsharp.Native;
+using Onsharp.Utils;
 using Onsharp.World;
 
 namespace Onsharp.Entities
@@ -17,12 +20,190 @@ namespace Onsharp.Entities
         }
 
         /// <summary>
-        /// The steam of the player. Only available after the <see cref="EventType.PlayerSteamAuth"/> was called.
-        ///
-        /// NOT IMPLEMENTED YET!
+        /// The current network stats of the player.
         /// </summary>
-        public ulong SteamID { get; }
+        public NetworkStats NetworkStats => Bridge.GetNetworkStats(Id);
+
+        /// <summary>
+        /// A list containing all vehicles that are currently streamed for the player.
+        /// </summary>
+        public List<Vehicle> StreamedVehicles => Owner.Vehicles.SelectAll(vehicle => vehicle.IsStreamedFor(this));
+
+        /// <summary>
+        /// The steam of the player. Only available after the <see cref="EventType.PlayerSteamAuth"/> was called.
+        /// </summary>
+        public long SteamID => Onset.GetPlayerSteamId(Id);
+
+        /// <summary>
+        /// Whether the voice is enabled and the player can talk in voice chat, or not.
+        /// </summary>
+        public bool IsVoiceEnabled
+        {
+            get => Onset.IsPlayerVoiceEnabled(Id);
+            set => Onset.SetPlayerVoiceEnabled(Id, value);
+        }
+
+        /// <summary>
+        /// Whether the player is talking or not.
+        /// </summary>
+        public bool IsTalking => Onset.IsPlayerTalking(Id);
+
+        /// <summary>
+        /// The state of the player.
+        /// </summary>
+        public PlayerState State => (PlayerState) Onset.GetPlayerState(Id);
+
+        /// <summary>
+        /// The movement mode of the player.
+        /// </summary>
+        public MoveMode MoveMode => (MoveMode) Onset.GetPlayerMovementMode(Id);
+
+        /// <summary>
+        /// The current movement speed of the player.
+        /// </summary>
+        public double Speed => Onset.GetPlayerMovementSpeed(Id);
+
+        /// <summary>
+        /// Whether the player is aiming with a weapon or not.
+        /// </summary>
+        public bool IsAiming => Onset.IsPlayerAiming(Id);
+
+        /// <summary>
+        /// Whether the player is reloading a weapon or not.
+        /// </summary>
+        public bool IsReloading => Onset.IsPlayerReloading(Id);
+
+        /// <summary>
+        /// The vehicle the player is currently sitting in, null if he is not in a vehicle currently.
+        /// </summary>
+        public Vehicle Vehicle
+        {
+            get
+            {
+                int vehicleId = Onset.GetPlayerVehicle(Id);
+                if (vehicleId <= 0) return null;
+                return Owner.CreateVehicle(vehicleId);
+            }
+        }
+
+        /// <summary>
+        /// Whether the player is in a vehicle or not.
+        /// </summary>
+        public bool IsInVehicle => Onset.GetPlayerVehicle(Id) > 0;
+
+        /// <summary>
+        /// The seat the player is currently sitting on, if the player is sitting in a vehicle.
+        /// </summary>
+        public int VehicleSeat => Onset.GetPlayerVehicleSeat(Id);
+
+        /// <summary>
+        /// The slot the player has currently selected.
+        /// </summary>
+        public int SelectedSlot => Onset.GetPlayerEquippedWeaponSlot(Id);
+
+        /// <summary>
+        /// Whether the player is dead or not.
+        /// </summary>
+        public bool IsDead => Onset.IsPlayerDead(Id);
+
+        /// <summary>
+        /// The yaw rotation of the player.
+        /// </summary>
+        public double Heading
+        {
+            get => Onset.GetPlayerHeading(Id);
+            set => Onset.SetPlayerHeading(Id, value);
+        }
+
+        /// <summary>
+        /// The health of the player.
+        /// </summary>
+        public double Health
+        {
+            get => Onset.GetPlayerHealth(Id);
+            set => Onset.SetPlayerHealth(Id, value);
+        }
+
+        /// <summary>
+        /// The armor of the player.
+        /// </summary>
+        public double Armor
+        {
+            get => Onset.GetPlayerArmor(Id);
+            set => Onset.SetPlayerArmor(Id, value);
+        }
+
+        /// <summary>
+        /// The head size of the player.
+        /// </summary>
+        public float HeadSize
+        {
+            get => Onset.GetPlayerHeadSize(Id);
+            set
+            {
+                if(value < 0 || value > 3)
+                    throw new ArgumentException("The slot cannot be less than 0 and greater than 3!");
+                Onset.SetPlayerHeadSize(Id, value);
+            }
+        }
+
+        /// <summary>
+        /// The respawn time of the player in milliseconds.
+        /// </summary>
+        public long RespawnTime
+        {
+            get => Onset.GetPlayerRespawnTime(Id);
+            set => Onset.SetPlayerRespawnTime(Id, value);
+        }
+
+        /// <summary>
+        /// The internet IP of the player.
+        /// </summary>
+        public string IP => Bridge.PtrToString(Onset.GetPlayerIP(Id));
+
+        /// <summary>
+        /// The ping of the player.
+        /// </summary>
+        public int Ping => Onset.GetPlayerPing(Id);
+
+        /// <summary>
+        /// The game version of the player.
+        /// </summary>
+        public int GameVersion => Onset.GetPlayerGameVersion(Id);
         
+        /// <summary>
+        /// The player's game locale.
+        /// </summary>
+        public string Locale => Bridge.PtrToString(Onset.GetPlayerLocale(Id));
+        
+        /// <summary>
+        /// The player's system's GUID.
+        /// </summary>
+        public string GUID => Bridge.PtrToString(Onset.GetPlayerGUID(Id));
+ 
+        /// <summary>
+        /// The status of the player in association of the given voice channel.
+        /// <br/><see cref="IsInVoiceChannel"/>
+        /// <br/><see cref="AddToVoiceChannel"/>
+        /// <br/><see cref="RemoveFromVoiceChannel"/>
+        /// </summary>
+        /// <param name="voiceChannel">The wanted voice channel</param>
+        public bool this[int voiceChannel]
+        {
+            get => IsInVoiceChannel(voiceChannel);
+            set
+            {
+                if (value)
+                {
+                    AddToVoiceChannel(voiceChannel);
+                }
+                else
+                {
+                    RemoveFromVoiceChannel(voiceChannel);
+                }
+            }
+        }
+
         public Player(int id) : base(id, "Player")
         {
         }
@@ -99,6 +280,244 @@ namespace Onsharp.Entities
         public void SetText3DVisibility(Text3D text3d, bool visible)
         {
             Onset.SetText3DVisibility(text3d.Id, Id, visible);
+        }
+
+        /// <summary>
+        /// Checks if the player is streamed in for the given player.
+        /// </summary>
+        /// <param name="player">The given player</param>
+        /// <returns>True, if the player is streamed in for the given player</returns>
+        public bool IsStreamedFor(Player player)
+        {
+            return Onset.IsStreamedIn(EntityName, player.Id, Id);
+        }
+
+        /// <summary>
+        /// Checks if the given player is streamed in for the player.
+        /// </summary>
+        /// <param name="player">The given player</param>
+        /// <returns>True, if the given player is streamed in for the player</returns>
+        public bool IsStreamedIn(Player player)
+        {
+            return player.IsStreamedFor(this);
+        }
+
+        /// <summary>
+        /// Checks if the given vehicle is streamed in for the player.
+        /// </summary>
+        /// <param name="vehicle">The given vehicle</param>
+        /// <returns>True, if the given vehicle is streamed in for the player</returns>
+        public bool IsStreamedIn(Vehicle vehicle)
+        {
+            return vehicle.IsStreamedFor(this);
+        }
+
+        /// <summary>
+        /// Checks if the given object is streamed in for the player.
+        /// </summary>
+        /// <param name="obj">The given object</param>
+        /// <returns>True, if the given object is streamed in for the player</returns>
+        public bool IsStreamedIn(Object obj)
+        {
+            return obj.IsStreamedFor(this);
+        }
+
+        /// <summary>
+        /// Checks if the given NPC is streamed in for the player.
+        /// </summary>
+        /// <param name="npc">The given NPC</param>
+        /// <returns>True, if the given NPC is streamed in for the player</returns>
+        public bool IsStreamedIn(NPC npc)
+        {
+            return npc.IsStreamedFor(this);
+        }
+
+        /// <summary>
+        /// Sets the spawn location of the player.
+        /// </summary>
+        /// <param name="pos">The location to be set to</param>
+        /// <param name="heading">The yaw rotation to be set to</param>
+        public void SetSpawnLocation(Vector pos, double heading = 0)
+        {
+            Onset.SetPlayerSpawnLocation(Id, pos.X, pos.Y, pos.Z, heading);
+        }
+
+        /// <summary>
+        /// Enables the given voice channel for the player.
+        /// </summary>
+        /// <param name="channel">The voice channel to be changed</param>
+        public void AddToVoiceChannel(int channel)
+        {
+            Onset.SetPlayerVoiceChannel(Id, channel, true);
+        }
+
+        /// <summary>
+        /// Disables the given voice channel for the player.
+        /// </summary>
+        /// <param name="channel">The voice channel to be changed</param>
+        public void RemoveFromVoiceChannel(int channel)
+        {
+            Onset.SetPlayerVoiceChannel(Id, channel, false);
+        }
+
+        /// <summary>
+        /// Checks if the player is in the given voice channel.
+        /// </summary>
+        /// <param name="channel">The voice channel to be checked</param>
+        /// <returns>True, if the player is in the given voice channel</returns>
+        public bool IsInVoiceChannel(int channel)
+        {
+            return Onset.IsPlayerVoiceChannel(Id, channel);
+        }
+
+        /// <summary>
+        /// Sets the dimension of the player's voice.
+        /// </summary>
+        /// <param name="dim">The dimension to be set to</param>
+        /// <returns>True on success</returns>
+        public bool SetVoiceDimension(uint dim)
+        {
+            return Onset.SetPlayerVoiceDimension(Id, dim);
+        }
+
+        /// <summary>
+        /// Sets the player into the given vehicle on the given seat.
+        /// </summary>
+        /// <param name="vehicle">The vehicle to be entered</param>
+        /// <param name="seat">The wanted seat</param>
+        public void SetIntoVehicle(Vehicle vehicle, int seat = 0)
+        {
+            Onset.SetPlayerInVehicle(Id, vehicle.Id, seat);
+        }
+
+        /// <summary>
+        /// Forces the player to leave the current vehicle, if he is sitting in one.
+        /// </summary>
+        public void LeaveVehicle()
+        {
+            Onset.RemovePlayerFromVehicle(Id);
+        }
+
+        /// <summary>
+        /// Sets the wanted weapon stat for the player for the given weapon.
+        /// </summary>
+        /// <param name="weapon">The given weapon</param>
+        /// <param name="stat">The stat to be changed</param>
+        /// <param name="value">The value to which it will be changed</param>
+        /// <returns>True on success</returns>
+        public bool SetWeaponStat(Weapon weapon, WeaponStat stat, double value)
+        {
+            return Onset.SetPlayerWeaponStat(Id, (int) weapon, stat.GetName(), value);
+        }
+
+        /// <summary>
+        /// Gives the player the given weapon on the given slot.
+        /// </summary>
+        /// <param name="slot">The slot to be set</param>
+        /// <param name="weapon">The weapon to be set to</param>
+        /// <param name="ammo">The ammo of the weapon</param>
+        /// <param name="equip">True, if the slot should be equipped automatically</param>
+        /// <param name="loaded">True, if the weapon should be loaded automatically</param>
+        /// <returns>True on success</returns>
+        /// <exception cref="ArgumentException">When the slot is out of range (between 1 and 3)</exception>
+        public bool GiveWeapon(int slot, Weapon weapon, int ammo = 1, bool equip = true, bool loaded = true)
+        {
+            if(slot < 1 || slot > 3)
+                throw new ArgumentException("The slot cannot be less than 1 and greater than 3!");
+            return Onset.SetPlayerWeapon(Id, (int) weapon, ammo, equip, slot, loaded);
+        }
+
+        /// <summary>
+        /// Gets the currently equipped weapon on the given slot of the player.
+        /// </summary>
+        /// <param name="slot">The wanted slot</param>
+        /// <returns>The equipped weapon</returns>
+        /// <exception cref="ArgumentException">When the slot is out of range (between 1 and 3)</exception>
+        public Weapon GetCurrentWeapon(int slot)
+        {
+            if(slot < 1 || slot > 3)
+                throw new ArgumentException("The slot cannot be less than 1 and greater than 3!");
+            return (Weapon) Onset.GetPlayerWeapon(Id, slot);
+        }
+
+        /// <summary>
+        /// Changes the selected slot of the player to the given slot.
+        /// </summary>
+        /// <param name="slot">The slot to be changed to</param>
+        /// <returns>True on success</returns>
+        /// <exception cref="ArgumentException">When the slot is out of range (between 1 and 3)</exception>
+        public bool ChangeSelectedSlot(int slot)
+        {
+            if(slot < 1 || slot > 3)
+                throw new ArgumentException("The slot cannot be less than 1 and greater than 3!");
+            return Onset.EquipPlayerWeaponSlot(Id, slot);
+        }
+
+        /// <summary>
+        /// Enables the spectate mode.
+        /// </summary>
+        public void EnableSpectate()
+        {
+            Onset.SetPlayerSpectate(Id, true);
+        }
+
+        /// <summary>
+        /// Disables the spectate mode.
+        /// </summary>
+        public void DisableSpectate()
+        {
+            Onset.SetPlayerSpectate(Id, false);
+        }
+
+        /// <summary>
+        /// Kicks the player with the given reason.
+        /// </summary>
+        /// <param name="reason">The kick message</param>
+        public void Kick(string reason = "")
+        {
+            Onset.KickPlayer(Id, reason);
+        }
+
+        /// <summary>
+        /// Plays an animation for the player.
+        /// </summary>
+        /// <param name="animation">The animation to be played</param>
+        public void PlayAnimation(Animation animation)
+        {
+            Onset.SetPlayerAnimation(Id, animation.GetName());
+        }
+
+        /// <summary>
+        /// Attaches the parachute of the player.
+        /// </summary>
+        public void AttachParachute()
+        {
+            Onset.AttachPlayerParachute(Id, true);
+        }
+
+        /// <summary>
+        /// Detaches the parachute of the player.
+        /// </summary>
+        public void DetachParachute()
+        {
+            Onset.AttachPlayerParachute(Id, false);
+        }
+
+        /// <summary>
+        /// Sets if the player is in ragdoll or not.
+        /// </summary>
+        /// <param name="enable">True, if the player should be in ragdoll</param>
+        public void SetRagdoll(bool enable)
+        {
+            Onset.SetPlayerRagdoll(Id, enable);
+        }
+
+        /// <summary>
+        /// Stops the current animation.
+        /// </summary>
+        public void StopAnimation()
+        {
+            PlayAnimation(Animation.Stop);
         }
     }
 }

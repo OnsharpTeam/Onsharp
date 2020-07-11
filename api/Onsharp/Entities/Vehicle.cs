@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using Onsharp.Native;
+using Onsharp.Utils;
 using Onsharp.World;
 
 namespace Onsharp.Entities
@@ -97,7 +98,7 @@ namespace Onsharp.Entities
         /// <summary>
         /// Whether the lights are enabled or not.
         /// </summary>
-        public bool LightEnabled
+        public bool IsLightEnabled
         {
             get => Onset.GetVehicleLightEnabled(Id);
             set => Onset.SetVehicleLightEnabled(Id, value);
@@ -107,7 +108,7 @@ namespace Onsharp.Entities
         /// The engine state of the vehicle.
         /// When true, the engine is on, otherwise its off.
         /// </summary>
-        public bool EngineState
+        public bool IsEngineRunning
         {
             get => Onset.GetVehicleEngineState(Id);
             set
@@ -147,7 +148,11 @@ namespace Onsharp.Entities
         /// The passenger of the given seat.
         /// </summary>
         /// <param name="seat">The wanted seat</param>
-        public Player this[int seat] => GetPassenger(seat);
+        public Player this[int seat]
+        {
+            get => GetPassenger(seat);
+            set => SetPassenger(value, seat);
+        }
         
         /// <summary>
         /// The driver of the vehicle, or null if the driver seat is not occupied.
@@ -176,6 +181,16 @@ namespace Onsharp.Entities
         public void Attach(Object obj, Vector pos, Vector rot, string socketName = "")
         {
             obj.Attach(this, pos, rot, socketName);
+        }
+
+        /// <summary>
+        /// Checks if the vehicle is streamed in for the player.
+        /// </summary>
+        /// <param name="player">The player</param>
+        /// <returns>True, if the vehicle is streamed in for the player</returns>
+        public bool IsStreamedFor(Player player)
+        {
+            return Onset.IsStreamedIn(EntityName, player.Id, Id);
         }
         
         /// <summary>
@@ -239,6 +254,16 @@ namespace Onsharp.Entities
             int passenger = Onset.GetVehiclePassenger(Id, seat);
             if (passenger <= 0) return null;
             return Owner.CreatePlayer(passenger);
+        }
+
+        /// <summary>
+        /// Sets the given passenger seat to the given player.
+        /// </summary>
+        /// <param name="player">The player to be set into the vehicle</param>
+        /// <param name="seat">The wanted seat</param>
+        public void SetPassenger(Player player, int seat)
+        {
+            player.SetIntoVehicle(this, seat);
         }
 
         /// <summary>

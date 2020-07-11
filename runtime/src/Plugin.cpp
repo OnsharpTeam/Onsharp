@@ -110,6 +110,293 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED bool SetPlayerRagdoll(int player, bool enable)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, enable);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetPlayerRagdoll", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED long GetPlayerSteamId(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerSteamId", &args);
+    return returnValues.at(0).GetValue<long>();
+}
+
+EXPORTED float GetPlayerHeadSize(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerHeadSize", &args);
+    return returnValues.at(0).GetValue<float>();
+}
+
+EXPORTED void SetPlayerHeadSize(int player, float size)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, size);
+    Plugin::Get()->CallLuaFunction("SetPlayerHeadSize", &args);
+}
+
+EXPORTED void AttachPlayerParachute(int player, bool attach)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, attach);
+    Plugin::Get()->CallLuaFunction("AttachPlayerParachute", &args);
+}
+
+EXPORTED void SetPlayerAnimation(int player, const char* animation)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, animation);
+    Plugin::Get()->CallLuaFunction("SetPlayerAnimation", &args);
+}
+
+EXPORTED int GetPlayerGameVersion(int player)
+{
+    Lua::LuaArgs_t argValues = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerGameVersion", &argValues);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED Plugin::NValue* GetPlayerGUID(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerGUID", &args);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED Plugin::NValue* GetPlayerLocale(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerLocale", &args);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED void KickPlayer(int player, const char* reason)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, reason);
+    Plugin::Get()->CallLuaFunction("KickPlayer", &args);
+}
+
+EXPORTED int GetPlayerPing(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerPing", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED Plugin::NValue* GetPlayerIP(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerIP", &args);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED long GetPlayerRespawnTime(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerRespawnTime", &args);
+    return returnValues.at(0).GetValue<long>();
+}
+
+EXPORTED void SetPlayerRespawnTime(int player, long msTime)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, msTime);
+    Plugin::Get()->CallLuaFunction("SetPlayerRespawnTime", &args);
+}
+
+EXPORTED double GetPlayerArmor(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerArmor", &args);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED void SetPlayerArmor(int player, double armor)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, armor);
+    Plugin::Get()->CallLuaFunction("SetPlayerArmor", &args);
+}
+
+EXPORTED double GetPlayerHealth(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerHealth", &args);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED void SetPlayerHealth(int player, double health)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, health);
+    Plugin::Get()->CallLuaFunction("SetPlayerHealth", &args);
+}
+
+EXPORTED bool IsPlayerDead(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsPlayerDead", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void SetPlayerSpectate(int player, bool spectate)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, spectate);
+    Plugin::Get()->CallLuaFunction("SetPlayerSpectate", &args);
+}
+
+EXPORTED double GetPlayerHeading(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerHeading", &args);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED void SetPlayerHeading(int player, double heading)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, heading);
+    Plugin::Get()->CallLuaFunction("SetPlayerHeading", &args);
+}
+
+EXPORTED bool EquipPlayerWeaponSlot(int player, int slot)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, slot);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("EquipPlayerWeaponSlot", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED int GetPlayerEquippedWeaponSlot(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerEquippedWeaponSlot", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED int GetPlayerWeapon(int player, int slot)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, slot);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerWeapon", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED bool SetPlayerWeapon(int player, int weapon, int ammo, bool equip, int slot, bool loaded)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, weapon, ammo, equip, slot, loaded);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetPlayerWeapon", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED bool SetPlayerWeaponStat(int player, int weapon, const char* stat, double value)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, weapon, stat, value);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetPlayerWeaponStat", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void RemovePlayerFromVehicle(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Plugin::Get()->CallLuaFunction("RemovePlayerFromVehicle", &args);
+}
+
+EXPORTED void SetPlayerInVehicle(int player, int vehicle, int seat)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, vehicle, seat);
+    Plugin::Get()->CallLuaFunction("SetPlayerInVehicle", &args);
+}
+
+EXPORTED int GetPlayerVehicleSeat(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerVehicleSeat", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED int GetPlayerVehicle(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerVehicle", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED bool IsPlayerReloading(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsPlayerReloading", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED bool IsPlayerAiming(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsPlayerAiming", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED double GetPlayerMovementSpeed(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerMovementSpeed", &args);
+    return returnValues.at(0).GetValue<double>();
+}
+
+EXPORTED int GetPlayerMovementMode(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerMovementMode", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED int GetPlayerState(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerState", &args);
+    return returnValues.at(0).GetValue<int>();
+}
+
+EXPORTED bool SetPlayerVoiceDimension(int player, unsigned int dim)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, dim);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetPlayerVoiceDimension", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED bool IsPlayerTalking(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsPlayerTalking", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED bool IsPlayerVoiceEnabled(int player)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsPlayerVoiceEnabled", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void SetPlayerVoiceEnabled(int player, bool enable)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, enable);
+    Plugin::Get()->CallLuaFunction("SetPlayerVoiceEnabled", &args);
+}
+
+EXPORTED bool IsPlayerVoiceChannel(int player, int channel)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, channel);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("IsPlayerVoiceChannel", &args);
+    return returnValues.at(0).GetValue<bool>();
+}
+
+EXPORTED void SetPlayerVoiceChannel(int player, int channel, bool enable)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, channel, enable);
+    Plugin::Get()->CallLuaFunction("SetPlayerSpawnLocation", &args);
+}
+
+EXPORTED void SetPlayerSpawnLocation(int player, double x, double y, double z, double heading)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(player, x, y, z, heading);
+    Plugin::Get()->CallLuaFunction("SetPlayerSpawnLocation", &args);
+}
+
 EXPORTED void EnableVehicleBackfire(int vehicle, bool enable)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, enable);
@@ -650,11 +937,12 @@ EXPORTED void DestroyEntity(const char* entityName, int id)
     Plugin::Get()->CallLuaFunction(funcName.c_str(), &args);
 }
 
-EXPORTED void GetNetworkStats(int* totalPacketLoss, int* lastSecondPacketLoss, int* messagesInResendBuffer,
+EXPORTED void GetNetworkStats(int source, int* totalPacketLoss, int* lastSecondPacketLoss, int* messagesInResendBuffer,
         int* bytesInResendBuffer, int* bytesSend, int* bytesReceived, int* bytesResend, int* totalBytesSend,
         int* totalBytesReceived, bool* isLimitedByCongestionControl, bool* isLimitedByOutgoingBandwidthLimit) {
-    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
-    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetNetworkStats", &argValues);
+    Lua::LuaArgs_t argValues = source <= 0 ? Lua::BuildArgumentList() : Lua::BuildArgumentList(source);
+    std::string funcName = "Get" + std::string((source <= 0 ? "" : "Player")) + "NetworkStats";
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction(funcName.c_str(), &argValues);
     *totalPacketLoss = returnValues.at(0).GetValue<int>();
     *lastSecondPacketLoss = returnValues.at(1).GetValue<int>();
     *messagesInResendBuffer = returnValues.at(2).GetValue<int>();

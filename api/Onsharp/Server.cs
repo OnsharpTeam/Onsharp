@@ -27,36 +27,8 @@ namespace Onsharp
         public double TickRate => Onset.GetServerTickRate();
 
         public int MaxPlayers => Onset.GetMaxPlayers();
-        
-        public NetworkStats NetworkStats
-        {
-            get
-            {
-                int totalPacketLoss = 0;
-                int lastSecondPacketLoss = 0;
-                int messagesInResendBuffer = 0;
-                int bytesInResendBuffer = 0;
-                int bytesSend = 0;
-                int bytesReceived = 0;
-                int bytesResend = 0;
-                int totalBytesSend = 0;
-                int totalBytesReceived = 0;
-                bool isLimitedByCongestionControl = false;
-                bool isLimitedByOutgoingBandwidthLimit = false;
-                Onset.GetNetworkStats(ref totalPacketLoss, ref lastSecondPacketLoss,
-                    ref messagesInResendBuffer,
-                    ref bytesInResendBuffer, ref bytesSend, ref bytesReceived, ref bytesResend,
-                    ref totalBytesSend,
-                    ref totalBytesReceived, ref isLimitedByCongestionControl,
-                    ref isLimitedByOutgoingBandwidthLimit);
-                return new NetworkStats(totalPacketLoss, lastSecondPacketLoss,
-                    messagesInResendBuffer,
-                    bytesInResendBuffer, bytesSend, bytesReceived, bytesResend,
-                    totalBytesSend,
-                    totalBytesReceived, isLimitedByCongestionControl,
-                    isLimitedByOutgoingBandwidthLimit);
-            }
-        }
+
+        public NetworkStats NetworkStats => Bridge.GetNetworkStats(0);
 
         public Dimension this[uint val] => GetDimension(val);
 

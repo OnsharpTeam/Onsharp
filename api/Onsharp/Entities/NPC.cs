@@ -42,7 +42,7 @@ namespace Onsharp.Entities
         /// </summary>
         /// <param name="player">The player</param>
         /// <returns>True, if the NPC is streamed in for the player</returns>
-        public bool IsStreamedIn(Player player)
+        public bool IsStreamedFor(Player player)
         {
             return Onset.IsStreamedIn(EntityName, player.Id, Id);
         }
@@ -52,7 +52,7 @@ namespace Onsharp.Entities
         /// </summary>
         /// <param name="animation">The animation to be played</param>
         /// <param name="loop">True, if the animation should loop</param>
-        public void PlayAnimation(Animation animation, bool loop)
+        public void PlayAnimation(Animation animation, bool loop = false)
         {
             Onset.SetNPCAnimation(Id, animation.GetName(), loop);
         }
@@ -108,6 +108,14 @@ namespace Onsharp.Entities
         public void Attach(Text3D text3d, Vector pos, Vector rot, string socketName = "")
         {
             text3d.Attach(this, pos, rot, socketName);
+        }
+
+        /// <summary>
+        /// Stops the current animation.
+        /// </summary>
+        public void StopAnimation()
+        {
+            PlayAnimation(Animation.Stop);
         }
     }
 }

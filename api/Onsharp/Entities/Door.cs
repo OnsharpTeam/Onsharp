@@ -7,7 +7,7 @@ namespace Onsharp.Entities
         /// <summary>
         /// Whether the door is open or not.
         /// </summary>
-        public bool Open
+        public bool IsOpen
         {
             get => Onset.GetDoorOpen(Id);
             set => Onset.SetDoorOpen(Id, value);
