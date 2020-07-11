@@ -122,7 +122,7 @@ namespace Onsharp.Updater
             _progress.Refresh(e.ProgressPercentage, "Downloading...");
         }
 
-        private void DeleteFileSilently(string path)
+        internal static void DeleteFileSilently(string path)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace Onsharp.Updater
             }
         }
 
-        private void DeleteDirectorySilently(string path)
+        private static void DeleteDirectorySilently(string path)
         {
             try
             {

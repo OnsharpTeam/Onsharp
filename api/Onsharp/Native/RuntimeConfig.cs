@@ -12,7 +12,7 @@ namespace Onsharp.Native
         public bool IsDebug { get; set; } = false;
 
         /// <summary>
-        /// Whether Onsharp should keep itself and the plugins updated or not.
+        /// Whether Onsharp should keep the plugins updated or not.
         /// </summary>
         public bool KeepPluginsUpdated { get; set; } = true;
 

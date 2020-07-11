@@ -1,0 +1,7 @@
+Updating Folder Structure:
+~ -> Server Directory
+
+~/plugins/onsharp-runtime.dll -> Can be changed
+~/onsharp/runtime/Onsharp.dll -> Can be changed
+~/onsharp/runtime/*.dll -> Libraries can be changed
+~/packages/onsharp/* -> Can be changed

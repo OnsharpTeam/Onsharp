@@ -61,7 +61,7 @@ namespace TestPlugin
             Timer.Delay(5000, () =>
             {
                 Vector pos = player.GetPosition();
-                Runtime.CreateObject(1, pos.X, pos.Y, pos.Z, 0, 0, 0, 1, 1, 1);
+                Server.CreateObject(1, pos);
                 player.SendMessage("Working!");
             });
         }

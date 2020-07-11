@@ -4,8 +4,6 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Threading;
-using System.Threading.Tasks;
 using Nett;
 using Onsharp.Commands;
 using Onsharp.Converters;
@@ -15,6 +13,7 @@ using Onsharp.Events;
 using Onsharp.Interop;
 using Onsharp.IO;
 using Onsharp.Plugins;
+using Onsharp.Updater;
 using Onsharp.World;
 using Object = Onsharp.Entities.Object;
 using Timer = Onsharp.Threading.Timer;
@@ -58,7 +57,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The path to the runtime folder.
         /// </summary>
-        private static string AppPath { get; set; }
+        internal static string AppPath { get; set; }
         
         /// <summary>
         /// The path to the temp folder.
@@ -197,6 +196,11 @@ namespace Onsharp.Native
         {
             try
             {
+                if (RuntimeUpdater.IsUpdateAvailable(out string newVersion))
+                {
+                    Logger.Fatal("The update v{VERSION} for the Onsharp Runtime is available!", newVersion);
+                }
+                
                 PluginManager = new PluginManager();
                 ConsoleManager.Start();
             }
