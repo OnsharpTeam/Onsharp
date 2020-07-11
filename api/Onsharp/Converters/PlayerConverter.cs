@@ -24,7 +24,7 @@ namespace Onsharp.Converters
         {
             if (long.TryParse(value, out long val))
             {
-                return server.GetPlayerBy(player => player.Id == val);
+                return server.GetPlayerBy(player => player.SteamID == val);
             }
 
             return server.GetPlayerBy(player => player.Name == value);

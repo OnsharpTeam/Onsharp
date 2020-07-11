@@ -2,6 +2,7 @@
 using System.Threading;
 using Onsharp.Commands;
 using Onsharp.Entities;
+using Onsharp.Enums;
 using Onsharp.Events;
 using Onsharp.Plugins;
 using Onsharp.Updater;
@@ -22,6 +23,7 @@ namespace TestPlugin
             Logger.SetDebug(config.IsDebug);
             Logger.Debug("Debug mode is {STATE}!", "enabled");
             Server.OverrideEntityFactory(new MyPlayerFactory());
+            Runtime.DisableEntityPoolRefreshing();
         }
 
         public override void OnStop()
@@ -63,7 +65,15 @@ namespace TestPlugin
                 Vector pos = player.GetPosition();
                 Server.CreateObject(1, pos);
                 player.SendMessage("Working!");
+                Runtime.RegisterConverter<>();
             });
         }
+        
+        [Command("vehicle")]
+        public void OnHelloCommand(MyPlayer player, VehicleModel model)
+        {
+            Vehicle vehicle = Server.CreateVehicle(model, player.GetPosition());
+            vehicle.SetPassenger(player, 0);
+        } 
     }
 }
