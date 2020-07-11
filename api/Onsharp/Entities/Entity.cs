@@ -86,5 +86,27 @@ namespace Onsharp.Entities
         {
             Dimension = Owner[id];
         }
+
+        /// <summary>
+        /// Sets the property value for the given name of the entity.
+        /// </summary>
+        /// <param name="name">The name of the property</param>
+        /// <param name="value">The value to be set to</param>
+        public void SetPropertyValue(string name, object value)
+        {
+            NativeValue nVal = Bridge.CreateNValue(value);
+            Onset.SetPropertyValue(EntityName, Id, name, nVal.NativePtr);
+        }
+
+        /// <summary>
+        /// Gets the property value for the given name of the entity.
+        /// </summary>
+        /// <param name="name">The name of the property</param>
+        /// <typeparam name="T">The wanted return type</typeparam>
+        /// <returns>The casted value</returns>
+        public T GetPropertyValue<T>(string name)
+        {
+            return (T) new NativeValue(Onset.GetPropertyValue(EntityName, Id, name)).GetValue();
+        }
     }
 }

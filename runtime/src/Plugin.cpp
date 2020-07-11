@@ -110,6 +110,22 @@ Plugin::Plugin()
 
 //region Native Bridge Functions
 
+EXPORTED Plugin::NValue* GetPropertyValue(const char* entityName, int entity, const char* propertyKey)
+{
+    std::string funcName = "Get" + std::string(entityName) + "PropertyValue";
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(entity, propertyKey);
+    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction(funcName.c_str(), &args);
+    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
+}
+
+EXPORTED void SetPropertyValue(const char* entityName, int entity, const char* propertyKey, Plugin::NValue* propertyValue)
+{
+    std::string funcName = "Set" + std::string(entityName) + "PropertyValue";
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(entity, propertyKey);
+    propertyValue->AddAsArg(&args);
+    Plugin::Get()->CallLuaFunction(funcName.c_str(), &args);
+}
+
 EXPORTED bool SetPlayerRagdoll(int player, bool enable)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(player, enable);

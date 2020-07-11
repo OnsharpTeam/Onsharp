@@ -11,6 +11,14 @@ namespace Onsharp.Native
     internal static class Onset
     {
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr GetPropertyValue([MarshalAs(UnmanagedType.LPStr)] string entityName, int entity,
+            [MarshalAs(UnmanagedType.LPStr)] string propertyName);
+
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SetPropertyValue([MarshalAs(UnmanagedType.LPStr)] string entityName, int entity,
+            [MarshalAs(UnmanagedType.LPStr)] string propertyName, IntPtr propertyValue);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool SetPlayerRagdoll(int player, bool enable);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
