@@ -1188,7 +1188,7 @@ EXPORTED Plugin::NValue** InvokePackage(const char* importId, const char* funcNa
 
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("Onsharp_InvokePackage", &arg_list);
     auto rVals = new Plugin::NValue*[returnValues.size()];
-    for(int i = 0; i < returnValues.size(); i++)
+    for(int i = 0; i < static_cast<int>(returnValues.size()); i++)
     {
         rVals[i] = Plugin::Get()->CreateNValueByLua(returnValues.at(i));
     }
@@ -1337,7 +1337,7 @@ EXPORTED int ReleaseIntArray(int* lArray)
 
 EXPORTED void ForceRuntimeRestart(bool complete)
 {
-    (void*) complete;
+    complete = false;
     Plugin::Get()->GetBridge().Restart();
 }
 
