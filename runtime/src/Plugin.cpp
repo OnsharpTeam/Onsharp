@@ -64,6 +64,7 @@ Plugin::Plugin()
         void** args = new void*[len];
         int idx = 0;
         args_table->ForEach([args, &idx](Lua::LuaValue k, Lua::LuaValue v) {
+            (void) k;
             args[idx] = Plugin::Get()->CreateNValueByLua(std::move(v));
             idx++;
         });
@@ -98,6 +99,7 @@ Plugin::Plugin()
         args[1] = Plugin::Get()->CreatNValueByString(funcName);
         int idx = 2;
         args_table->ForEach([args, &idx](Lua::LuaValue k, Lua::LuaValue v) {
+            (void) k;
             args[idx] = Plugin::Get()->CreateNValueByLua(std::move(v));
             idx++;
         });
@@ -1164,6 +1166,7 @@ EXPORTED Plugin::NValue* GetValueFromTable(Plugin::NValue* table, Plugin::NValue
     auto currVal = new Lua::LuaValue;
     Lua::LuaValue k2 = key->GetLuaValue();
     table->tVal->ForEach([&_break, &currVal, k2](Lua::LuaValue k, Lua::LuaValue v) {
+        (void) k;
         if(_break) return;
         if(k == k2) {
             _break = true;
@@ -1323,6 +1326,7 @@ EXPORTED int* GetEntities(const char* entityName, int* len)
     int* entities = new int[entityTable->Count()];
     int idx = 0;
     entityTable->ForEach([entities, &idx](Lua::LuaValue k, Lua::LuaValue v) {
+        (void) k;
         entities[idx] = (int)v.GetValue<float>();
         idx++;
     });
@@ -1337,7 +1341,7 @@ EXPORTED int ReleaseIntArray(int* lArray)
 
 EXPORTED void ForceRuntimeRestart(bool complete)
 {
-    complete = false;
+    (void) complete;
     Plugin::Get()->GetBridge().Restart();
 }
 
