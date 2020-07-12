@@ -481,7 +481,16 @@ namespace Onsharp.Native
                     Converter converter = FindConverter(wantedType);
                     if (converter != null)
                     {
-                        arr[i] = converter.Handle(objects[i - 1], wantedType, server);
+                        try
+                        {
+                            arr[i] = converter.Handle(objects[i - 1], wantedType, server);
+                        }
+                        catch (Exception e)
+                        {
+                            server.Owner.Plugin.Logger.Error(e,
+                                "An error occurred with converter {CONV} when converting {VAL} to {TYPE}!",
+                                converter.GetType().FullName, objects[i - 1], wantedType.ParameterType.FullName);
+                        }
                     }
                 }
 

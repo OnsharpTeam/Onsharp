@@ -87,10 +87,11 @@ namespace Onsharp.Commands
                 string openingChar = "";
 
                 #region Greedy String Formatting
-
-                string[] parts = line.Split(' ');
+                
+                string[] parts = line.Trim().Split(' ');
                 foreach (string str in parts)
                 {
+                    if(string.IsNullOrEmpty(str?.Trim())) continue;
                     if (currentStr == null)
                     {
                         if (str.StartsWith("\""))
