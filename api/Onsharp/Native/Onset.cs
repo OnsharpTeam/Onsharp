@@ -248,10 +248,10 @@ namespace Onsharp.Native
         internal static extern IntPtr GetVehicleLicensePlate(int vehicle);
 
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool SetVehicleDamage(int vehicle, byte index, float damage);
+        internal static extern bool SetVehicleDamage(int vehicle, int index, float damage);
 
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern float GetVehicleDamage(int vehicle, byte index);
+        internal static extern float GetVehicleDamage(int vehicle, int index);
 
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int CreateVehicle(int model, double x, double y, double z, double heading);
@@ -413,7 +413,7 @@ namespace Onsharp.Native
         internal static extern void Delay([MarshalAs(UnmanagedType.LPStr)] string name, long millis);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool CreateExplosion(byte id, double x, double y, double z, uint dim, bool soundEnabled,
+        internal static extern bool CreateExplosion(int id, double x, double y, double z, uint dim, bool soundEnabled,
             double camShakeRadius, double radialForce, double damageRadius);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]

@@ -425,7 +425,7 @@ EXPORTED void AttachVehicleNitro(int vehicle, bool attach)
     Plugin::Get()->CallLuaFunction("AttachVehicleNitro", &args);
 }
 
-EXPORTED bool SetVehicleDamage(int vehicle, byte index, float damage)
+EXPORTED bool SetVehicleDamage(int vehicle, int index, float damage)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, index, damage);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetVehicleDamage", &args);
@@ -656,7 +656,7 @@ EXPORTED Plugin::NValue* GetVehicleLicensePlate(int vehicle)
     return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
 }
 
-EXPORTED float GetVehicleDamage(int vehicle, byte index)
+EXPORTED float GetVehicleDamage(int vehicle, int index)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, index);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetVehicleDamage", &args);
@@ -1017,7 +1017,7 @@ EXPORTED void Delay(const char* id, long millis)
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("Onsharp_Delay", &argValues);
 }
 
-EXPORTED bool CreateExplosion(byte id, double x, double y, double z, unsigned int dim, bool soundEnabled,
+EXPORTED bool CreateExplosion(int id, double x, double y, double z, unsigned int dim, bool soundEnabled,
                               double camShakeRadius, double radialForce, double damageRadius)
 {
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id, x, y, z, dim, soundEnabled, camShakeRadius, radialForce, damageRadius);
