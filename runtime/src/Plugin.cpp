@@ -1139,6 +1139,7 @@ EXPORTED Plugin::NValue** GetKeysFromTable(Plugin::NValue* table)
     auto rVals = new Plugin::NValue*[table->tVal->Count()];
     int idx = 0;
     table->tVal->ForEach([rVals, &idx](Lua::LuaValue k, Lua::LuaValue v) {
+        (void) v;
         rVals[idx] = Plugin::Get()->CreateNValueByLua(std::move(k));
         idx++;
     });
@@ -1166,7 +1167,6 @@ EXPORTED Plugin::NValue* GetValueFromTable(Plugin::NValue* table, Plugin::NValue
     auto currVal = new Lua::LuaValue;
     Lua::LuaValue k2 = key->GetLuaValue();
     table->tVal->ForEach([&_break, &currVal, k2](Lua::LuaValue k, Lua::LuaValue v) {
-        (void) v;
         if(_break) return;
         if(k == k2) {
             _break = true;
