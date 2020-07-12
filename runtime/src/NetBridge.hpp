@@ -105,7 +105,7 @@ public:
 #if defined(_WIN32)
         std::string coreClrPath = std::string(gCurrentPath) + "\\onsharp\\runtime\\coreclr.dll";
 #else
-        std::string coreClrPath = std::string(gCurrentPath) + "\\onsharp\\runtime\\libcoreclr.so";
+        std::string coreClrPath = std::string(gCurrentPath) + "/onsharp/runtime/libcoreclr.so";
 #endif
         char cCurrentPath[FILENAME_MAX];
 
@@ -120,7 +120,7 @@ public:
 #if defined(_WIN32)
         std::string wrapperPath = std::string(cCurrentPath) + "\\onsharp\\runtime\\Onsharp.dll";
 #else
-        std::string wrapperPath = std::string(cCurrentPath) + "\\onsharp\\runtime\\Onsharp.dll";
+        std::string wrapperPath = std::string(cCurrentPath) + "/onsharp/runtime/Onsharp.dll";
 #endif
 
         char rCurrentPath[FILENAME_MAX];
@@ -136,7 +136,7 @@ public:
 #if defined(_WIN32)
         std::string runtimePath = std::string(rCurrentPath) + "\\onsharp\\runtime\\";
 #else
-        std::string runtimePath = std::string(rCurrentPath) + "\\onsharp\\runtime\\";
+        std::string runtimePath = std::string(rCurrentPath) + "/onsharp/runtime/";
 #endif
 
 #if defined(_WIN32)

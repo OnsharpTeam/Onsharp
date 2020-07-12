@@ -14,10 +14,29 @@ namespace fs = std::filesystem;
 
 #include "Plugin.hpp"
 
-#ifdef _WIN32
-# define EXPORTED extern "C" __declspec(dllexport)
+#if defined _WIN32 || defined __CYGWIN__
+#ifdef BUILDING_DLL
+#ifdef __GNUC__
+      #define EXPORTED extern "C" __attribute__ ((dllexport))
+    #else
+      #define EXPORTED extern "C" __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+    #endif
 #else
-# define EXPORTED
+#ifdef __GNUC__
+#define EXPORTED extern "C" __attribute__ ((dllimport))
+#else
+#define EXPORTED extern "C" __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
+#endif
+#endif
+#define NOT_EXPORTED
+#else
+#if __GNUC__ >= 4
+    #define EXPORTED extern "C" __attribute__ ((visibility ("default")))
+    #define NOT_EXPORTED extern "C"  __attribute__ ((visibility ("hidden")))
+  #else
+    #define EXPORTED
+    #define NOT_EXPORTED
+  #endif
 #endif
 
 #ifdef LUA_DEFINE

@@ -239,7 +239,7 @@ namespace Onsharp.Native
             {
                 if (key == "call-event")
                 {
-                    EventType type = (EventType) (int) args[0];
+                    EventType type = (EventType) System.Convert.ToInt32(args[0]);
                     bool flag = true;
                     PluginManager.IteratePlugins(plugin =>
                     {
@@ -264,7 +264,7 @@ namespace Onsharp.Native
 
                 if (key == "call-remote")
                 {
-                    int player = (int) args[0];
+                    int player = System.Convert.ToInt32(args[0]);
                     string pluginId = (string) args[1];
                     string name = (string) args[2];
                     object[] remoteArgs = new object[args.Length - 3];
@@ -285,7 +285,7 @@ namespace Onsharp.Native
                 if (key == "call-command")
                 {
                     string pluginId = (string) args[0];
-                    int player = (int) args[1];
+                    int player = System.Convert.ToInt32(args[1]);
                     string name = (string) args[2];
                     string line = (string) args[3];
                     Plugin plugin = PluginManager.GetPlugin(pluginId);
@@ -327,7 +327,7 @@ namespace Onsharp.Native
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "An error occurred while handling a call from the native side!");
+                Logger.Error(ex, "An error occurred while handling a call {CALLNAME} from the native side!", key);
             }
             
             return null;
