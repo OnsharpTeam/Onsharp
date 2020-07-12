@@ -1166,7 +1166,7 @@ EXPORTED Plugin::NValue* GetValueFromTable(Plugin::NValue* table, Plugin::NValue
     auto currVal = new Lua::LuaValue;
     Lua::LuaValue k2 = key->GetLuaValue();
     table->tVal->ForEach([&_break, &currVal, k2](Lua::LuaValue k, Lua::LuaValue v) {
-        (void) k;
+        (void) v;
         if(_break) return;
         if(k == k2) {
             _break = true;
