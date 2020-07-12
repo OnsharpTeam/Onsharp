@@ -179,7 +179,7 @@ namespace Onsharp.Native
         internal static void Unload()
         {
             Logger.Warn("Stopping bridge...");
-            ConsoleManager.Stop();
+            //ConsoleManager.Stop();
             for (int i = PluginManager.Plugins.Count - 1; i >= 0; i--)
             {
                 Plugin plugin = PluginManager.Plugins[i];
@@ -202,7 +202,7 @@ namespace Onsharp.Native
                 }
                 
                 PluginManager = new PluginManager();
-                ConsoleManager.Start();
+                //ConsoleManager.Start();
             }
             catch (Exception ex)
             {

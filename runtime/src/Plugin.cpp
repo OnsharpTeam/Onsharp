@@ -25,7 +25,7 @@ namespace fs = std::filesystem;
 #ifdef __GNUC__
 #define EXPORTED extern "C" __attribute__ ((dllimport))
 #else
-#define EXPORTED extern "C" __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
+#define EXPORTED extern "C" __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
 #endif
 #endif
 #define NOT_EXPORTED
