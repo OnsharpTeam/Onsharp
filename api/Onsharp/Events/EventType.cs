@@ -37,16 +37,6 @@ namespace Onsharp.Events
         /// </summary>
         PlayerPickupHit = 4,
         /// <summary>
-        /// Called when the package was started.<br/>
-        /// ()
-        /// </summary>
-        PackageStart = 6,
-        /// <summary>
-        /// Called when the package is being stopped.<br/>
-        /// ()
-        /// </summary>
-        PackageStop = 7,
-        /// <summary>
         /// Called on execution of the main thread.<br/>
         /// (<see cref="float"/> deltaSeconds)
         /// </summary>

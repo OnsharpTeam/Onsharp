@@ -48,11 +48,5 @@ namespace Onsharp.Plugins
         /// Gets called when the plugin is getting disabled.
         /// </summary>
         public abstract void OnStop();
-
-        public IPluginManager PluginManager { get; set; }
-        
-        public IServer Server { get; set; }
-        
-        public IRuntime Runtime { get; set; }
     }
 }

@@ -35,7 +35,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The current version of Onsharp running.
         /// </summary>
-        internal static readonly Version Version = new Version(1, 0, 4);
+        internal static readonly Version Version = new Version(1, 0, 5);
 
         /// <summary>
         /// A list containing all the events which needs as first argument a player, so called player events.
@@ -239,7 +239,9 @@ namespace Onsharp.Native
             {
                 if (key == "call-event")
                 {
-                    EventType type = (EventType) System.Convert.ToInt32(args[0]);
+                    int typeId = System.Convert.ToInt32(args[0]);
+                    if (typeId == 7 || typeId == 6) return true;
+                    EventType type = (EventType) typeId;
                     bool flag = true;
                     PluginManager.IteratePlugins(plugin =>
                     {
@@ -562,10 +564,6 @@ namespace Onsharp.Native
                     return new object[] {player};
                 case EventType.PlayerPickupHit:
                     return new object[] {player, owner.Server.CreatePickup((int) args[2])};
-                case EventType.PackageStart:
-                    return new object[0];
-                case EventType.PackageStop:
-                    return new object[0];
                 case EventType.GameTick:
                     return new[]{args[1]};
                 case EventType.ClientConnectionRequest:

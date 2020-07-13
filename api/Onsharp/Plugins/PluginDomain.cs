@@ -176,6 +176,7 @@ namespace Onsharp.Plugins
             {
                 Plugin.Logger.Info("Starting plugin {NAME} v{VERSION} by {AUTHOR}...", Plugin.Display,
                     Plugin.Meta.Version, Plugin.Meta.Author);
+                Bridge.Logger.Debug("Server init? {YES}", Plugin.Server != null);
                 Plugin.OnStart();
                 lock (PluginManager.Plugins)
                     PluginManager.Plugins.Add(Plugin);
@@ -221,6 +222,7 @@ namespace Onsharp.Plugins
         private void ChangePluginState(PluginState state)
         {
             Plugin.State = state;
+            Bridge.Logger.Debug("Plugin {ID} changed state to {STATE}", Path, Enum.GetName(typeof(PluginState), state));
         }
     }
 }
