@@ -5,9 +5,9 @@ namespace Onsharp.Plugins
 {
     /// <summary>
     /// This interface defines the main plugin class. Only one class is allowed to implement this interface.
-    /// The plugin interface inherited the <see cref="IEntryPoint"/> interface and all its functionality.
+    /// The plugin interface inherited the <see cref="EntryPoint"/> interface and all its functionality.
     /// </summary>
-    public abstract class Plugin : IEntryPoint
+    public abstract class Plugin : EntryPoint
     {
         /// <summary>
         /// The meta of this plugin.

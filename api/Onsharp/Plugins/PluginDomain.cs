@@ -16,7 +16,7 @@ namespace Onsharp.Plugins
     /// </summary>
     internal class PluginDomain
     {
-        private static readonly Type EntryPointType = typeof(IEntryPoint);
+        private static readonly Type EntryPointType = typeof(EntryPoint);
         private static readonly Type PluginType = typeof(Plugin);
         private readonly AssemblyLoadContext _context;
         private Assembly _assembly;
@@ -39,7 +39,7 @@ namespace Onsharp.Plugins
         /// <summary>
         /// All entry points of the plugin which is owned by this domain.
         /// </summary>
-        internal List<IEntryPoint> EntryPoints { get; private set; }
+        internal List<EntryPoint> EntryPoints { get; private set; }
 
         /// <summary>
         /// the plugin main class of the plugin which is owned by this domain.
@@ -76,7 +76,7 @@ namespace Onsharp.Plugins
         {
             Bridge.Logger.Info("Loading plugin on path \"{PATH}\"...", Path);
             Server = new Server(this);
-            EntryPoints = new List<IEntryPoint>();
+            EntryPoints = new List<EntryPoint>();
             using (Stream stream = File.OpenRead(Path))
             {
                 _assembly = _context.LoadFromStream(stream);
@@ -127,7 +127,7 @@ namespace Onsharp.Plugins
                 }
                 else if (EntryPointType.IsAssignableFrom(type))
                 {
-                    IEntryPoint entryPoint = (IEntryPoint) Activator.CreateInstance(type);
+                    EntryPoint entryPoint = (EntryPoint) Activator.CreateInstance(type);
                     if (entryPoint == null)
                     {
                         Bridge.Logger.Fatal(
@@ -140,7 +140,7 @@ namespace Onsharp.Plugins
                 }
             }
 
-            foreach (IEntryPoint entryPoint in EntryPoints)
+            foreach (EntryPoint entryPoint in EntryPoints)
             {
                 entryPoint.Server = Server;
                 entryPoint.PluginManager = Bridge.PluginManager;
