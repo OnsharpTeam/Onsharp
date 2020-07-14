@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Onsharp.Enums;
 using Onsharp.Events;
 using Onsharp.Native;
@@ -519,5 +520,103 @@ namespace Onsharp.Entities
         {
             PlayAnimation(Animation.Stop);
         }
+
+        #region Colored Chat
+
+        /// <summary>
+        /// Sends a colored message to the player's chat.
+        /// </summary>
+        /// <param name="message">The message to be sent</param>
+        public void SendColoredMessage(string message)
+        {
+            StringBuilder formattedMessage = new StringBuilder();
+            string currentPart = "<span size=\"10\">";
+            for(int i = 0; i < message.Length; i++)
+            {
+                char c = message[i];
+                if (c == '~')
+                {
+                    formattedMessage.Append(currentPart + "</>");
+                    i++;
+                    string color = GetColorCode(message[i]);
+                    i++;
+                    c = message[i];
+                    string style = null;
+                    if (c != '~')
+                    {
+                        style = GetStyleCode(c);
+                        i++;
+                    }
+
+                    currentPart = "<span size=\"10\" " + (color != null ? "color=\"#" + color + "\"" : "") +
+                                  (style != null ? " style=\"" + style + "\"" : "") + ">";
+                }
+                else
+                {
+                    currentPart += c;
+                }
+            }
+            
+
+            formattedMessage.Append(currentPart + "</>");
+            SendMessage(formattedMessage.ToString());
+        }
+
+        private string GetStyleCode(char c)
+        {
+            switch (c)
+            {
+                case '*':
+                    return "bold";
+                case '/':
+                    return "italic";
+                default:
+                    return null;
+            }
+        }
+
+        private string GetColorCode(char c)
+        {
+            switch (c)
+            {
+                case '0':
+                    return "000000";
+                case '1':
+                    return "0000AA";
+                case '2':
+                    return "00AA00";
+                case '3':
+                    return "00AAAA";
+                case '4':
+                    return "AA0000";
+                case '5':
+                    return "AA00AA";
+                case '6':
+                    return "FFAA00";
+                case '7':
+                    return "AAAAAA";
+                case '8':
+                    return "555555";
+                case '9':
+                    return "5555FF";
+                case 'a':
+                    return "55FF55";
+                case 'b':
+                    return "55FFFF";
+                case 'c':
+                    return "FF5555";
+                case 'd':
+                    return "FF55FF";
+                case 'e':
+                    return "FFFF55";
+                case 'f':
+                    return "FFFFFF";
+                default:
+                    return null;
+                
+            }
+        }
+
+        #endregion
     }
 }
