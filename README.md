@@ -9,6 +9,13 @@ We take great care to provide good documentation so that the introduction, but a
 
 > The docuemntations are sill work in progress!
 
+## The Team
+| <a href="https://github.com/DasDarki" target="_blank">**DasDarki**</a> |
+| :---: |
+| [![DasDarki](https://avatars1.githubusercontent.com/u/20742539?v=3&s=150)](https://github.com/DasDarki)|
+| Project Lead & Developer |
+
+## Appendix
 ### Color Codes
 |Color Code|Description|
 |---|---|
@@ -31,9 +38,3 @@ We take great care to provide good documentation so that the introduction, but a
 |\~d\~|![#FF55FF](https://via.placeholder.com/15/FF55FF/000000?text=+) `#FF55FF`|
 |\~e\~|![#FFFF55](https://via.placeholder.com/15/FFFF55/000000?text=+) `#FFFF55`|
 |\~f\~|![#FFFFFF](https://via.placeholder.com/15/FFFFFF/000000?text=+) `#FFFFFF`|
-
-## The Team
-| <a href="https://github.com/DasDarki" target="_blank">**DasDarki**</a> |
-| :---: |
-| [![DasDarki](https://avatars1.githubusercontent.com/u/20742539?v=3&s=150)](https://github.com/DasDarki)|
-| Project Lead & Developer |
