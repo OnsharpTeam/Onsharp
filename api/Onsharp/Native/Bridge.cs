@@ -35,7 +35,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The current version of Onsharp running.
         /// </summary>
-        internal static readonly Version Version = new Version(1, 0, 5);
+        internal static readonly Version Version = new Version(1, 0, 6);
 
         /// <summary>
         /// A list containing all the events which needs as first argument a player, so called player events.
@@ -252,12 +252,13 @@ namespace Onsharp.Native
                             return;
                         }
 
-                        if (!domain.Server.CallEvent(type, ParseEventArgs(domain, type, args)))
+                        object[] objArgs = ParseEventArgs(domain, type, args);
+                        if (!domain.Server.CallEvent(type, objArgs))
                             flag = false;
 
                         if (type == EventType.PlayerQuit)
                         {
-                            domain.Server.PlayerPool.RemoveEntity((Player) args[0]);
+                            domain.Server.PlayerPool.RemoveEntity((Player) objArgs[0]);
                         }
                     });
             
