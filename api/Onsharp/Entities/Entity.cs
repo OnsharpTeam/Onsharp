@@ -92,10 +92,11 @@ namespace Onsharp.Entities
         /// </summary>
         /// <param name="name">The name of the property</param>
         /// <param name="value">The value to be set to</param>
-        public void SetPropertyValue(string name, object value)
+        /// <param name="sync">Whether the value should be synced to the clients or not</param>
+        public void SetPropertyValue(string name, object value, bool sync = false)
         {
             NativeValue nVal = Bridge.CreateNValue(value);
-            Onset.SetPropertyValue(EntityName, Id, name, nVal.NativePtr);
+            Onset.SetPropertyValue(EntityName, Id, name, nVal.NativePtr, sync);
         }
 
         /// <summary>

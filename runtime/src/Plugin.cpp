@@ -139,11 +139,12 @@ EXPORTED Plugin::NValue* GetPropertyValue(const char* entityName, int entity, co
     return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
 }
 
-EXPORTED void SetPropertyValue(const char* entityName, int entity, const char* propertyKey, Plugin::NValue* propertyValue)
+EXPORTED void SetPropertyValue(const char* entityName, int entity, const char* propertyKey, Plugin::NValue* propertyValue, bool sync)
 {
     std::string funcName = "Set" + std::string(entityName) + "PropertyValue";
     Lua::LuaArgs_t args = Lua::BuildArgumentList(entity, propertyKey);
     propertyValue->AddAsArg(&args);
+    args.emplace_back(sync);
     Plugin::Get()->CallLuaFunction(funcName.c_str(), &args);
 }
 

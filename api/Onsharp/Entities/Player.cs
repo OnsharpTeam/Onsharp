@@ -233,7 +233,13 @@ namespace Onsharp.Entities
             IntPtr[] argsArr = new IntPtr[args.Length];
             for (int i = 0; i < args.Length; i++)
             {
-                argsArr[i] = Bridge.CreateNValue(args[i]).NativePtr;
+                object arg = args[i];
+                if (arg is Entity entity)
+                {
+                    arg = entity.Id;
+                }
+                
+                argsArr[i] = Bridge.CreateNValue(arg).NativePtr;
             }
             
             Onset.CallRemote(Id, name, argsArr, argsArr.Length);
@@ -610,6 +616,7 @@ namespace Onsharp.Entities
                 case 'e':
                     return "FFFF55";
                 case 'f':
+                case 'r':
                     return "FFFFFF";
                 default:
                     return null;

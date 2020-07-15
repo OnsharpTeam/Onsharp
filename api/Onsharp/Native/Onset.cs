@@ -16,7 +16,7 @@ namespace Onsharp.Native
 
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void SetPropertyValue([MarshalAs(UnmanagedType.LPStr)] string entityName, int entity,
-            [MarshalAs(UnmanagedType.LPStr)] string propertyName, IntPtr propertyValue);
+            [MarshalAs(UnmanagedType.LPStr)] string propertyName, IntPtr propertyValue, bool sync);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool SetPlayerRagdoll(int player, bool enable);
