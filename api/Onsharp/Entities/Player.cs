@@ -455,7 +455,7 @@ namespace Onsharp.Entities
         /// <exception cref="ArgumentException">When the slot is out of range (between 1 and 3)</exception>
         public bool ChangeSelectedSlot(int slot)
         {
-            if(slot < 1 || slot > 3)
+            if(slot < 0 || slot > 3)
                 throw new ArgumentException("The slot cannot be less than 1 and greater than 3!");
             return Onset.EquipPlayerWeaponSlot(Id, slot);
         }
@@ -533,10 +533,11 @@ namespace Onsharp.Entities
         /// Sends a colored message to the player's chat.
         /// </summary>
         /// <param name="message">The message to be sent</param>
-        public void SendColoredMessage(string message)
+        /// <param name="size">The size of the font</param>
+        public void SendColoredMessage(string message, int size = 10)
         {
             StringBuilder formattedMessage = new StringBuilder();
-            string currentPart = "<span size=\"10\">";
+            string currentPart = "<span size=\"" + size + "\">";
             for(int i = 0; i < message.Length; i++)
             {
                 char c = message[i];
@@ -554,7 +555,7 @@ namespace Onsharp.Entities
                         i++;
                     }
 
-                    currentPart = "<span size=\"10\" " + (color != null ? "color=\"#" + color + "\"" : "") +
+                    currentPart = "<span size=\"" + size + "\" " + (color != null ? "color=\"#" + color + "\"" : "") +
                                   (style != null ? " style=\"" + style + "\"" : "") + ">";
                 }
                 else

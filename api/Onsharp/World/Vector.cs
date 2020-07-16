@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Onsharp.World
 {
@@ -135,6 +136,11 @@ namespace Onsharp.World
         }
 
         public Vector(Vector v) : this(v.X, v.Y, v.Z)
+        {
+        }
+
+        [JsonConstructor]
+        public Vector()
         {
         }
 

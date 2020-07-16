@@ -9,28 +9,18 @@ namespace Onsharp.Utils
     public static class ColorUtils
     {
         /// <summary>
-        /// Converts a RGBA color to a hex string.
-        /// </summary>
-        /// <param name="red">The red color value</param>
-        /// <param name="green">The green color value</param>
-        /// <param name="blue">The blue color value</param>
-        /// <param name="alpha">The alpha channel</param>
-        /// <returns>The hex string</returns>
-        public static string RgbaToHex(int red, int green, int blue, int alpha)
-        {
-            return Bridge.PtrToString(Onset.GetColorHex(red, green, blue, alpha, true));
-        }
-
-        /// <summary>
         /// Converts a RGB color to a hex string.
         /// </summary>
         /// <param name="red">The red color value</param>
         /// <param name="green">The green color value</param>
         /// <param name="blue">The blue color value</param>
-        /// <returns>The hex string</returns>
+        /// <returns>The hex int string</returns>
         public static string RgbToHex(int red, int green, int blue)
         {
-            return Bridge.PtrToString(Onset.GetColorHex(red, green, blue, 0, false));
+            int rgb = red;
+            rgb = (rgb << 8) + green;
+            rgb = (rgb << 8) + blue;
+            return rgb.ToString();
         }
 
         /// <summary>
@@ -40,22 +30,21 @@ namespace Onsharp.Utils
         /// <returns>The HEX color</returns>
         public static string ColorToHex(Color color)
         {
-            return RgbaToHex(color.R, color.G, color.B, color.A);
+            return RgbToHex(color.R, color.G, color.B);
         }
 
         /// <summary>
         /// Converts a HEX color to a color object.
         /// </summary>
-        /// <param name="hex">The HEX string</param>
+        /// <param name="hex">The HEX int string</param>
         /// <returns>The color object</returns>
         public static Color HexToColor(string hex)
         {
-            int red = 0;
-            int green = 0;
-            int blue = 0;
-            int alpha = 0;
-            Onset.GetColorValuesFromHex(hex, ref red, ref green, ref blue, ref alpha);
-            return Color.FromArgb(alpha, red, green, blue);
+            if (!int.TryParse(hex, out int rgb)) return Color.Black;
+            int red = (rgb >> 16) & 0xFF;
+            int green = (rgb >> 8) & 0xFF;
+            int blue = rgb & 0xFF;
+            return Color.FromArgb(red, green, blue);
         }
     }
 }

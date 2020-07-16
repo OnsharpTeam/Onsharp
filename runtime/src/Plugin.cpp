@@ -538,11 +538,10 @@ EXPORTED Plugin::NValue* GetVehicleColor(int vehicle)
     return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
 }
 
-EXPORTED bool SetVehicleColor(int vehicle, const char* hexColor)
+EXPORTED void SetVehicleColor(int vehicle, const char* hexColor)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, hexColor);
-    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetVehicleColor", &args);
-    return returnValues.at(0).GetValue<bool>();
+    Plugin::Get()->CallLuaFunction("SetVehicleColor", &args);
 }
 
 EXPORTED int GetVehicleNumberOfSeats(int vehicle)
@@ -625,30 +624,6 @@ EXPORTED bool SetVehicleRespawnParams(int vehicle, bool enableRespawn, long resp
     Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, enableRespawn, respawnTime, repairOnRespawn);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetVehicleRespawnParams", &args);
     return returnValues.at(0).GetValue<bool>();
-}
-
-EXPORTED void GetColorValuesFromHex(const char* hex, int* red, int* green, int* blue, int* alpha)
-{
-    Lua::LuaArgs_t args = Lua::BuildArgumentList(hex);
-    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("HexToRGBA", &args);
-    *red = returnValues.at(0).GetValue<int>();
-    *green = returnValues.at(1).GetValue<int>();
-    *blue = returnValues.at(2).GetValue<int>();
-    *alpha = returnValues.at(3).GetValue<int>();
-}
-
-EXPORTED Plugin::NValue* GetColorHex(int red, int green, int blue, int alpha, bool withAlpha)
-{
-    if(withAlpha)
-    {
-        Lua::LuaArgs_t args = Lua::BuildArgumentList(red, green, blue, alpha);
-        Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("RGBA", &args);
-        return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
-    }
-
-    Lua::LuaArgs_t args = Lua::BuildArgumentList(red, green, blue);
-    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("RGB", &args);
-    return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
 }
 
 EXPORTED Plugin::NValue* GetVehicleModelName(int vehicle)

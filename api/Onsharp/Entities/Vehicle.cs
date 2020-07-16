@@ -74,7 +74,12 @@ namespace Onsharp.Entities
         public Color Color
         {
             get => ColorUtils.HexToColor(Bridge.PtrToString(Onset.GetVehicleColor(Id)));
-            set => Onset.SetVehicleColor(Id, ColorUtils.ColorToHex(value));
+            set
+            {
+                string hex = ColorUtils.ColorToHex(value);
+                Bridge.Logger.Debug("Veh Set Color : " + hex);
+                Onset.SetVehicleColor(Id, hex);
+            }
         }
 
         /// <summary>
@@ -260,7 +265,7 @@ namespace Onsharp.Entities
         /// Sets the given passenger seat to the given player.
         /// </summary>
         /// <param name="player">The player to be set into the vehicle</param>
-        /// <param name="seat">The wanted seat</param>
+        /// <param name="seat">The wanted seat. Seat 1 is the driver seat</param>
         public void SetPassenger(Player player, int seat)
         {
             player.SetIntoVehicle(this, seat);
