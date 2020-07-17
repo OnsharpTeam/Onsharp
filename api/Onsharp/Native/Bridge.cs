@@ -35,7 +35,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The current version of Onsharp running.
         /// </summary>
-        internal static readonly Version Version = new Version(1, 0, 7);
+        internal static readonly Version Version = new Version(1, 0, 8);
 
         /// <summary>
         /// A list containing all the events which needs as first argument a player, so called player events.

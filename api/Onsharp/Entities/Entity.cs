@@ -1,4 +1,5 @@
-﻿using Onsharp.Enums;
+﻿using System.Collections.Generic;
+using Onsharp.Enums;
 using Onsharp.Native;
 using Onsharp.World;
 
@@ -39,10 +40,13 @@ namespace Onsharp.Entities
         
         internal EntityPool Pool { get; set; }
 
+        private readonly Dictionary<string, object> _localData;
+
         internal Entity(int id, string entityName)
         {
             Id = id;
             EntityName = entityName;
+            _localData = new Dictionary<string, object>();
         }
 
         /// <summary>
@@ -107,7 +111,126 @@ namespace Onsharp.Entities
         /// <returns>The casted value</returns>
         public T GetPropertyValue<T>(string name)
         {
-            return (T) new NativeValue(Onset.GetPropertyValue(EntityName, Id, name)).GetValue();
+            object val = GetPropertyValue(name);
+            return val == null ? default : (T) val;
+        }
+
+        /// <summary>
+        /// Checks if the entity has the property value for the given name.
+        /// </summary>
+        /// <param name="name">The name of the property</param>
+        /// <returns>True, if the entity has the wanted property value</returns>
+        public bool HasPropertyValue(string name)
+        {
+            return GetPropertyValue(name) != null;
+        }
+
+        /// <summary>
+        /// Tries to convert the property value of the given name.
+        /// </summary>
+        /// <param name="name">The name of the property value</param>
+        /// <param name="val">The outcome value of the property value</param>
+        /// <typeparam name="T">The wanted type</typeparam>
+        /// <returns>True, if the value could be casted</returns>
+        public bool TryPropertyValue<T>(string name, out T val)
+        {
+            val = default;
+            try
+            {
+                object obj = GetPropertyValue(name);
+                if (obj == null)
+                {
+                    return false;
+                }
+
+                val = (T) obj;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the property value for the given name of this entity.
+        /// </summary>
+        /// <param name="name">The name of the property</param>
+        /// <returns>The default value</returns>
+        public object GetPropertyValue(string name)
+        {
+            return new NativeValue(Onset.GetPropertyValue(EntityName, Id, name)).GetValue();
+        }
+
+        /// <summary>
+        /// Sets the local value for the given name of the entity.
+        /// </summary>
+        /// <param name="name">The name of the local data</param>
+        /// <param name="value">The value to be set to</param>
+        public void SetLocalValue(string name, object value)
+        {
+            if (_localData.ContainsKey(name))
+                _localData.Remove(name);
+            _localData.Add(name, value);
+        }
+
+        /// <summary>
+        /// Gets the local value for the given name of the entity.
+        /// </summary>
+        /// <param name="name">The name of the local data</param>
+        /// <typeparam name="T">The wanted return type</typeparam>
+        /// <returns>The casted value</returns>
+        public T GetLocalValue<T>(string name)
+        {
+            object val = GetLocalValue(name);
+            return val == null ? default : (T) val;
+        }
+
+        /// <summary>
+        /// Checks if the entity has the local value for the given name.
+        /// </summary>
+        /// <param name="name">The name of the local data</param>
+        /// <returns>True, if the entity has the wanted local value</returns>
+        public bool HasLocalValue(string name)
+        {
+            return GetLocalValue(name) != null;
+        }
+
+        /// <summary>
+        /// Tries to convert the local value of the given name.
+        /// </summary>
+        /// <param name="name">The name of the local value</param>
+        /// <param name="val">The outcome value of the local value</param>
+        /// <typeparam name="T">The wanted type</typeparam>
+        /// <returns>True, if the value could be casted</returns>
+        public bool TryLocalValue<T>(string name, out T val)
+        {
+            val = default;
+            try
+            {
+                object obj = GetLocalValue(name);
+                if (obj == null)
+                {
+                    return false;
+                }
+
+                val = (T) obj;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the local value for the given name of this entity.
+        /// </summary>
+        /// <param name="name">The name of the local data</param>
+        /// <returns>The default value</returns>
+        public object GetLocalValue(string name)
+        {
+            return _localData.ContainsKey(name) ? _localData[name] : null;
         }
     }
 }

@@ -455,7 +455,7 @@ namespace Onsharp.Entities
         /// <exception cref="ArgumentException">When the slot is out of range (between 1 and 3)</exception>
         public bool ChangeSelectedSlot(int slot)
         {
-            if(slot < 0 || slot > 3)
+            if(slot < 1 || slot > 3)
                 throw new ArgumentException("The slot cannot be less than 1 and greater than 3!");
             return Onset.EquipPlayerWeaponSlot(Id, slot);
         }
