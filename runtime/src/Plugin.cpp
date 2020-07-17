@@ -307,11 +307,12 @@ EXPORTED int GetPlayerEquippedWeaponSlot(int player)
     return returnValues.at(0).GetValue<int>();
 }
 
-EXPORTED int GetPlayerWeapon(int player, int slot)
+EXPORTED void GetPlayerWeapon(int player, int slot, int* model, int* ammo)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(player, slot);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerWeapon", &args);
-    return returnValues.at(0).GetValue<int>();
+    *model = returnValues.at(0).GetValue<int>();
+    *ammo = returnValues.at(1).GetValue<int>();
 }
 
 EXPORTED bool SetPlayerWeapon(int player, int weapon, int ammo, bool equip, int slot, bool loaded)

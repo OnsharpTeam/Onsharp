@@ -438,13 +438,47 @@ namespace Onsharp.Entities
         /// Gets the currently equipped weapon on the given slot of the player.
         /// </summary>
         /// <param name="slot">The wanted slot</param>
+        /// <param name="ammo">The ammo currently in the weapon</param>
+        /// <returns>The equipped weapon</returns>
+        /// <exception cref="ArgumentException">When the slot is out of range (between 1 and 3)</exception>
+        public Weapon GetCurrentWeapon(int slot, out int ammo)
+        {
+            if(slot < 1 || slot > 3)
+                throw new ArgumentException("The slot cannot be less than 1 and greater than 3!");
+            int model = 0, rAmmo = 0;
+            Onset.GetPlayerWeapon(Id, slot, ref model, ref rAmmo);
+            ammo = rAmmo;
+            return (Weapon) model;
+        }
+
+        /// <summary>
+        /// Gets the ammo of the currently equipped weapon on the given slot of the player.
+        /// </summary>
+        /// <param name="slot">The wanted slot</param>
+        /// <returns>The ammo of the equipped weapon</returns>
+        /// <exception cref="ArgumentException">When the slot is out of range (between 1 and 3)</exception>
+        public int GetCurrentAmmo(int slot)
+        {
+            if(slot < 1 || slot > 3)
+                throw new ArgumentException("The slot cannot be less than 1 and greater than 3!");
+            int model = 0, rAmmo = 0;
+            Onset.GetPlayerWeapon(Id, slot, ref model, ref rAmmo);
+            return rAmmo;
+        }
+
+        /// <summary>
+        /// Gets the currently equipped weapon on the given slot of the player.
+        /// </summary>
+        /// <param name="slot">The wanted slot</param>
         /// <returns>The equipped weapon</returns>
         /// <exception cref="ArgumentException">When the slot is out of range (between 1 and 3)</exception>
         public Weapon GetCurrentWeapon(int slot)
         {
             if(slot < 1 || slot > 3)
                 throw new ArgumentException("The slot cannot be less than 1 and greater than 3!");
-            return (Weapon) Onset.GetPlayerWeapon(Id, slot);
+            int model = 0, rAmmo = 0;
+            Onset.GetPlayerWeapon(Id, slot, ref model, ref rAmmo);
+            return (Weapon) model;
         }
 
         /// <summary>

@@ -91,7 +91,7 @@ namespace Onsharp.Native
         internal static extern int GetPlayerEquippedWeaponSlot(int player);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int GetPlayerWeapon(int player, int slot);
+        internal static extern void GetPlayerWeapon(int player, int slot, ref int model, ref int ammo);
 
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool SetPlayerWeapon(int player, int weapon, int ammo, bool equip, int slot, bool loaded);
