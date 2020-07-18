@@ -38,8 +38,10 @@ function Onsharp_RegisterRemoteEvent(pluginId, eventName)
         args[3] = eventName;
 
         local remoteArgs = {...};
+		local idx = 4
         for _, v in ipairs(remoteArgs) do
-            args[#args + 1] = v;
+            args[idx] = v;
+			idx = idx + 1
         end
 
         CallBridge("call-remote", args);

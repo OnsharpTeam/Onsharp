@@ -273,7 +273,7 @@ namespace Onsharp.Native
                     object[] remoteArgs = new object[args.Length - 3];
                     for (int i = 3; i < args.Length; i++)
                     {
-                        remoteArgs[i - 2] = args[i];
+                        remoteArgs[i - 3] = args[i];
                     }
                     
                     Plugin plugin = PluginManager.GetPlugin(pluginId);
