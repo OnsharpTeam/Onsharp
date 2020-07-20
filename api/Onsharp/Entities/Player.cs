@@ -4,6 +4,7 @@ using System.Text;
 using Onsharp.Enums;
 using Onsharp.Events;
 using Onsharp.Native;
+using Onsharp.Steam;
 using Onsharp.Utils;
 using Onsharp.World;
 
@@ -35,6 +36,21 @@ namespace Onsharp.Entities
         /// </summary>
         public long SteamID => Onset.GetPlayerSteamId(Id);
 
+        /// <summary>
+        /// The steam id of the player as string and in the 64 format.
+        /// </summary>
+        public string SteamID64 => SteamID.ToString();
+
+        /// <summary>
+        /// The steam id of the player in the 32 format.
+        /// </summary>
+        public string SteamID32 => SteamIDConvert.Steam64ToSteam32(SteamID);
+
+        /// <summary>
+        /// The steam id of the player in the second format.
+        /// </summary>
+        public string SteamID2 => SteamIDConvert.Steam64ToSteam2(SteamID);
+        
         /// <summary>
         /// Whether the voice is enabled and the player can talk in voice chat, or not.
         /// </summary>
