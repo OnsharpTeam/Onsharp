@@ -54,7 +54,7 @@ namespace Onsharp.Events
         NPCReachTarget = 10,
         /// <summary>
         /// Called when a <see cref="Onsharp.Entities.NPC"/> is damaged.<br/>
-        /// (<see cref="Onsharp.Entities.NPC"/> npc, <see cref="Onsharp.Enums.DamageType"/> damageType, <see cref="float"/> amount)
+        /// (<see cref="Onsharp.Entities.NPC"/> npc, <see cref="Onsharp.Enums.DamageType"/> damageType, <see cref="double"/> amount)
         /// </summary>
         NPCDamage = 11,
         /// <summary>
@@ -152,7 +152,7 @@ namespace Onsharp.Events
         PlayerWeaponShot = 29,
         /// <summary>
         /// Called when a <see cref="Onsharp.Entities.Player"/> is damaged.<br/>
-        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Enums.DamageType"/> damageType, <see cref="float"/> amount)
+        /// (<see cref="Onsharp.Entities.Player"/> player, <see cref="Onsharp.Enums.DamageType"/> damageType, <see cref="double"/> amount)
         /// </summary>
         PlayerDamage = 30,
         /// <summary>
@@ -166,5 +166,10 @@ namespace Onsharp.Events
         /// /// <returns>Returning false results in preventing the further processing</returns>
         /// </summary>
         PlayerPreCommand = 32,
+        /// <summary>
+        /// Called when a vehicle takes health or physical damage.<br/>
+        /// (<see cref="Onsharp.Entities.Vehicle"/> vehicle, <see cref="double"/> healthDamage, <see cref="int"/>damageIndex, <see cref="double"/> physicalDamage)
+        /// </summary>
+        VehicleDamage = 33,
     }
 }

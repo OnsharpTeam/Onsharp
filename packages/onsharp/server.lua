@@ -202,4 +202,8 @@ AddEvent("OnPlayerInteractDoor", function(player_, door_, bWantsOpen)
     return CallBridgedEvent(31, player_, door_, bWantsOpen)
 end)
 
+AddEvent("OnVehicleDamage", function(vehicle, healthDamage, damageIndex, damageAmount)
+    return CallBridgedEvent(33, vehicle, healthDamage, damageIndex, damageAmount)
+end)
+
 -- END SERVER EVENTS --

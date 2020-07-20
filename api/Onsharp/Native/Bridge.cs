@@ -620,6 +620,8 @@ namespace Onsharp.Native
                     return new object[] {player, (DamageType) (int) args[2], (double) args[3]};
                 case EventType.PlayerInteractDoor:
                     return new object[] {player, owner.Server.CreateDoor((int) args[2]), (bool) args[3]};
+                case EventType.VehicleDamage:
+                    return new object[] {owner.Server.CreateVehicle((int) args[1]), (double) args[2], (int) args[3], (double) args[4]};
                 default:
                     return null;
             }
