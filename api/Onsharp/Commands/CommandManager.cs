@@ -102,7 +102,7 @@ namespace Onsharp.Commands
                             }
                             else
                             {
-                                currentStr = str;
+                                currentStr = str.Substring(1);
                                 openingChar = "\"";
                             }
                         }
