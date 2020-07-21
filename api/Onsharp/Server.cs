@@ -16,6 +16,19 @@ namespace Onsharp
 {
     internal class Server : IServer
     {
+        #region Entity Types
+
+        private static readonly Type EntityType = typeof(Entity);
+        private static readonly Type PlayerType = typeof(Player);
+        private static readonly Type DoorType = typeof(Door);
+        private static readonly Type NPCType = typeof(NPC);
+        private static readonly Type ObjectType = typeof(Object);
+        private static readonly Type PickupType = typeof(Pickup);
+        private static readonly Type Text3DType = typeof(Text3D);
+        private static readonly Type VehicleType = typeof(Vehicle);
+
+        #endregion
+        
         internal PluginDomain Owner { get; }
 
         public string Name
@@ -390,6 +403,46 @@ namespace Onsharp
             }
         }
 
+        private Entity CreateTypedEntity(int id, Type type)
+        {
+            if (type == DoorType)
+            {
+                return CreateDoor(id);
+            }
+            
+            if (type == NPCType)
+            {
+                return CreateNPC(id);
+            }
+            
+            if (type == ObjectType)
+            {
+                return CreateObject(id);
+            }
+            
+            if (type == PickupType)
+            {
+                return CreatePickup(id);
+            }
+            
+            if (type == PlayerType)
+            {
+                return CreatePlayer(id);
+            }
+            
+            if (type == Text3DType)
+            {
+                return CreateText3D(id);
+            }
+            
+            if (type == VehicleType)
+            {
+                return CreateVehicle(id);
+            }
+            
+            return type == NPCType ? CreateNPC(id) : null;
+        }
+
         internal void FireRemoteEvent(string name, int player, object[] nArgs)
         {
             lock (RemoteEvents)
@@ -399,11 +452,19 @@ namespace Onsharp
                     RemoteEvent @event = RemoteEvents[i];
                     if (@event.Name == name)
                     {
-                        object[] args = new object[nArgs.Length + 1];
+                        ParameterInfo[] parameters = @event.Parameters;
+                        object[] args = new object[nArgs.Length - 2];
                         args[0] = CreatePlayer(player);
                         for (int j = 0; j < nArgs.Length; j++)
                         {
-                            args[j + 1] = nArgs[j];
+                            ParameterInfo parameter = parameters[j + 1];
+                            object raw = nArgs[j];
+                            if (EntityType.IsAssignableFrom(parameter.ParameterType) && raw is int id)
+                            {
+                                raw = CreateTypedEntity(id, parameter.ParameterType);
+                            }
+                            
+                            args[j + 1] = raw;
                         }
 
                         @event.FireEvent(args);

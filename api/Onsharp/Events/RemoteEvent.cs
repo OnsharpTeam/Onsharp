@@ -20,6 +20,11 @@ namespace Onsharp.Events
         private MethodInfo _handler;
         private object _owner;
 
+        /// <summary>
+        /// All parameters for the handling method.
+        /// </summary>
+        internal ParameterInfo[] Parameters => _handler.GetParameters();
+
         public RemoteEvent(string name)
         {
             Name = name;

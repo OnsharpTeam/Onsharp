@@ -23,6 +23,7 @@ namespace Onsharp.Plugins
             List<PluginDomain> domainCache = new List<PluginDomain>();
             foreach (string pluginPath in Directory.GetFiles(Bridge.PluginsPath))
             {
+                if(!Path.GetExtension(pluginPath).ToLower().Contains("dll")) continue;
                 PluginDomain domain = new PluginDomain(this, pluginPath);
                 domain.Initialize();
                 if (domain.Plugin.State == PluginState.Failed)
