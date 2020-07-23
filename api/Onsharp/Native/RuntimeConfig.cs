@@ -20,5 +20,10 @@ namespace Onsharp.Native
         /// The timeout how long the console command manager should wait until start to take input.
         /// </summary>
         public int ConsoleInputTimeout { get; set; } = 3000;
+
+        /// <summary>
+        /// Whether the lazy mover is active or not.
+        /// </summary>
+        public bool LazyMoverActive { get; set; } = false;
     }
 }
