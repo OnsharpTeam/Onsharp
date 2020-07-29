@@ -180,6 +180,9 @@ namespace Onsharp.Native
                 ConsoleManager = new ConsoleManager();
                 Runtime = new Bridge();
                 Runtime.RegisterConsoleCommands(Runtime);
+
+                LazyMover.Start();
+                PluginManager = new PluginManager();
             }
             catch (Exception ex)
             {
@@ -215,8 +218,7 @@ namespace Onsharp.Native
                     Logger.Fatal("The update v{VERSION} for the Onsharp Runtime is available!", newVersion);
                 }
                 
-                LazyMover.Start();
-                PluginManager = new PluginManager();
+                PluginManager.Poll();
                 //ConsoleManager.Start();
             }
             catch (Exception ex)
