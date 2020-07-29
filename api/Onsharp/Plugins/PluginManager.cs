@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 using Onsharp.Exceptions;
 using Onsharp.Native;
 using Onsharp.Updater;
@@ -13,14 +14,16 @@ namespace Onsharp.Plugins
     {
         public List<Plugin> Plugins { get; }
         
-        internal List<PluginDomain> Domains { get; }
+        internal List<PluginDomain> Domains { get; private set; }
 
+        private List<PluginDomain> _domainCache;
+        
         internal PluginManager()
         {
             Plugins = new List<Plugin>();
             Domains = new List<PluginDomain>();
             ReloadLibs();
-            List<PluginDomain> domainCache = new List<PluginDomain>();
+            _domainCache = new List<PluginDomain>();
             foreach (string pluginPath in Directory.GetFiles(Bridge.PluginsPath))
             {
                 if(!Path.GetExtension(pluginPath).ToLower().Contains("dll")) continue;
@@ -46,11 +49,24 @@ namespace Onsharp.Plugins
                         domain = updater.Domain;
                     }
                 }
-                domainCache.Add(domain);
-            }
 
-            PrioritizedList list = new PrioritizedList(domainCache);
-            foreach (PluginDomain handle in domainCache)
+                if (domain.PackageProvider != null)
+                {
+                    domain.PackageProvider.Export(Path.Combine(Bridge.PackagePath, domain.PackageProvider.Name));
+                    
+                }
+                
+                _domainCache.Add(domain);
+            }
+        }
+
+        /// <summary>
+        /// Polls the cached init process and finishes it.
+        /// </summary>
+        internal void Poll()
+        {
+            PrioritizedList list = new PrioritizedList(_domainCache);
+            foreach (PluginDomain handle in _domainCache)
             {
                 if (handle.Plugin.Meta.Dependencies.Length > 0)
                 {
@@ -61,9 +77,9 @@ namespace Onsharp.Plugins
                 }
             }
 
-            domainCache = list.Convert();
+            _domainCache = list.Convert();
             Domains = new List<PluginDomain>();
-            foreach (PluginDomain domain in domainCache)
+            foreach (PluginDomain domain in _domainCache)
             {
                 if (domain.Plugin.Meta.Id == "_global" || domain.Plugin.Meta.Name == "_global")
                 {

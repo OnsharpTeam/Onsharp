@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using Nett;
+using Newtonsoft.Json.Linq;
 using Onsharp.Commands;
 using Onsharp.Converters;
 using Onsharp.Entities;
@@ -86,6 +87,16 @@ namespace Onsharp.Native
         internal static string LogPath { get; private set; }
         
         /// <summary>
+        /// The path to the folder containing all LUA packages for Onset.
+        /// </summary>
+        internal static string PackagePath { get; private set; }
+        
+        /// <summary>
+        /// The JSON object of the Onset server config.
+        /// </summary>
+        internal static JObject ConfigObject { get; private set; }
+        
+        /// <summary>
         /// The config of the current Onsharp runtime.
         /// </summary>
         internal static RuntimeConfig Config { get; private set; }
@@ -151,6 +162,8 @@ namespace Onsharp.Native
                 Directory.CreateDirectory(LogPath);
                 DataPath = Path.Combine(AppPath, "data");
                 Directory.CreateDirectory(DataPath);
+                PackagePath = Path.Combine(ServerPath, "packages");
+                Directory.CreateDirectory(PackagePath);
                 string configPath = Path.Combine(DataPath, "global.toml");
                 if (File.Exists(configPath))
                 {

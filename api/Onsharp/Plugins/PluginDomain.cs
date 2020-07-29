@@ -50,6 +50,11 @@ namespace Onsharp.Plugins
         /// The server owned by this domain and the plugin.
         /// </summary>
         internal Server Server { get; private set; }
+        
+        /// <summary>
+        /// The provider of the package, if set.
+        /// </summary>
+        internal PackageProvider PackageProvider { get; private set; }
 
         internal PluginDomain(PluginManager pluginManager, string path)
         {
@@ -95,7 +100,7 @@ namespace Onsharp.Plugins
                             type.FullName, Path);
                         return;
                     }
-                
+
                     AutoUpdaterAttribute updateAttribute = type.GetCustomAttribute<AutoUpdaterAttribute>();
                     if (updateAttribute != null)
                     {
@@ -115,6 +120,14 @@ namespace Onsharp.Plugins
                         Plugin.Logger = new Logger(Plugin.Display, meta.IsDebug);
                         Plugin.State = PluginState.Unknown;
                         EntryPoints.Add(Plugin);
+
+                        if (meta.Package != null)
+                        {
+                            PackageProvider = meta.Package;
+                            PackageProvider.Author ??= meta.Author;
+                            PackageProvider.Version ??= meta.Version;
+                            PackageProvider.Name ??= Plugin.Display;
+                        }
                     }
                     else
                     {
