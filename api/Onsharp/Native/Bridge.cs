@@ -12,6 +12,7 @@ using Onsharp.Enums;
 using Onsharp.Events;
 using Onsharp.Interop;
 using Onsharp.IO;
+using Onsharp.Modules;
 using Onsharp.Plugins;
 using Onsharp.Updater;
 using Onsharp.World;
@@ -52,7 +53,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The path of the server software running this runtime.
         /// </summary>
-        private static string ServerPath { get; set; }
+        internal static string ServerPath { get; set; }
         
         /// <summary>
         /// The path to the runtime folder.
@@ -201,6 +202,7 @@ namespace Onsharp.Native
                     Logger.Fatal("The update v{VERSION} for the Onsharp Runtime is available!", newVersion);
                 }
                 
+                LazyMover.Start();
                 PluginManager = new PluginManager();
                 //ConsoleManager.Start();
             }

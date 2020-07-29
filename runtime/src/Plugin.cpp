@@ -155,11 +155,11 @@ EXPORTED bool SetPlayerRagdoll(int player, bool enable)
     return returnValues.at(0).GetValue<bool>();
 }
 
-EXPORTED long GetPlayerSteamId(int player)
+EXPORTED long long GetPlayerSteamId(int player)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerSteamId", &args);
-    return returnValues.at(0).GetValue<long>();
+    return returnValues.at(0).GetValue<long long>();
 }
 
 EXPORTED float GetPlayerHeadSize(int player)
@@ -228,14 +228,14 @@ EXPORTED Plugin::NValue* GetPlayerIP(int player)
     return Plugin::Get()->CreateNValueByLua(returnValues.at(0));
 }
 
-EXPORTED long GetPlayerRespawnTime(int player)
+EXPORTED long long GetPlayerRespawnTime(int player)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(player);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("GetPlayerRespawnTime", &args);
-    return returnValues.at(0).GetValue<long>();
+    return returnValues.at(0).GetValue<long long>();
 }
 
-EXPORTED void SetPlayerRespawnTime(int player, long msTime)
+EXPORTED void SetPlayerRespawnTime(int player, long long msTime)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(player, msTime);
     Plugin::Get()->CallLuaFunction("SetPlayerRespawnTime", &args);
@@ -620,7 +620,7 @@ EXPORTED void SetVehicleRotation(int vehicle, double x, double y, double z)
     Plugin::Get()->CallLuaFunction("SetVehicleRotation", &args);
 }
 
-EXPORTED bool SetVehicleRespawnParams(int vehicle, bool enableRespawn, long respawnTime, bool repairOnRespawn)
+EXPORTED bool SetVehicleRespawnParams(int vehicle, bool enableRespawn, long long respawnTime, bool repairOnRespawn)
 {
     Lua::LuaArgs_t args = Lua::BuildArgumentList(vehicle, enableRespawn, respawnTime, repairOnRespawn);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("SetVehicleRespawnParams", &args);
@@ -1009,7 +1009,7 @@ EXPORTED int CreateTimer(const char* id, double interval)
     return returnValues.at(0).GetValue<int>();
 }
 
-EXPORTED void Delay(const char* id, long millis)
+EXPORTED void Delay(const char* id, long long millis)
 {
     Lua::LuaArgs_t argValues = Lua::BuildArgumentList(id, millis);
     Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction("Onsharp_Delay", &argValues);
