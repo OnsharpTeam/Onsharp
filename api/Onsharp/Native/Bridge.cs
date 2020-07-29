@@ -94,7 +94,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The JSON object of the Onset server config.
         /// </summary>
-        internal static JObject ConfigObject { get; private set; }
+        internal static JObject ServerConfig { get; private set; }
         
         /// <summary>
         /// The config of the current Onsharp runtime.
@@ -164,6 +164,7 @@ namespace Onsharp.Native
                 Directory.CreateDirectory(DataPath);
                 PackagePath = Path.Combine(ServerPath, "packages");
                 Directory.CreateDirectory(PackagePath);
+                ServerConfig = JObject.Parse(File.ReadAllText(Path.Combine(ServerPath, "server_config.json")));
                 string configPath = Path.Combine(DataPath, "global.toml");
                 if (File.Exists(configPath))
                 {

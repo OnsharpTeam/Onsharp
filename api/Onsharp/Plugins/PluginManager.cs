@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Onsharp.Exceptions;
 using Onsharp.Native;
@@ -53,11 +54,26 @@ namespace Onsharp.Plugins
                 if (domain.PackageProvider != null)
                 {
                     domain.PackageProvider.Export(Path.Combine(Bridge.PackagePath, domain.PackageProvider.Name));
-                    
+                    AddPackage(domain.PackageProvider.Name);
                 }
                 
                 _domainCache.Add(domain);
             }
+
+            File.WriteAllText(Path.Combine(Bridge.ServerPath, "server_config.json"),
+                Bridge.ServerConfig.ToString(Formatting.Indented));
+        }
+
+        /// <summary>
+        /// Adds a package to the server config object if not existing.
+        /// </summary>
+        /// <param name="name"></param>
+        private void AddPackage(string name)
+        {
+            JArray array = Bridge.ServerConfig["packages"] as JArray;
+            if (array == null) return;
+            if (array.IndexOf(name) < 0) return;
+            array.Add(name);
         }
 
         /// <summary>
