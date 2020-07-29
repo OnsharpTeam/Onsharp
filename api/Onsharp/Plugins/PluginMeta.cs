@@ -1,4 +1,5 @@
 ﻿using System;
+using Onsharp.Native;
 
 namespace Onsharp.Plugins
 {
@@ -40,6 +41,11 @@ namespace Onsharp.Plugins
         /// Whether the plugin is in debug mode or not.
         /// </summary>
         public bool IsDebug { get; set; }
+        
+        /// <summary>
+        /// The provider which provides a possible LUA package to be generated.
+        /// </summary>
+        public PackageProvider Package { get; set; }
 
         /// <summary>
         /// This constructor offers all properties. If you want to set them, this is the constructor you need.
