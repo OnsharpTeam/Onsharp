@@ -41,6 +41,7 @@ namespace Onsharp.IO
         /// <param name="delete">If true, the folder will be deleted after clearing</param>
         public static void ClearFolder(string path, bool delete = false)
         {
+            if(!Directory.Exists(path)) return;
             bool realDelete = delete;
             foreach (string file in Directory.GetFiles(path))
             {

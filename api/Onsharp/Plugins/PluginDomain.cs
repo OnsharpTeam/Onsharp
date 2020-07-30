@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Onsharp.IO;
 using Onsharp.Native;
@@ -121,13 +122,12 @@ namespace Onsharp.Plugins
                         Plugin.State = PluginState.Unknown;
                         EntryPoints.Add(Plugin);
 
-                        if (meta.Package != null)
-                        {
-                            PackageProvider = meta.Package;
-                            PackageProvider.Author ??= meta.Author;
-                            PackageProvider.Version ??= meta.Version;
-                            PackageProvider.Name ??= Plugin.Display;
-                        }
+                        PackageProvider = TryCreatePackageProvider(meta.PackageProvider);
+                        if (PackageProvider == null) continue;
+                        PackageProvider.Author ??= meta.Author;
+                        PackageProvider.Version ??= meta.Version;
+                        PackageProvider.Name ??= Plugin.Display;
+                        PackageProvider.Name = Regex.Replace(PackageProvider.Name, "[^0-9A-Za-z]", "");
                     }
                     else
                     {
@@ -180,6 +180,18 @@ namespace Onsharp.Plugins
             }
         }
 
+        private PackageProvider TryCreatePackageProvider(Type type)
+        {
+            try
+            {
+                return (PackageProvider) Activator.CreateInstance(type);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         /// Starts the plugin and calls its start callback.
         /// </summary>
@@ -189,7 +201,6 @@ namespace Onsharp.Plugins
             {
                 Plugin.Logger.Info("Starting plugin {NAME} v{VERSION} by {AUTHOR}...", Plugin.Display,
                     Plugin.Meta.Version, Plugin.Meta.Author);
-                Bridge.Logger.Debug("Server init? {YES}", Plugin.Server != null);
                 Plugin.OnStart();
                 lock (PluginManager.Plugins)
                     PluginManager.Plugins.Add(Plugin);

@@ -15,16 +15,14 @@ namespace Onsharp.Plugins
     {
         public List<Plugin> Plugins { get; }
         
-        internal List<PluginDomain> Domains { get; private set; }
-
-        private List<PluginDomain> _domainCache;
+        internal List<PluginDomain> Domains { get; }
         
         internal PluginManager()
         {
             Plugins = new List<Plugin>();
             Domains = new List<PluginDomain>();
             ReloadLibs();
-            _domainCache = new List<PluginDomain>();
+            List<PluginDomain> domainCache = new List<PluginDomain>();
             foreach (string pluginPath in Directory.GetFiles(Bridge.PluginsPath))
             {
                 if(!Path.GetExtension(pluginPath).ToLower().Contains("dll")) continue;
@@ -53,36 +51,20 @@ namespace Onsharp.Plugins
 
                 if (domain.PackageProvider != null)
                 {
+                    domain.Plugin.Logger.Info("Found a package provider! Exporting package...");
                     domain.PackageProvider.Export(Path.Combine(Bridge.PackagePath, domain.PackageProvider.Name));
                     AddPackage(domain.PackageProvider.Name);
+                    domain.Plugin.Logger.Info("Package {NAME} successfully provided!", domain.PackageProvider.Name);
                 }
                 
-                _domainCache.Add(domain);
+                domainCache.Add(domain);
             }
 
             File.WriteAllText(Path.Combine(Bridge.ServerPath, "server_config.json"),
                 Bridge.ServerConfig.ToString(Formatting.Indented));
-        }
-
-        /// <summary>
-        /// Adds a package to the server config object if not existing.
-        /// </summary>
-        /// <param name="name"></param>
-        private void AddPackage(string name)
-        {
-            JArray array = Bridge.ServerConfig["packages"] as JArray;
-            if (array == null) return;
-            if (array.IndexOf(name) < 0) return;
-            array.Add(name);
-        }
-
-        /// <summary>
-        /// Polls the cached init process and finishes it.
-        /// </summary>
-        internal void Poll()
-        {
-            PrioritizedList list = new PrioritizedList(_domainCache);
-            foreach (PluginDomain handle in _domainCache)
+            
+            PrioritizedList list = new PrioritizedList(domainCache);
+            foreach (PluginDomain handle in domainCache)
             {
                 if (handle.Plugin.Meta.Dependencies.Length > 0)
                 {
@@ -93,9 +75,9 @@ namespace Onsharp.Plugins
                 }
             }
 
-            _domainCache = list.Convert();
+            domainCache = list.Convert();
             Domains = new List<PluginDomain>();
-            foreach (PluginDomain domain in _domainCache)
+            foreach (PluginDomain domain in domainCache)
             {
                 if (domain.Plugin.Meta.Id == "_global" || domain.Plugin.Meta.Name == "_global")
                 {
@@ -117,6 +99,19 @@ namespace Onsharp.Plugins
                 Domains.Add(domain);
                 domain.Start();
             }
+        }
+
+        /// <summary>
+        /// Adds a package to the server config object if not existing.
+        /// </summary>
+        /// <param name="name"></param>
+        private void AddPackage(string name)
+        {
+            JArray array = Bridge.ServerConfig["packages"] as JArray;
+            if (array == null) return;
+            if (array.IndexOf(name) >= 0) return;
+            array.Add(name);
+            Onset.StartPackage(name);
         }
 
         public IReadOnlyList<Plugin> GetAllPlugins()

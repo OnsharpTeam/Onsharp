@@ -23,7 +23,6 @@ namespace Onsharp.Native
         
         internal string Version { get; set; }
 
-        private int _scriptId;
         private readonly Dictionary<Type, List<Tuple<string, byte[]>>> _data;
         
         /// <summary>
@@ -37,7 +36,6 @@ namespace Onsharp.Native
             Name = name;
             Version = version;
             Author = author;
-            _scriptId = 0;
             _data = new Dictionary<Type, List<Tuple<string, byte[]>>>
             {
                 {Type.ServerScript, new List<Tuple<string, byte[]>>()},
@@ -52,6 +50,7 @@ namespace Onsharp.Native
         /// <param name="path">The path to the package folder</param>
         internal void Export(string path)
         {
+            Initialize();
             FileSystemUtils.ClearFolder(path, true);
             Directory.CreateDirectory(path);
             Package package = new Package {Version = Version, Author = Author};
@@ -75,6 +74,13 @@ namespace Onsharp.Native
             }
             
             File.WriteAllText(Path.Combine(path, "package.json"), Json.ToJson(package, Json.Flag.Pretty));
+        }
+
+        /// <summary>
+        /// Gets called when the package should be initialized before exporting it to the system. 
+        /// </summary>
+        protected virtual void Initialize()
+        {
         }
 
         #region Adding Assets
@@ -132,7 +138,7 @@ namespace Onsharp.Native
         /// <summary>
         /// Adds an server script to the stack with the given name.
         /// </summary>
-        /// <param name="name">The name of the server script</param>
+        /// <param name="name">The name of the server script. It must contain the LUA extension and can contain subdirectories. Use <see cref="Path.Combine(string,string)"/>to combine path cross platform</param>
         /// <param name="bytes">The data as a byte array</param>
         /// <returns>The current provider</returns>
         public PackageProvider AddServerScript(string name, byte[] bytes)
@@ -143,7 +149,7 @@ namespace Onsharp.Native
         /// <summary>
         /// Adds an server script to the stack with the given name.
         /// </summary>
-        /// <param name="name">The name of the server script</param>
+        /// <param name="name">The name of the server script. It must contain the LUA extension and can contain subdirectories. Use <see cref="Path.Combine(string,string)"/>to combine path cross platform</param>
         /// <param name="content">The data as string</param>
         /// <param name="encoding">The charset which should be used for encoding</param>
         /// <returns>The current provider</returns>
@@ -155,7 +161,7 @@ namespace Onsharp.Native
         /// <summary>
         /// Adds an server script to the stack with the given name.
         /// </summary>
-        /// <param name="name">The name of the server script</param>
+        /// <param name="name">The name of the server script. It must contain the LUA extension and can contain subdirectories. Use <see cref="Path.Combine(string,string)"/>to combine path cross platform</param>
         /// <param name="content">The data as string</param>
         /// <returns>The current provider</returns>
         public PackageProvider AddServerScript(string name, string content)
@@ -166,7 +172,7 @@ namespace Onsharp.Native
         /// <summary>
         /// Downloads the data from the remote server from the given url and adds it as server script to the stack with the given name.
         /// </summary>
-        /// <param name="name">The name of the server script</param>
+        /// <param name="name">The name of the server script. It must contain the LUA extension and can contain subdirectories. Use <see cref="Path.Combine(string,string)"/>to combine path cross platform</param>
         /// <param name="url">The url to the remote server</param>
         /// <returns>The current provider</returns>
         public PackageProvider AddRemoteServerScript(string name, string url)
@@ -182,30 +188,30 @@ namespace Onsharp.Native
         /// <summary>
         /// Adds an client script to the stack with the given name.
         /// </summary>
-        /// <param name="name">The name of the server script</param>
+        /// <param name="name">The name of the server script. It must contain the LUA extension and can contain subdirectories. Use <see cref="Path.Combine(string,string)"/>to combine path cross platform</param>
         /// <param name="bytes">The data as a byte array</param>
         /// <returns>The current provider</returns>
         public PackageProvider AddClientScript(string name, byte[] bytes)
         {
-            return AddData(Type.ServerScript, bytes, name);
+            return AddData(Type.ClientScript, bytes, name);
         }
 
         /// <summary>
         /// Adds an client script to the stack with the given name.
         /// </summary>
-        /// <param name="name">The name of the server script</param>
+        /// <param name="name">The name of the server script. It must contain the LUA extension and can contain subdirectories. Use <see cref="Path.Combine(string,string)"/>to combine path cross platform</param>
         /// <param name="content">The data as string</param>
         /// <param name="encoding">The charset which should be used for encoding</param>
         /// <returns>The current provider</returns>
         public PackageProvider AddClientScript(string name, string content, Encoding encoding)
         {
-            return AddData(Type.ServerScript, encoding.GetBytes(content), name);
+            return AddData(Type.ClientScript, encoding.GetBytes(content), name);
         }
 
         /// <summary>
         /// Adds an client script to the stack with the given name.
         /// </summary>
-        /// <param name="name">The name of the server script</param>
+        /// <param name="name">The name of the server script. It must contain the LUA extension and can contain subdirectories. Use <see cref="Path.Combine(string,string)"/>to combine path cross platform</param>
         /// <param name="content">The data as string</param>
         /// <returns>The current provider</returns>
         public PackageProvider AddClientScript(string name, string content)
@@ -216,7 +222,7 @@ namespace Onsharp.Native
         /// <summary>
         /// Downloads the data from the remote server from the given url and adds it as server script to the stack with the given name.
         /// </summary>
-        /// <param name="name">The name of the server script</param>
+        /// <param name="name">The name of the server script. It must contain the LUA extension and can contain subdirectories. Use <see cref="Path.Combine(string,string)"/>to combine path cross platform</param>
         /// <param name="url">The url to the remote server</param>
         /// <returns>The current provider</returns>
         public PackageProvider AddRemoteClientScript(string name, string url)
@@ -232,11 +238,10 @@ namespace Onsharp.Native
         /// </summary>
         /// <param name="type">The type of the data pair</param>
         /// <param name="data">The data itself</param>
-        /// <param name="ext">The extension of the data</param>
+        /// <param name="ext">The name, extension and possible sub directories of the data</param>
         /// <returns>The current provider</returns>
         private PackageProvider AddData(Type type, byte[] data, string ext)
         {
-            ext = type == Type.Asset ? ext : "generated_" + (_scriptId++) + ".lua";
             _data[type].Add(new Tuple<string, byte[]>(ext, data));
             return this;
         }

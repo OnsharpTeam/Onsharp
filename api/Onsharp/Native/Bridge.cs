@@ -181,9 +181,6 @@ namespace Onsharp.Native
                 ConsoleManager = new ConsoleManager();
                 Runtime = new Bridge();
                 Runtime.RegisterConsoleCommands(Runtime);
-
-                LazyMover.Start();
-                PluginManager = new PluginManager();
             }
             catch (Exception ex)
             {
@@ -219,7 +216,8 @@ namespace Onsharp.Native
                     Logger.Fatal("The update v{VERSION} for the Onsharp Runtime is available!", newVersion);
                 }
                 
-                PluginManager.Poll();
+                LazyMover.Start();
+                PluginManager = new PluginManager();
                 //ConsoleManager.Start();
             }
             catch (Exception ex)
@@ -263,6 +261,7 @@ namespace Onsharp.Native
                     bool flag = true;
                     PluginManager.IteratePlugins(plugin =>
                     {
+                        if (plugin == null || plugin.State == PluginState.Failed) return;
                         PluginDomain domain = PluginManager.GetDomain(plugin);
                         if (domain == null)
                         {

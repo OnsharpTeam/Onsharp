@@ -43,9 +43,9 @@ namespace Onsharp.Plugins
         public bool IsDebug { get; set; }
         
         /// <summary>
-        /// The provider which provides a possible LUA package to be generated.
+        /// The type defining a package provider for this plugin. The type must extend <see cref="Native.PackageProvider"/> and need a default constructor.
         /// </summary>
-        public PackageProvider Package { get; set; }
+        public Type PackageProvider { get; set; }
 
         /// <summary>
         /// This constructor offers all properties. If you want to set them, this is the constructor you need.
