@@ -109,7 +109,7 @@ namespace Onsharp.Plugins
         {
             JArray array = Bridge.ServerConfig["packages"] as JArray;
             if (array == null) return;
-            if (array.IndexOf(name) >= 0) return;
+            if (array.Any(t => t.Value<string>() == name)) return;
             array.Add(name);
             Onset.StartPackage(name);
         }
