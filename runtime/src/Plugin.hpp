@@ -116,29 +116,29 @@ public:
         {
             if(type == NTYPE::STRING)
             {
-                printf("nval STR : %s \n", sVal.c_str());
+                Onset::Plugin::Get()->Log("nval STR : %s \n", sVal.c_str());
                 return;
             }
 
             if(type == NTYPE::INTEGER)
             {
-                printf("nval INT : %d \n", iVal);
+                Onset::Plugin::Get()->Log("nval INT : %d \n", iVal);
                 return;
             }
 
             if(type == NTYPE::DOUBLE)
             {
-                printf("nval DBL : %f \n", dVal);
+                Onset::Plugin::Get()->Log("nval DBL : %f \n", dVal);
                 return;
             }
 
             if(type == NTYPE::BOOLEAN)
             {
-                printf("nval BLD : %s \n", bVal ? "true" : "false");
+                Onset::Plugin::Get()->Log("nval BLD : %s \n", bVal ? "true" : "false");
                 return;
             }
 
-            printf("nval NULL\n");
+            Onset::Plugin::Get()->Log("nval NULL\n");
         }
     };
 

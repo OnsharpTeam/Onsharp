@@ -32,12 +32,12 @@ namespace Onsharp.Native
         /// <summary>
         /// The name of the c++ runtime dll.
         /// </summary>
-        internal const string DllName = "onsharp-runtime";
+        internal const string DllName = "../../plugins/onsharp-runtime";
         
         /// <summary>
         /// The current version of Onsharp running.
         /// </summary>
-        internal static readonly Version Version = new Version(1, 0, 10);
+        internal static readonly Version Version = new Version(1, 0, 12);
 
         /// <summary>
         /// A list containing all the events which needs as first argument a player, so called player events.
@@ -258,6 +258,7 @@ namespace Onsharp.Native
                     int typeId = System.Convert.ToInt32(args[0]);
                     if (typeId == 7 || typeId == 6) return true;
                     EventType type = (EventType) typeId;
+                    
                     bool flag = true;
                     PluginManager.IteratePlugins(plugin =>
                     {
@@ -347,7 +348,10 @@ namespace Onsharp.Native
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "An error occurred while handling a call {CALLNAME} from the native side!", key);
+                Logger.Error(ex,
+                    "An error occurred while handling a call {CALLNAME} from the native side! The data which was excepted is the following when debug enabled!",
+                    key);
+                Logger.Debug("Data for the Call:\n{DATA}", Json.ToJson(args, Json.Flag.Pretty));
             }
             
             return null;

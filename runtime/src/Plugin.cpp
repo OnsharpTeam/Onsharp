@@ -81,11 +81,9 @@ Plugin::Plugin()
         Lua::ParseArguments(L, key, args_table);
         int len = args_table->Count();
         void** args = new void*[len];
-        int idx = 0;
-        args_table->ForEach([args, &idx](Lua::LuaValue k, Lua::LuaValue v) {
+        args_table->ForEach([args](Lua::LuaValue k, Lua::LuaValue v) {
             (void) k;
-            args[idx] = Plugin::Get()->CreateNValueByLua(std::move(v));
-            idx++;
+            args[k.GetValue<int>()-1] = Plugin::Get()->CreateNValueByLua(std::move(v));
         });
         Plugin::Get()->ClearLuaStack();
         NValue* returnVal = Plugin::Get()->CallBridge(key.c_str(), args, len);
@@ -116,11 +114,9 @@ Plugin::Plugin()
         void** args = new void*[len + 2];
         args[0] = Plugin::Get()->CreatNValueByString(pluginId);
         args[1] = Plugin::Get()->CreatNValueByString(funcName);
-        int idx = 2;
-        args_table->ForEach([args, &idx](Lua::LuaValue k, Lua::LuaValue v) {
+        args_table->ForEach([args](Lua::LuaValue k, Lua::LuaValue v) {
             (void) k;
-            args[idx] = Plugin::Get()->CreateNValueByLua(std::move(v));
-            idx++;
+            args[k.GetValue<int>()+1] = Plugin::Get()->CreateNValueByLua(std::move(v));
         });
         Plugin::Get()->ClearLuaStack();
         NValue* returnVal = Plugin::Get()->CallBridge("interop", args, len);
