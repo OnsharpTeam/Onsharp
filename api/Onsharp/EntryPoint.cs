@@ -1,4 +1,5 @@
-﻿using Onsharp.Native;
+﻿using Onsharp.Modules;
+using Onsharp.Native;
 using Onsharp.Plugins;
 
 namespace Onsharp
@@ -23,5 +24,10 @@ namespace Onsharp
         /// The current Onsharp runtime instance running in the background.
         /// </summary>
         public IRuntime Runtime { get; set; }
+        
+        /// <summary>
+        /// The i18n associated to this plugin.
+        /// </summary>
+        public I18n I18n { get; set; }
     }
 }

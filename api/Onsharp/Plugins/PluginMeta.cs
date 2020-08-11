@@ -43,6 +43,11 @@ namespace Onsharp.Plugins
         public bool IsDebug { get; set; }
         
         /// <summary>
+        /// Whether the plugin has the I18n module enabled or not.
+        /// </summary>
+        public bool IsI18n { get; set; }
+        
+        /// <summary>
         /// The type defining a package provider for this plugin. The type must extend <see cref="Native.PackageProvider"/> and need a default constructor.
         /// </summary>
         public Type PackageProvider { get; set; }

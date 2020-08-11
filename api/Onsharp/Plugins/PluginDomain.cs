@@ -6,6 +6,7 @@ using System.Runtime.Loader;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Onsharp.IO;
+using Onsharp.Modules;
 using Onsharp.Native;
 using Onsharp.Updater;
 
@@ -153,10 +154,12 @@ namespace Onsharp.Plugins
                 }
             }
 
+            I18n i18n = new I18n(Plugin.Logger, _assembly);
             foreach (EntryPoint entryPoint in EntryPoints)
             {
                 entryPoint.Server = Server;
                 entryPoint.PluginManager = Bridge.PluginManager;
+                entryPoint.I18n = i18n;
                 entryPoint.Runtime = Bridge.Runtime;
                 entryPoint.Runtime.RegisterConsoleCommands(entryPoint);
                 entryPoint.Server.RegisterExportable(entryPoint);
