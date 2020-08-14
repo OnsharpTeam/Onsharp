@@ -505,6 +505,9 @@ namespace Onsharp.Native
         internal static extern void RegisterCommand([MarshalAs(UnmanagedType.LPStr)] string pluginId, [MarshalAs(UnmanagedType.LPStr)] string commandName);
         
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void RegisterCommandAlias([MarshalAs(UnmanagedType.LPStr)] string pluginId, [MarshalAs(UnmanagedType.LPStr)] string commandName, [MarshalAs(UnmanagedType.LPStr)] string alias);
+        
+        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void CallRemote(int player, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr[] nVals, int len);
         
         [DllImport(Bridge.DllName, EntryPoint = "CreateNValue_s", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]

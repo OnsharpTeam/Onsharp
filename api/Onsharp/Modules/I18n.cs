@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Resources;
+using System.Text;
 using Onsharp.IO;
+using Onsharp.Plugins;
 
 namespace Onsharp.Modules
 {
@@ -15,6 +18,7 @@ namespace Onsharp.Modules
     {
         private readonly Dictionary<string, Dictionary<string, string>> _languagePacks;
         private readonly ILogger _logger;
+        private readonly Plugin _plugin;
         private Dictionary<string, string> _currentLanguagePack;
 
         /// <summary>
@@ -25,8 +29,9 @@ namespace Onsharp.Modules
         /// <returns>The translated message</returns>
         public string this[string key, params object[] args] => Get(key, args);
 
-        internal I18n(ILogger logger, Assembly assembly)
+        internal I18n(ILogger logger, Assembly assembly, Plugin plugin)
         {
+            _plugin = plugin;
             _logger = logger;
             _languagePacks = new Dictionary<string, Dictionary<string, string>>();
             try
@@ -64,6 +69,51 @@ namespace Onsharp.Modules
             }
         }
 
+        internal void Initialize()
+        {
+            if (_plugin.Meta.I18n == Mode.Configurable)
+            {
+                string path = Path.Combine(_plugin.Data.Directory.FullName, "langs");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                foreach (string code in _languagePacks.Keys)
+                {
+                    Dictionary<string, string> pack = _languagePacks[code];
+                    StringBuilder content = new StringBuilder();
+                    foreach (string key in pack.Keys)
+                    {
+                        content.AppendLine(key + "=" + pack[key]);
+                    }
+                    
+                    File.WriteAllText(Path.Join(path, code + ".lang"), content.ToString());
+                }
+
+                foreach (string file in Directory.GetFiles(path))
+                {
+                    if (Path.GetExtension(file) == ".lang")
+                    {
+                        string name = Path.GetFileNameWithoutExtension(file);
+                        AddLanguage(name, File.ReadAllText(file));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes the language pack by the given language code.
+        /// </summary>
+        /// <param name="code">The code of the language pack to be removed</param>
+        public void RemoveLanguage(string code)
+        {
+            if (_languagePacks.ContainsKey(code))
+            {
+                _languagePacks.Remove(code);
+            }
+        }
+
         /// <summary>
         /// Manually adds the given content to the language list by the language code as key.
         /// </summary>
@@ -71,6 +121,7 @@ namespace Onsharp.Modules
         /// <param name="content">The content of the language pack in the simple format of KEY=VALUE</param>
         public void AddLanguage(string code, string content)
         {
+            RemoveLanguage(code);
             if (!_languagePacks.ContainsKey(code))
             {
                 try
@@ -116,6 +167,25 @@ namespace Onsharp.Modules
             if (_currentLanguagePack == null) return key;
             if (!_currentLanguagePack.ContainsKey(key)) return key;
             return _currentLanguagePack[key];
+        }
+
+        /// <summary>
+        /// The mode specifies how the i18n works in basic functionality.
+        /// </summary>
+        public enum Mode
+        {
+            /// <summary>
+            /// When set to disabled, the i18n module is disabled and the variable is null.
+            /// </summary>
+            Disabled,
+            /// <summary>
+            /// When set to internal, only internally configuration of the i18n module is allowed.
+            /// </summary>
+            Internal,
+            /// <summary>
+            /// When set to configurable, lang files are generated and the users are allowed to set them up.
+            /// </summary>
+            Configurable
         }
     }
 }

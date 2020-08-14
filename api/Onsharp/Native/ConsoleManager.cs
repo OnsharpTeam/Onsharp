@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Onsharp.Commands;
+using Onsharp.Plugins;
+using Onsharp.Utils;
 
 namespace Onsharp.Native
 {
@@ -12,28 +13,22 @@ namespace Onsharp.Native
     /// </summary>
     internal class ConsoleManager
     {
+        private const int CommandsPerPage = 5;
         private readonly List<ConsoleCommand> _commands;
-        private readonly Thread _inputThread;
-        private bool _isRunning = true;
         
         internal ConsoleManager()
         {
             _commands = new List<ConsoleCommand>();
-            _inputThread = new Thread(OnInput){IsBackground = true, Name = "ConsoleInput"};
-            Console.CursorVisible = false;
         }
 
-        private void OnInput()
+        internal void PollInput(string input)
         {
-            Thread.Sleep(Bridge.Config.ConsoleInputTimeout);
-            Console.CursorVisible = true;
-            while (_isRunning)
+            if (input.StartsWith("/"))
             {
-                Console.Write("> ");   
-                string line = Console.ReadLine();
-                if (!string.IsNullOrEmpty(line))
+                input = input.Substring(1);
+                if (!string.IsNullOrEmpty(input))
                 {
-                    string[] parts = line.Split(' ');
+                    string[] parts = input.Split(' ');
                     string name = parts[0];
                     string[] args = new string[parts.Length - 1];
                     for (int i = 1; i < parts.Length; i++)
@@ -41,7 +36,7 @@ namespace Onsharp.Native
                         args[i - 1] = parts[i];
                     }
                     
-                    ExecuteCommand(line, name, args);
+                    ExecuteCommand(input, name, args);
                 }
             }
         }
@@ -143,38 +138,45 @@ namespace Onsharp.Native
                     {
                         return command;
                     }
+
+                    if (command.Aliases.ContainsIgnoreCase(name))
+                    {
+                        return command;
+                    }
                 }
 
                 return null;
             }
         }
 
-        internal void PrintCommands()
+        internal void PrintCommands(int page)
         {
             lock (_commands)
             {
-                Bridge.Logger.Info("All Console Commands:");
+                int pages = CountPages();
+                if(page > pages) return;
+                string header = page + "/" + pages;
+                Bridge.Logger.Info("<============[ Help ({PAGES}) ]============>", header);
+                int start = CommandsPerPage * page;
+                int end = start + CommandsPerPage - 1;
                 foreach (ConsoleCommand command in _commands)
                 {
-                    Bridge.Logger.Info(" > " + command.Name +
-                                       (string.IsNullOrEmpty(command.Usage) ? "" : " " + command.Usage) + " - " +
-                                       command.Description);
+                    Bridge.Logger.Info("{COMMAND}" + command.Usage.Text + " : " + command.Description, command.CommandText);
+                    foreach (Usage.Parameter parameter in command.Usage.Parameters)
+                    {
+                        Bridge.Logger.Info("    {NAME} (" + parameter.Type + "): " + parameter.Description, parameter.Name);
+                    }
+
+                    start++;
+                    if(start >= end)
+                        break;
                 }
+                
+                Bridge.Logger.Info("<============[ Help ({PAGES}) ]============>", header);
             }
         }
         
-        internal void Stop()
-        {
-            _isRunning = false;
-            _inputThread.Interrupt();
-        }
-
-        internal void Start()
-        {
-            _inputThread.Start();
-        }
-        
-        internal void Register(object owner)
+        internal void Register(object owner, string specific)
         {
             lock (_commands)
             {
@@ -183,13 +185,29 @@ namespace Onsharp.Native
                     if(method.IsStatic) continue;
                     ConsoleCommand command = method.GetCustomAttribute<ConsoleCommand>();
                     if (command == null) continue;
+                    if (Bridge.IsConsoleCommandOccupied(command.Name))
+                    {
+                        if (string.IsNullOrEmpty(specific))
+                        {
+                            Bridge.Logger.Fatal(
+                                "Console command {NAME} could not be registered because this name is occupied and no specifier was passed!",
+                                command.Name);
+                            continue;
+                        }
+                        
+                        string newName = specific + ":" + command.Name;
+                        Bridge.Logger.Warn("Occupied console command name found, changed it to plugin-specific: {OLD} => {NEW}", command.Name, newName);
+                        command.SetCommandName(newName);
+                    }
+                    
+                    Bridge.OccupyConsoleCommand(command.Name);
                     command.SetHandler(owner, method);
                     _commands.Add(command);
                 }
             }
         }
 
-        internal void Register<T>()
+        internal void Register<T>(string specific)
         {
             lock (_commands)
             {
@@ -198,9 +216,33 @@ namespace Onsharp.Native
                     if(!method.IsStatic) continue;
                     ConsoleCommand command = method.GetCustomAttribute<ConsoleCommand>();
                     if (command == null) continue;
+                    if (Bridge.IsConsoleCommandOccupied(command.Name))
+                    {
+                        if (string.IsNullOrEmpty(specific))
+                        {
+                            Bridge.Logger.Fatal(
+                                "Console command {NAME} could not be registered because this name is occupied and no specifier was passed!",
+                                command.Name);
+                            continue;
+                        }
+                        
+                        string newName = specific + ":" + command.Name;
+                        Bridge.Logger.Warn("Occupied console command name found, changed it to plugin-specific: {OLD} => {NEW}", command.Name, newName);
+                        command.SetCommandName(newName);
+                    }
+                    
+                    Bridge.OccupyConsoleCommand(command.Name);
                     command.SetHandler(null, method);
                     _commands.Add(command);
                 }
+            }
+        }
+
+        private int CountPages()
+        {
+            lock (_commands)
+            {
+                return (int) Math.Ceiling(_commands.Count / (float) CommandsPerPage);
             }
         }
     }

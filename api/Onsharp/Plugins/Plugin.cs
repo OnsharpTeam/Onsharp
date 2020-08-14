@@ -48,5 +48,13 @@ namespace Onsharp.Plugins
         /// Gets called when the plugin is getting disabled.
         /// </summary>
         public abstract void OnStop();
+
+        /// <summary>
+        /// Gets called when the plugin is initialized. This process happens before start and before the i18n is finished but after the plugins are sorted and ordered.
+        /// Use this event to add languages manually to the i18n module.
+        /// </summary>
+        public virtual void OnInitialize()
+        {
+        }
     }
 }

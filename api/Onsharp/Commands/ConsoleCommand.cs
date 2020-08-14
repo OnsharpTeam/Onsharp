@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Reflection;
+using System.Text;
+using Onsharp.Utils;
 
 namespace Onsharp.Commands
 {
@@ -13,7 +15,7 @@ namespace Onsharp.Commands
         /// <summary>
         /// The name of the command defining the chat root.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; private set; }
         
         /// <summary>
         /// The description of the command.
@@ -21,10 +23,20 @@ namespace Onsharp.Commands
         public string Description { get; }
         
         /// <summary>
-        /// The usage of this command.
-        /// The usage defines only the arguments after the name.
+        /// The aliases of the command. An alias is an optional other name instead of the given one.
         /// </summary>
-        public string Usage { get; }
+        public string[] Aliases { get; }
+
+        /// <summary>
+        /// The usage of the command.
+        /// The usage is auto-generated.
+        /// </summary>
+        internal Usage Usage { get; private set; }
+        
+        /// <summary>
+        /// The command names which can be used.
+        /// </summary>
+        internal string CommandText { get; private set; }
         
         private MethodInfo _handler;
         private object _owner;
@@ -33,13 +45,29 @@ namespace Onsharp.Commands
         /// The main constructor requiring the commands name.
         /// </summary>
         /// <param name="name">The name of the command</param>
-        /// <param name="usage">The usage of the command</param>
         /// <param name="description">The description of the command</param>
-        public ConsoleCommand(string name, string usage, string description)
+        /// <param name="aliases">The aliases of the command</param>
+        public ConsoleCommand(string name, string description, params string[] aliases)
+        {
+            Description = description;
+            Aliases = aliases;
+            SetCommandName(name);
+        }
+
+        /// <summary>
+        /// Sets the name of this command and generates the command text.
+        /// </summary>
+        internal void SetCommandName(string name)
         {
             Name = name;
-            Usage = usage;
-            Description = description;
+            StringBuilder builder = new StringBuilder();
+            builder.Append("/" + name);
+            foreach (string alias in Aliases)
+            {
+                builder.Append(", /" + alias);
+            }
+
+            CommandText = builder.ToString();
         }
         
         /// <summary>
@@ -51,6 +79,7 @@ namespace Onsharp.Commands
         {
             _handler = handler;
             _owner = owner;
+            Usage = RuntimeUtils.GetUsage(_handler);
         }
 
         /// <summary>

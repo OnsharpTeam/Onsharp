@@ -16,6 +16,7 @@ using Onsharp.IO;
 using Onsharp.Modules;
 using Onsharp.Plugins;
 using Onsharp.Updater;
+using Onsharp.Utils;
 using Onsharp.World;
 using Object = Onsharp.Entities.Object;
 using Timer = Onsharp.Threading.Timer;
@@ -37,7 +38,12 @@ namespace Onsharp.Native
         /// <summary>
         /// The current version of Onsharp running.
         /// </summary>
-        internal static readonly Version Version = new Version(1, 0, 13);
+        internal static readonly Version Version = new Version(1, 1, 0);
+
+        /// <summary>
+        /// The current api version of onsharp.
+        /// </summary>
+        internal const int ApiVersion = 1;
 
         /// <summary>
         /// A list containing all the events which needs as first argument a player, so called player events.
@@ -117,6 +123,21 @@ namespace Onsharp.Native
         internal static Bridge Runtime { get; private set; }
         
         /// <summary>
+        /// A list containing all admins on this server.
+        /// </summary>
+        internal static List<long> Admins { get; private set; }
+        
+        /// <summary>
+        /// A list which contains occupied command names.
+        /// </summary>
+        private static List<string> OccupiedCommandNames { get; set; }
+        
+        /// <summary>
+        /// A list which contains occupied console command names.
+        /// </summary>
+        private static List<string> OccupiedConsoleCommandNames { get; set; }
+        
+        /// <summary>
         /// The current console manager running in the background.
         /// </summary>
         private static ConsoleManager ConsoleManager { get; set; }
@@ -128,6 +149,11 @@ namespace Onsharp.Native
         {
             new EnumConverter(), new PlayerConverter()
         };
+        
+        /// <summary>
+        /// The path to the file containing all admins.
+        /// </summary>
+        private static string AdminsFile { get; set; }
 
         private static readonly Converter DefaultConverter = new BasicConverter();
 
@@ -149,6 +175,8 @@ namespace Onsharp.Native
         {
             try
             {
+                OccupiedCommandNames = new List<string>();
+                OccupiedConsoleCommandNames = new List<string>();
                 ServerPath = appPath;
                 AppPath = Path.Combine(ServerPath, "onsharp");
                 Directory.CreateDirectory(AppPath);
@@ -175,7 +203,18 @@ namespace Onsharp.Native
                     Config = new RuntimeConfig();
                     Toml.WriteFile(Config, configPath);
                 }
-            
+
+                AdminsFile = Path.Combine(DataPath, "admins.json");
+                if (File.Exists(AdminsFile))
+                {
+                    Admins = Json.FromJson<List<long>>(File.ReadAllText(AdminsFile));
+                }
+                else
+                {
+                    Admins = new List<long>();
+                    File.WriteAllText(AdminsFile, Json.ToJson(Admins));
+                }
+                
                 Logger = new Logger("Onsharp", Config.IsDebug, "_global");
                 if(Config.IsDebug) Logger.Warn("{DEBUG}-Mode is currently active!", "DEBUG");
                 ConsoleManager = new ConsoleManager();
@@ -194,7 +233,6 @@ namespace Onsharp.Native
         internal static void Unload()
         {
             Logger.Warn("Stopping bridge...");
-            //ConsoleManager.Stop();
             for (int i = PluginManager.Plugins.Count - 1; i >= 0; i--)
             {
                 Plugin plugin = PluginManager.Plugins[i];
@@ -218,7 +256,6 @@ namespace Onsharp.Native
                 
                 LazyMover.Start();
                 PluginManager = new PluginManager();
-                //ConsoleManager.Start();
             }
             catch (Exception ex)
             {
@@ -226,6 +263,67 @@ namespace Onsharp.Native
             }
         }
 
+        /// <summary>
+        /// Returns true, if the given console command name is occupied or not.
+        /// </summary>
+        /// <param name="name">The name to be checked</param>
+        internal static bool IsConsoleCommandOccupied(string name)
+        {
+            lock (OccupiedConsoleCommandNames)
+            {
+                return OccupiedConsoleCommandNames.ContainsIgnoreCase(name);
+            }
+        }
+
+        /// <summary>
+        /// Occupies a the given console command name.
+        /// </summary>
+        internal static void OccupyConsoleCommand(string name)
+        {
+            lock (OccupiedConsoleCommandNames)
+            {
+                OccupiedConsoleCommandNames.Add(name);
+            }
+        }
+
+        /// <summary>
+        /// Returns true, if the given command name is occupied or not.
+        /// </summary>
+        /// <param name="name">The name to be checked</param>
+        internal static bool IsCommandOccupied(string name)
+        {
+            lock (OccupiedCommandNames)
+            {
+                return OccupiedCommandNames.ContainsIgnoreCase(name);
+            }
+        }
+
+        /// <summary>
+        /// Occupies a the given command name.
+        /// </summary>
+        internal static void OccupyCommand(string name)
+        {
+            lock (OccupiedCommandNames)
+            {
+                OccupiedCommandNames.Add(name);
+            }
+        }
+
+        /// <summary>
+        /// Saves the admins to a file.
+        /// </summary>
+        private static void SaveAdmins()
+        {
+            try
+            {
+                File.WriteAllText(AdminsFile, Json.ToJson(Admins));
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "An error occurred while saving admins file!");
+            }
+        }
+        
         /// <summary>
         /// This method gets called from the native side and is the interaction interface from the pipeline to the dotnet runtime.
         /// </summary>
@@ -278,6 +376,18 @@ namespace Onsharp.Native
                         {
                             domain.Server.PlayerPool.RemoveEntity((Player) objArgs[0]);
                         }
+                        else if (type == EventType.PlayerSteamAuth)
+                        {
+                            Player player = (Player) objArgs[0];
+                            lock (Admins)
+                            {
+                                player.IsAdmin = Admins.Contains(player.SteamID);
+                            }
+                        }
+                        else if (type == EventType.ConsoleInput)
+                        {
+                            ConsoleManager.PollInput((string) objArgs[0]);
+                        }
                     });
             
                     return flag;
@@ -309,6 +419,12 @@ namespace Onsharp.Native
                     int player = System.Convert.ToInt32(args[1]);
                     string name = (string) args[2];
                     string line = (string) args[3];
+                    if (pluginId == "native")
+                    {
+                        
+                        return null;
+                    }
+                    
                     Plugin plugin = PluginManager.GetPlugin(pluginId);
                     if (plugin != null)
                     {
@@ -643,6 +759,22 @@ namespace Onsharp.Native
                     return new object[] {player, owner.Server.CreateDoor((int) args[2]), (bool) args[3]};
                 case EventType.VehicleDamage:
                     return new object[] {owner.Server.CreateVehicle((int) args[1]), (double) args[2], (int) args[3], (double) args[4]};
+                case EventType.Custom:
+                    return null;
+                case EventType.PlayerPreCommand:
+                    return null;
+                case EventType.ConsoleInput:
+                    return new[] {args[1]};
+                case EventType.DoorDestroyed:
+                    return new object[] {owner.Server.CreateDoor((int) args[1])};
+                case EventType.NPCDestroyed:
+                    return new object[] {owner.Server.CreateNPC((int) args[1])};
+                case EventType.ObjectDestroyed:
+                    return new object[] {owner.Server.CreateObject((int) args[1])};
+                case EventType.PickupDestroyed:
+                    return new object[] {owner.Server.CreatePickup((int) args[1])};
+                case EventType.Text3DDestroyed:
+                    return new object[] {owner.Server.CreateText3D((int) args[1])};
                 default:
                     return null;
             }
@@ -691,14 +823,14 @@ namespace Onsharp.Native
             Converters.Add(converter);
         }
 
-        public void RegisterConsoleCommands(object owner)
+        public void RegisterConsoleCommands(object owner, string specifier = null)
         {
-            ConsoleManager.Register(owner);
+            ConsoleManager.Register(owner, specifier);
         }
 
-        public void RegisterConsoleCommands<T>()
+        public void RegisterConsoleCommands<T>(string specifier = null)
         {
-            ConsoleManager.Register<T>();
+            ConsoleManager.Register<T>(specifier);
         }
 
         public void StartPackage(string packageName)
@@ -728,16 +860,54 @@ namespace Onsharp.Native
             return list;
         }
 
-        [ConsoleCommand("help", "", "Shows all console commands and how to use them")]
-        public void OnHelpConsoleCommand()
+        [ConsoleCommand("help", "Shows all console commands and how to use them")]
+        public void OnHelpConsoleCommand([Describe("The page number with the next 5 commands.")] int page = 1)
         {
-            ConsoleManager.PrintCommands();
+            ConsoleManager.PrintCommands(page);
         }
 
-        [ConsoleCommand("exit", "", "Stops the server")]
+        [ConsoleCommand("exit", "Stops the server")]
         public void OnExitConsoleCommand()
         {
             Onset.ShutdownServer();
+        }
+        
+        [Command("help", "Shows all commands and how to use them", Permission = "onset.commands.help")]
+        public void OnHelpCommand(Player player, [Describe("The page number with the next 5 commands.")] int page = 1)
+        {
+            CommandInfo.PrintCommands(player, page);
+        }
+
+        [ConsoleCommand("makeadmin", "Makes a player to an admin")]
+        public void OnMakeAdminConsoleCommand([Describe("The target steamID64 which should be made admin")] long target)
+        {
+            Admins.Add(target);
+            SaveAdmins();
+            Logger.Info(target + " is now admin!");
+        }
+
+        [ConsoleCommand("remadmin", "Makes a player to an admin")]
+        public void OnRemoveAdminConsoleCommand([Describe("The target steamID64 which should be removed from admin")] long target)
+        {
+            Admins.Remove(target);
+            SaveAdmins();
+            Logger.Info(target + " is no longer admin!");
+        }
+
+        [Command("makeadmin", "Makes a player to an admin", Permission = "onset.commands.makeadmin")]
+        public void OnMakeAdminCommand(Player player, [Describe("The target which should be made admin")] Player target)
+        {
+            Admins.Add(target.SteamID);
+            SaveAdmins();
+            player.SendColoredMessage("~7/~" + target.Name + " is now admin!");
+        }
+
+        [Command("remadmin", "Makes a player to an admin", Permission = "onset.commands.remadmin")]
+        public void OnRemoveAdminCommand(Player player, [Describe("The target which should be removed from admin")] Player target)
+        {
+            Admins.Remove(target.SteamID);
+            SaveAdmins();
+            player.SendColoredMessage("~7/~" + target.Name + " is no longer admin!");
         }
     }
 }

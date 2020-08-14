@@ -16,6 +16,10 @@
         /// <summary>
         /// The entered arguments are not enough to fulfill the required argument list.
         /// </summary>
-        TooFewArgs
+        TooFewArgs,
+        /// <summary>
+        /// The player has not enough permission to run this command.
+        /// </summary>
+        NoPermissions
     }
 }

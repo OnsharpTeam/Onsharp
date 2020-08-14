@@ -300,14 +300,19 @@ namespace Onsharp
             return flag;
         }
 
+        internal void Inject()
+        {
+            _commandManager.RegisterCommands(Bridge.Runtime, "native");
+        }
+
         public void RegisterCommands(object owner)
         {
-            _commandManager.RegisterCommands(owner);
+            _commandManager.RegisterCommands(owner, Owner.Plugin.Meta.Id);
         }
 
         public void RegisterCommands<T>()
         {
-            _commandManager.RegisterCommands<T>();
+            _commandManager.RegisterCommands<T>(Owner.Plugin.Meta.Id);
         }
 
         public LuaPackage ImportPackage(string packageName)

@@ -1,4 +1,5 @@
 ﻿using System;
+using Onsharp.Modules;
 using Onsharp.Native;
 
 namespace Onsharp.Plugins
@@ -41,16 +42,22 @@ namespace Onsharp.Plugins
         /// Whether the plugin is in debug mode or not.
         /// </summary>
         public bool IsDebug { get; set; }
-        
+
         /// <summary>
-        /// Whether the plugin has the I18n module enabled or not.
+        /// The mode of the i18n module. Default: <see cref="Modules.I18n.Mode.Internal"/>.
         /// </summary>
-        public bool IsI18n { get; set; }
+        public I18n.Mode I18n { get; set; } = Modules.I18n.Mode.Internal;
         
         /// <summary>
         /// The type defining a package provider for this plugin. The type must extend <see cref="Native.PackageProvider"/> and need a default constructor.
         /// </summary>
         public Type PackageProvider { get; set; }
+
+        /// <summary>
+        /// The api version which uses the plugin. If the version is lower the current runtime version, the plugin won't be loaded in order to prevent further issues.
+        /// By default its set to the current runtime api version. If you want to prevent users to use your plugin which the wrong api version you can manually set it.
+        /// </summary>
+        public int ApiVersion { get; set; } = Bridge.ApiVersion;
 
         /// <summary>
         /// This constructor offers all properties. If you want to set them, this is the constructor you need.

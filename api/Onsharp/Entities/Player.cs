@@ -220,9 +220,68 @@ namespace Onsharp.Entities
                 }
             }
         }
+        
+        /// <summary>
+        /// Whether this player is admin or not. If set to true, the player has administrator permission which means he can run all commands on the server.
+        /// </summary>
+        public bool IsAdmin { get; set; }
+
+        /// <summary>
+        /// The permissions the player has. Permissions can be wildcarded.
+        /// </summary>
+        private readonly List<string> _permissions;
 
         public Player(int id) : base(id, "Player")
         {
+            _permissions = new List<string>();
+        }
+
+        /// <summary>
+        /// Adds the given permission to the player.
+        /// </summary>
+        /// <param name="permission">The permission to be added</param>
+        public void AddPermission(string permission)
+        {
+            lock (_permissions)
+            {
+                _permissions.Add(permission);
+            }
+        }
+        
+        /// <summary>
+        /// Removes the given permission from the player.
+        /// </summary>
+        /// <param name="permission">The permission to be removed</param>
+        public void RemovePermission(string permission)
+        {
+            lock (_permissions)
+            {
+                _permissions.Remove(permission);
+            }
+        }
+
+        /// <summary>
+        /// Checks if the player has the given permission or not.
+        /// </summary>
+        /// <param name="permission">The permission to be checked</param>
+        /// <returns>True if the player has the permission</returns>
+        public bool HasPermission(string permission)
+        {
+            if (IsAdmin) return true;
+            lock (_permissions)
+            {
+                if (_permissions.Contains("*")) return true;
+                if (_permissions.Contains(permission)) return true;
+                string[] parts = permission.Split('.');
+                string lastPart = "";
+                foreach (string part in parts)
+                {
+                    lastPart += part + ".";
+                    if (_permissions.Contains(lastPart + "*")) return true;
+                }
+
+                return false;
+            }
         }
 
         /// <summary>

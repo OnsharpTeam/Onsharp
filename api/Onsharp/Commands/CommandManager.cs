@@ -17,13 +17,13 @@ namespace Onsharp.Commands
         private readonly List<Command> _commands;
         private readonly Server _server;
 
-        internal CommandManager(Server server)
+        internal CommandManager(Server server = null)
         {
             _server = server;
             _commands = new List<Command>();
         }
 
-        internal void RegisterCommands(object owner)
+        internal void RegisterCommands(object owner, string specific)
         {
             lock (_commands)
             {
@@ -32,14 +32,28 @@ namespace Onsharp.Commands
                     if(method.IsStatic) continue;
                     Command command = method.GetCustomAttribute<Command>();
                     if (command == null) continue;
-                    Onset.RegisterCommand(_server.Owner.Plugin.Meta.Id, command.Name);
+                    if (Bridge.IsCommandOccupied(command.Name))
+                    {
+                        string newName = specific + ":" + command.Name;
+                        Bridge.Logger.Warn("Occupied console command name found, changed it to plugin-specific: {OLD} => {NEW}", command.Name, newName);
+                        command.SetCommandName(newName);
+                    }
+                    
+                    Bridge.OccupyCommand(command.Name);
+                    Onset.RegisterCommand(_server?.Owner.Plugin.Meta.Id ?? "native", command.Name);
+                    foreach (string alias in command.Aliases)
+                    {
+                        Onset.RegisterCommandAlias(_server?.Owner.Plugin.Meta.Id ?? "native", command.Name, alias);
+                    }
+                    
                     command.SetHandler(owner, method);
                     _commands.Add(command);
+                    CommandInfo.RegisterCommand(command);
                 }
             }
         }
 
-        internal void RegisterCommands<T>()
+        internal void RegisterCommands<T>(string specific)
         {
             lock (_commands)
             {
@@ -48,9 +62,23 @@ namespace Onsharp.Commands
                     if(!method.IsStatic) continue;
                     Command command = method.GetCustomAttribute<Command>();
                     if (command == null) continue;
-                    Onset.RegisterCommand(_server.Owner.Plugin.Meta.Id, command.Name);
+                    if (Bridge.IsCommandOccupied(command.Name))
+                    {
+                        string newName = specific + ":" + command.Name;
+                        Bridge.Logger.Warn("Occupied console command name found, changed it to plugin-specific: {OLD} => {NEW}", command.Name, newName);
+                        command.SetCommandName(newName);
+                    }
+                    
+                    Bridge.OccupyCommand(command.Name);
+                    Onset.RegisterCommand(_server?.Owner.Plugin.Meta.Id ?? "native", command.Name);
+                    foreach (string alias in command.Aliases)
+                    {
+                        Onset.RegisterCommandAlias(_server?.Owner.Plugin.Meta.Id ?? "native", command.Name, alias);
+                    }
+                    
                     command.SetHandler(null, method);
                     _commands.Add(command);
+                    CommandInfo.RegisterCommand(command);
                 }
             }
         }
@@ -79,6 +107,12 @@ namespace Onsharp.Commands
                 if (command == null)
                 {
                     _server.CallEventUnsafely("CommandFailure", player, CommandFailure.NoCommand, line, name);
+                    return;
+                }
+
+                if (!string.IsNullOrEmpty(command.Permission) && !player.HasPermission(command.Permission))
+                {
+                    _server.CallEventUnsafely("CommandFailure", player, CommandFailure.NoPermissions, line, name);
                     return;
                 }
                 
@@ -170,7 +204,7 @@ namespace Onsharp.Commands
                 for (int i = _commands.Count - 1; i >= 0; i--)
                 {
                     Command command = _commands[i];
-                    if (command.Name.ToLower() == name.ToLower())
+                    if (String.Equals(command.Name, name, StringComparison.CurrentCultureIgnoreCase))
                     {
                         return command;
                     }

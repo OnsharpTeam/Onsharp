@@ -48,6 +48,8 @@ namespace Onsharp.Plugins
         /// </summary>
         internal Plugin Plugin { get; private set; }
         
+        internal I18n I18n { get; private set; }
+
         /// <summary>
         /// The server owned by this domain and the plugin.
         /// </summary>
@@ -103,6 +105,14 @@ namespace Onsharp.Plugins
                         return;
                     }
 
+                    if (string.Equals(meta.Id, "native", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        Bridge.Logger.Fatal(
+                            "Onsharp found a plugin class {CLASS} in the plugin on path \"{PATH}\" which has native as plugin id which is not allowed!",
+                            type.FullName, Path);
+                        return;
+                    }
+
                     AutoUpdaterAttribute updateAttribute = type.GetCustomAttribute<AutoUpdaterAttribute>();
                     if (updateAttribute != null)
                     {
@@ -154,14 +164,32 @@ namespace Onsharp.Plugins
                 }
             }
 
-            I18n i18n = new I18n(Plugin.Logger, _assembly);
+            if (Plugin == null)
+            {
+                ChangePluginState(PluginState.Failed);
+                Bridge.Logger.Fatal(
+                    "Could not finish the load process of the plugin on path \"{PATH}\": There is no valid plugin main class!", Path);
+                return;
+            }
+
+            if (Plugin.Meta.ApiVersion < Bridge.ApiVersion)
+            {
+                ChangePluginState(PluginState.Failed);
+                Bridge.Logger.Fatal(
+                    "The plugin failed on the api version check! The plugin {PLUGIN} uses the api v{V1} but your runtime runs with v{VR}, the runtime version is too new!",
+                    Plugin.Display, Plugin.Meta.ApiVersion, Bridge.ApiVersion);
+                return;
+            }
+
+            I18n = Plugin.Meta.I18n == I18n.Mode.Disabled ? null : new I18n(Plugin.Logger, _assembly, Plugin);
+            Server.Inject();
             foreach (EntryPoint entryPoint in EntryPoints)
             {
                 entryPoint.Server = Server;
                 entryPoint.PluginManager = Bridge.PluginManager;
-                entryPoint.I18n = i18n;
+                entryPoint.I18n = I18n;
                 entryPoint.Runtime = Bridge.Runtime;
-                entryPoint.Runtime.RegisterConsoleCommands(entryPoint);
+                entryPoint.Runtime.RegisterConsoleCommands(entryPoint, Plugin.Meta.Id);
                 entryPoint.Server.RegisterExportable(entryPoint);
                 entryPoint.Server.RegisterRemoteEvents(entryPoint);
                 entryPoint.Server.RegisterServerEvents(entryPoint);
@@ -202,8 +230,11 @@ namespace Onsharp.Plugins
         {
             try
             {
-                Plugin.Logger.Info("Starting plugin {NAME} v{VERSION} by {AUTHOR}...", Plugin.Display,
-                    Plugin.Meta.Version, Plugin.Meta.Author);
+                Plugin.Logger.Info("Initializing plugin {NAME} v{VERSION} by {AUTHOR}...", Plugin.Display,
+                        Plugin.Meta.Version, Plugin.Meta.Author);
+                Plugin.OnInitialize();
+                I18n.Initialize();
+                Plugin.Logger.Info("Starting...");
                 Plugin.OnStart();
                 lock (PluginManager.Plugins)
                     PluginManager.Plugins.Add(Plugin);

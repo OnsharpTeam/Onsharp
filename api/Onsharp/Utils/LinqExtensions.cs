@@ -266,5 +266,49 @@ namespace Onsharp.Utils
                 player.CallRemote(name, args);
             });
         }
+
+        /// <summary>
+        /// Checks if the given string value is in the given list without considering the case.
+        /// </summary>
+        /// <param name="list">The list to be checked</param>
+        /// <param name="value">The string value</param>
+        /// <returns>True if it is containing the string value</returns>
+        public static bool ContainsIgnoreCase(this Array list, string value)
+        {
+            bool b = false;
+            list.SafeForEach<string>(other =>
+            {
+                if (string.Equals(other, value, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    b = true;
+                    return true;
+                }
+
+                return false;
+            });
+            return b;
+        }
+
+        /// <summary>
+        /// Checks if the given string value is in the given list without considering the case.
+        /// </summary>
+        /// <param name="list">The list to be checked</param>
+        /// <param name="value">The string value</param>
+        /// <returns>True if it is containing the string value</returns>
+        public static bool ContainsIgnoreCase(this List<string> list, string value)
+        {
+            bool b = false;
+            list.SafeForEach(other =>
+            {
+                if (string.Equals(other, value, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    b = true;
+                    return true;
+                }
+
+                return false;
+            });
+            return b;
+        }
     }
 }

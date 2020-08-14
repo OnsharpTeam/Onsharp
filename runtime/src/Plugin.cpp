@@ -1232,6 +1232,12 @@ EXPORTED void RegisterCommand(const char* pluginId, const char* commandName)
     Plugin::Get()->CallLuaFunction("Onsharp_RegisterCommand", &args);
 }
 
+EXPORTED void RegisterCommandAlias(const char* pluginId, const char* commandName, const char* alias)
+{
+    Lua::LuaArgs_t args = Lua::BuildArgumentList(pluginId, commandName, alias);
+    Plugin::Get()->CallLuaFunction("Onsharp_RegisterCommandAlias", &args);
+}
+
 EXPORTED Plugin::NValue* CreateNValue_s(const char* val)
 {
     auto nVal = new Plugin::NValue;

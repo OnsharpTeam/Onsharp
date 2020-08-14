@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
+using Onsharp.Utils;
 
 namespace Onsharp.Commands
 {
@@ -14,18 +17,74 @@ namespace Onsharp.Commands
         /// <summary>
         /// The name of the command defining the chat root.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; private set; }
+        
+        /// <summary>
+        /// The description of the command describing what the command is doing.
+        /// </summary>
+        public string Description { get; set; }
+        
+        /// <summary>
+        /// The permission needed to run this command. Can be wildcarded.
+        /// </summary>
+        public string Permission { get; set; }
+        
+        /// <summary>
+        /// The aliases of the command. An alias is an optional other name instead of the given one.
+        /// </summary>
+        public string[] Aliases { get; }
+      
+        /// <summary>
+        /// The usage of the command.
+        /// </summary>
+        internal Usage Usage { get; private set; }
+        
+        /// <summary>
+        /// The command names which can be used.
+        /// </summary>
+        internal string CommandText { get; private set; }
         
         private MethodInfo _handler;
         private object _owner;
 
         /// <summary>
-        /// The main constructor requiring the command's name.
+        /// The main constructor which offers every parameter.
         /// </summary>
         /// <param name="name">The name of the command</param>
-        public Command(string name)
+        /// <param name="description">The description of the command</param>
+        /// <param name="permission">The permission which is needed in order to run the command</param>
+        /// <param name="aliases">The aliases of the command</param>
+        public Command(string name, string description, string permission, params string[] aliases)
+        {
+            Permission = permission;
+            Description = description;
+            Aliases = aliases;
+            SetCommandName(name);
+        }
+        
+        /// <summary>
+        /// The constructor which offers the minimum of parameters.
+        /// </summary>
+        /// <param name="name">The name of the command</param>
+        /// <param name="aliases">The aliases of the command</param>
+        public Command(string name, params string[] aliases) : this(name, "No description found", null, aliases)
+        {
+        }
+
+        /// <summary>
+        /// Sets the name of this command and generates the command text.
+        /// </summary>
+        internal void SetCommandName(string name)
         {
             Name = name;
+            StringBuilder builder = new StringBuilder();
+            builder.Append("/" + name);
+            foreach (string alias in Aliases)
+            {
+                builder.Append(", /" + alias);
+            }
+
+            CommandText = builder.ToString();
         }
         
         /// <summary>
@@ -37,6 +96,7 @@ namespace Onsharp.Commands
         {
             _handler = handler;
             _owner = owner;
+            Usage = RuntimeUtils.GetUsage(_handler, 1);
         }
 
         /// <summary>

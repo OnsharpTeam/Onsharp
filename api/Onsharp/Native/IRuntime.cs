@@ -62,22 +62,24 @@ namespace Onsharp.Native
         /// </summary>
         /// <param name="converter">The custom converter</param>
         void RegisterCustomConverter(Converter converter);
-        
-        /// <summary>
-        /// Searches through the class of the given owner objects for <see cref="Commands.ConsoleCommand"/> marked methods and registers them.
-        /// <see cref="IEntryPoint"/> classes will be registered automatically.
-        /// </summary>
-        /// <param name="owner">The owner object owning the marked methods</param>
-        void RegisterConsoleCommands(object owner);
 
         /// <summary>
         /// Searches through the class of the given owner objects for <see cref="Commands.ConsoleCommand"/> marked methods and registers them.
-        /// <see cref="IEntryPoint"/> classes will be registered automatically.
+        /// <see cref="EntryPoint"/> classes will be registered automatically.
+        /// </summary>
+        /// <param name="owner">The owner object owning the marked methods</param>
+        /// <param name="specifier">The specifier is a back up plan, when a command name is occupied</param>
+        void RegisterConsoleCommands(object owner, string specifier);
+
+        /// <summary>
+        /// Searches through the class of the given owner objects for <see cref="Commands.ConsoleCommand"/> marked methods and registers them.
+        /// <see cref="EntryPoint"/> classes will be registered automatically.
         /// The difference to the other method is that in this method no owner object is created,
         /// instead only the static methods are registered as handlers. 
         /// </summary>
+        /// <param name="specifier">The specifier is a back up plan, when a command name is occupied</param>
         /// <typeparam name="T">The type which will be searched through</typeparam>
-        void RegisterConsoleCommands<T>();
+        void RegisterConsoleCommands<T>(string specifier);
 
         /// <summary>
         /// Starts a lua package on the server.

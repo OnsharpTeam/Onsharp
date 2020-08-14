@@ -171,5 +171,35 @@ namespace Onsharp.Events
         /// (<see cref="Onsharp.Entities.Vehicle"/> vehicle, <see cref="double"/> healthDamage, <see cref="int"/>damageIndex, <see cref="double"/> physicalDamage)
         /// </summary>
         VehicleDamage = 33,
+        /// <summary>
+        /// Called when a user enters text in the console and hits enter.
+        /// (<see cref="string"/>)
+        /// </summary>
+        ConsoleInput = 34,
+        /// <summary>
+        /// Called when a <see cref="Onsharp.Entities.Door"/> has been destroyed.
+        /// (<see cref="Onsharp.Entities.Door"/>)
+        /// </summary>
+        DoorDestroyed = 35,
+        /// <summary>
+        /// Called when a <see cref="Onsharp.Entities.NPC"/> has been destroyed.
+        /// (<see cref="Onsharp.Entities.NPC"/>)
+        /// </summary>
+        NPCDestroyed = 36,
+        /// <summary>
+        /// Called when a <see cref="Onsharp.Entities.Object"/> has been destroyed.
+        /// (<see cref="Onsharp.Entities.Object"/>)
+        /// </summary>
+        ObjectDestroyed = 37,
+        /// <summary>
+        /// Called when a <see cref="Onsharp.Entities.Pickup"/> has been destroyed.
+        /// (<see cref="Onsharp.Entities.Pickup"/>)
+        /// </summary>
+        PickupDestroyed = 38,
+        /// <summary>
+        /// Called when a <see cref="Onsharp.Entities.Text3D"/> has been destroyed.
+        /// (<see cref="Onsharp.Entities.Text3D"/>)
+        /// </summary>
+        Text3DDestroyed = 39
     }
 }

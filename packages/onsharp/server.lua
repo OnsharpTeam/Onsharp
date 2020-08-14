@@ -30,6 +30,24 @@ function Onsharp_RegisterCommand(pluginId, commandName)
     end)
 end
 
+function Onsharp_RegisterCommandAlias(pluginId, commandName, alias)
+    AddCommand(alias, function(playerId, ...)
+        local commandArgs = {...};
+        local line = "";
+        for _, v in ipairs(commandArgs) do
+            line = line .. " " .. tostring(v);
+        end
+
+        local args = {};
+        args[1] = pluginId;
+        args[2] = playerId;
+        args[3] = commandName;
+        args[4] = line;
+		
+        CallBridge("call-command", args);
+    end)
+end
+
 function Onsharp_RegisterRemoteEvent(pluginId, eventName)
     AddRemoteEvent(eventName, function(playerId, ...)
         local args = {};
@@ -204,6 +222,30 @@ end)
 
 AddEvent("OnVehicleDamage", function(vehicle, healthDamage, damageIndex, damageAmount)
     return CallBridgedEvent(33, vehicle, healthDamage, damageIndex, damageAmount)
+end)
+
+AddEvent("OnConsoleInput", function(input)
+    return CallBridgedEvent(34, input)
+end)
+
+AddEvent("OnDoorDestroyed", function(id)
+    return CallBridgedEvent(35, id)
+end)
+
+AddEvent("OnNPCDestroyed", function(id)
+    return CallBridgedEvent(36, id)
+end)
+
+AddEvent("OnObjectDestroyed", function(id)
+    return CallBridgedEvent(37, id)
+end)
+
+AddEvent("OnPickupDestroyed", function(id)
+    return CallBridgedEvent(38, id)
+end)
+
+AddEvent("OnText3DDestroyed", function(id)
+    return CallBridgedEvent(39, id)
 end)
 
 -- END SERVER EVENTS --

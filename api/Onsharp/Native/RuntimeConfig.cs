@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace Onsharp.Native
 {
     /// <summary>
@@ -19,6 +21,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The timeout how long the console command manager should wait until start to take input.
         /// </summary>
+        [Obsolete("The console input is not getting overwatched by the console manager but by the Onset server itself.")]
         public int ConsoleInputTimeout { get; set; } = 3000;
 
         /// <summary>
