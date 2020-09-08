@@ -507,9 +507,12 @@ namespace Onsharp
                 }
             }
 
-            while (_taskQueue.TryDequeue(out Action callback))
+            if (type == EventType.GameTick)
             {
-                callback.Invoke();
+                while (_taskQueue.TryDequeue(out Action callback))
+                {
+                    callback.Invoke();
+                }
             }
 
             return flag;
