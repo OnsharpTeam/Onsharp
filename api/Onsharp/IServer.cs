@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Onsharp.Entities;
 using Onsharp.Entities.Factory;
 using Onsharp.Enums;
 using Onsharp.Interop;
 using Onsharp.Native;
 using Onsharp.World;
+using Object = Onsharp.Entities.Object;
 
 namespace Onsharp
 {
@@ -228,5 +230,14 @@ namespace Onsharp
         /// <param name="heading">The heading of the vehicle</param>
         /// <returns>The wrapped vehicle object</returns>
         Vehicle CreateVehicle(VehicleModel model, Vector pos, double heading = 0);
+        
+        /// <summary>
+        /// Adds the given callback to the task queue of the main thread. When the task queue is getting proceed
+        /// the callback is getting invoked from the main thread.
+        /// This method should be used from other threads than the main thread if interaction with the wrapped api
+        /// is wanted.
+        /// </summary>
+        /// <param name="callback">The callback which is added to the queue</param>
+        void InvokeMainThread(Action callback);
     }
 }

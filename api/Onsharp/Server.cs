@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using Onsharp.Commands;
@@ -97,11 +98,13 @@ namespace Onsharp
 
         private readonly CommandManager _commandManager;
         private readonly Dimension _globalDim;
+        private readonly ConcurrentQueue<Action> _taskQueue;
 
         internal Server(PluginDomain owner)
         {
             Owner = owner;
             _globalDim = new Dimension(this, 0);
+            _taskQueue = new ConcurrentQueue<Action>();
             Dimensions = new List<Dimension>();
             PlayerFactory = new PlayerFactory();
             PlayerPool = new EntityPool(this, null, CreatePlayer);
@@ -391,6 +394,11 @@ namespace Onsharp
             return _globalDim.CreateVehicle(model, pos, heading);
         }
 
+        public void InvokeMainThread(Action callback)
+        {                
+            _taskQueue.Enqueue(callback);
+        }
+
         internal object FireExportable(string funcName, object[] args)
         {
             lock (Exportables)
@@ -497,6 +505,11 @@ namespace Onsharp
                             flag = false;
                     }
                 }
+            }
+
+            while (_taskQueue.TryDequeue(out Action callback))
+            {
+                callback.Invoke();
             }
 
             return flag;
