@@ -38,7 +38,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The current version of Onsharp running.
         /// </summary>
-        internal static readonly Version Version = new Version(1, 1, 1);
+        internal static readonly Version Version = new Version(1, 1, 2);
 
         /// <summary>
         /// The current api version of onsharp.
@@ -533,7 +533,7 @@ namespace Onsharp.Native
                         continue;
                     }
                     
-                    arr[i] = DefaultConverter.Handle(objects[i - 1], wantedType, null);
+                    arr[i] = DefaultConverter.Handle(objects[i], wantedType, null);
                 }
 
                 return arr;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Onsharp.Entities;
 using Onsharp.Events;
+using Onsharp.IO;
 using Onsharp.Native;
 
 namespace Onsharp.Commands
@@ -32,6 +33,7 @@ namespace Onsharp.Commands
                     if(method.IsStatic) continue;
                     Command command = method.GetCustomAttribute<Command>();
                     if (command == null) continue;
+                    Bridge.Logger.Debug("A new command was found: {name}; Try to register it...", command.Name);
                     if (Bridge.IsCommandOccupied(command.Name))
                     {
                         string newName = specific + ":" + command.Name;
@@ -49,6 +51,7 @@ namespace Onsharp.Commands
                     command.SetHandler(owner, method);
                     _commands.Add(command);
                     CommandInfo.RegisterCommand(command);
+                    Bridge.Logger.Debug("A new command was registered: {CMD}!", command.Name);
                 }
             }
         }
@@ -62,6 +65,7 @@ namespace Onsharp.Commands
                     if(!method.IsStatic) continue;
                     Command command = method.GetCustomAttribute<Command>();
                     if (command == null) continue;
+                    Bridge.Logger.Debug("A new command was found: {name}; Try to register it...", command.Name);
                     if (Bridge.IsCommandOccupied(command.Name))
                     {
                         string newName = specific + ":" + command.Name;
@@ -79,6 +83,7 @@ namespace Onsharp.Commands
                     command.SetHandler(null, method);
                     _commands.Add(command);
                     CommandInfo.RegisterCommand(command);
+                    Bridge.Logger.Debug("A new command was registered: {CMD}!", command.Name);
                 }
             }
         }

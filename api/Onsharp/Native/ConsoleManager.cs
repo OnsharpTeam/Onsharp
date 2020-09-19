@@ -168,7 +168,7 @@ namespace Onsharp.Native
                     }
 
                     start++;
-                    if(start >= end)
+                    if(start > end)
                         break;
                 }
                 
@@ -185,6 +185,7 @@ namespace Onsharp.Native
                     if(method.IsStatic) continue;
                     ConsoleCommand command = method.GetCustomAttribute<ConsoleCommand>();
                     if (command == null) continue;
+                    Bridge.Logger.Debug("A new console command was found: {name}; Try to register it...", command.Name);
                     if (Bridge.IsConsoleCommandOccupied(command.Name))
                     {
                         if (string.IsNullOrEmpty(specific))
@@ -203,6 +204,7 @@ namespace Onsharp.Native
                     Bridge.OccupyConsoleCommand(command.Name);
                     command.SetHandler(owner, method);
                     _commands.Add(command);
+                    Bridge.Logger.Debug("A new console command was registered: {CMD}!", command.Name);
                 }
             }
         }
@@ -216,6 +218,7 @@ namespace Onsharp.Native
                     if(!method.IsStatic) continue;
                     ConsoleCommand command = method.GetCustomAttribute<ConsoleCommand>();
                     if (command == null) continue;
+                    Bridge.Logger.Debug("A new console command was found: {name}; Try to register it...", command.Name);
                     if (Bridge.IsConsoleCommandOccupied(command.Name))
                     {
                         if (string.IsNullOrEmpty(specific))
@@ -234,6 +237,7 @@ namespace Onsharp.Native
                     Bridge.OccupyConsoleCommand(command.Name);
                     command.SetHandler(null, method);
                     _commands.Add(command);
+                    Bridge.Logger.Debug("A new console command was registered: {CMD}!", command.Name);
                 }
             }
         }
