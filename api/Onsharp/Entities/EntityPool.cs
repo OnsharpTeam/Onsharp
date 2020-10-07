@@ -11,7 +11,7 @@ namespace Onsharp.Entities
     /// </summary>
     internal class EntityPool
     {
-        private List<Entity> _entities;
+        private readonly List<Entity> _entities;
         private readonly string _entityName;
         private readonly Func<int, Entity> _creator;
         private readonly Server _server;
@@ -61,23 +61,6 @@ namespace Onsharp.Entities
         
         internal IReadOnlyList<T> CastEntities<T>() where T : Entity
         {
-            if (Bridge.IsEntityRefreshingEnabled && _entityName != null)
-            {
-                int len = 0;
-                IntPtr ptr = Onset.GetEntities(_entityName, ref len);
-                int[] entities = new int[len];
-                Marshal.Copy(ptr, entities, 0, len);
-                List<Entity> newEntities = new List<Entity>();
-                foreach (int entityId in entities)
-                {
-                    newEntities.Add(_creator.Invoke(entityId));
-                }
-
-                lock (_entities)
-                    _entities = newEntities;
-                Onset.ReleaseIntArray(ptr);
-            }
-            
             lock (_entities)
             {
                 return _entities.Cast<T>().ToList().AsReadOnly();

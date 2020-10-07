@@ -54,7 +54,7 @@ namespace Onsharp.Native
             EventType.NPCStreamIn, EventType.NPCStreamOut, EventType.PlayerEnterVehicle, EventType.PlayerLeaveVehicle, EventType.PlayerStateChange,
             EventType.VehicleStreamIn, EventType.VehicleStreamOut, EventType.PlayerDamage, EventType.PlayerDeath, EventType.PlayerInteractDoor,
             EventType.PlayerStreamIn, EventType.PlayerStreamOut, EventType.PlayerServerAuth, EventType.PlayerSteamAuth, EventType.PlayerDownloadFile,
-            EventType.PlayerWeaponShot, EventType.PlayerSpawn
+            EventType.PlayerWeaponShot, EventType.PlayerSpawn, EventType.PlayerChangeDimension
         };
 
         /// <summary>
@@ -156,16 +156,6 @@ namespace Onsharp.Native
         private static string AdminsFile { get; set; }
 
         private static readonly Converter DefaultConverter = new BasicConverter();
-
-        /// <summary>
-        /// The flag defining if the entity refreshing of the pools is enabled.
-        /// If true, the pool gets refreshed if its getting accessed for retrieving all elements.
-        /// Turning it off is recommended if Onsharp is the only scripting environment running in Onset,
-        /// because than the management of every entity is managed by Onsharp.
-        /// </summary>
-        internal static bool IsEntityRefreshingEnabled => Runtime._isEntityRefreshingEnabled;
-
-        private bool _isEntityRefreshingEnabled = true;
 
         /// <summary>
         /// Gets called by the native runtime when Onsharp should load itself.
@@ -785,6 +775,32 @@ namespace Onsharp.Native
                     return new object[] {owner.Server.CreatePickup((int) args[1])};
                 case EventType.Text3DDestroyed:
                     return new object[] {owner.Server.CreateText3D((int) args[1])};
+                case EventType.PlayerChangeDimension:
+                    return new object[] {player, owner.Server.CreateDimension((uint) args[2]), owner.Server.CreateDimension((uint) args[3])};
+                case EventType.VehicleChangeDimension:
+                    return new object[] {owner.Server.CreateVehicle((int) args[1]), owner.Server.CreateDimension((uint) args[2]), owner.Server.CreateDimension((uint) args[3])};
+                case EventType.Text3DChangeDimension:
+                    return new object[] {owner.Server.CreateText3D((int) args[1]), owner.Server.CreateDimension((uint) args[2]), owner.Server.CreateDimension((uint) args[3])};
+                case EventType.PickupChangeDimension:
+                    return new object[] {owner.Server.CreatePickup((int) args[1]), owner.Server.CreateDimension((uint) args[2]), owner.Server.CreateDimension((uint) args[3])};
+                case EventType.ObjectChangeDimension:
+                    return new object[] {owner.Server.CreateObject((int) args[1]), owner.Server.CreateDimension((uint) args[2]), owner.Server.CreateDimension((uint) args[3])};
+                case EventType.NPCChangeDimension:
+                    return new object[] {owner.Server.CreateNPC((int) args[1]), owner.Server.CreateDimension((uint) args[2]), owner.Server.CreateDimension((uint) args[3])};
+                case EventType.ObjectCreated:
+                    return new object[] {owner.Server.CreateObject((int) args[1])};
+                case EventType.VehicleCreated:
+                    return new object[] {owner.Server.CreateVehicle((int) args[1])};
+                case EventType.Text3DCreated:
+                    return new object[] {owner.Server.CreateText3D((int) args[1])};
+                case EventType.PickupCreated:
+                    return new object[] {owner.Server.CreatePickup((int) args[1])};
+                case EventType.NPCCreated:
+                    return new object[] {owner.Server.CreateNPC((int) args[1])};
+                case EventType.DoorCreated:
+                    return new object[] {owner.Server.CreateDoor((int) args[1])};
+                case EventType.ObjectStopMoving:
+                    return new object[] {owner.Server.CreateObject((int) args[1])};
                 default:
                     return null;
             }
@@ -818,9 +834,9 @@ namespace Onsharp.Native
             return flag;
         }
 
+        [Obsolete("Since entities get created when the proper event got fired, there is no need for refreshing with the LUA side")]
         public void DisableEntityPoolRefreshing()
         {
-            _isEntityRefreshingEnabled = false;
         }
 
         public void RegisterConverter<T>(Func<string, Type, object> convertProcess)
