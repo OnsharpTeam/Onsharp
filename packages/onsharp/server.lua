@@ -248,4 +248,56 @@ AddEvent("OnText3DDestroyed", function(id)
     return CallBridgedEvent(39, id)
 end)
 
+AddEvent("OnPlayerChangeDimension", function(id, new_dim, old_dim) 
+    return CallBridgedEvent(40, id, new_dim, old_dim)
+end)
+
+AddEvent("OnVehicleChangeDimension", function(id, new_dim, old_dim) 
+    return CallBridgedEvent(41, id, new_dim, old_dim)
+end)
+
+AddEvent("OnText3DChangeDimension", function(id, new_dim, old_dim) 
+    return CallBridgedEvent(42, id, new_dim, old_dim)
+end)
+
+AddEvent("OnPickupChangeDimension", function(id, new_dim, old_dim) 
+    return CallBridgedEvent(43, id, new_dim, old_dim)
+end)
+
+AddEvent("OnObjectChangeDimension", function(id, new_dim, old_dim) 
+    return CallBridgedEvent(44, id, new_dim, old_dim)
+end)
+
+AddEvent("OnNPCChangeDimension", function(id, new_dim, old_dim) 
+    return CallBridgedEvent(45, id, new_dim, old_dim)
+end)
+
+AddEvent("OnObjectCreated", function(id) 
+    return CallBridgedEvent(46, id)
+end)
+
+AddEvent("OnVehicleCreated", function(id) 
+    return CallBridgedEvent(47, id)
+end)
+
+AddEvent("OnText3DCreated", function(id) 
+    return CallBridgedEvent(48, id)
+end)
+
+AddEvent("OnPickupCreated", function(id) 
+    return CallBridgedEvent(49, id)
+end)
+
+AddEvent("OnNPCCreated", function(id) 
+    return CallBridgedEvent(50, id)
+end)
+
+AddEvent("OnDoorCreated", function(id) 
+    return CallBridgedEvent(51, id)
+end)
+
+AddEvent("OnObjectStopMoving", function(id) 
+    return CallBridgedEvent(52, id)
+end)
+
 -- END SERVER EVENTS --
