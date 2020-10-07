@@ -19,7 +19,7 @@ namespace Onsharp.Updater
         /// <summary>
         /// The currently loaded domain for the plugin.
         /// </summary>
-        public PluginDomain Domain { get; private set; }
+        public PluginDomain Domain { get; }
 
         private readonly string _tmpZip;
         private readonly string _tmpDir;
@@ -48,7 +48,6 @@ namespace Onsharp.Updater
         /// </summary>
         internal void Start()
         {
-            Domain.PreReset();
             _client.DownloadFileAsync(new Uri(Domain.UpdatingData.Files), _tmpZip);
             _lock.WaitOne();
         }
@@ -58,17 +57,8 @@ namespace Onsharp.Updater
         /// </summary>
         private void Finish()
         {
-            string pluginPath = Path.Combine(Bridge.PluginsPath, Domain.UpdatingData.PluginFile + ".dll");
-            Domain = new PluginDomain(Domain.PluginManager, pluginPath);
-            Domain.Initialize();
-            if (Domain.Plugin.State == PluginState.Failed)
-            {
-                Domain = null;
-                return;
-            }
-            
             _progress.Refresh(100, "Finished!");
-            Domain.Plugin.Logger.Info("Update v{VER} successfully installed! {CHANGELOG}", Domain.Plugin.Meta.Version, 
+            Bridge.Logger.Info("Update v{VER} successfully installed! {CHANGELOG}", Domain.UpdatingData.Version, 
                 (string.IsNullOrEmpty(_changelog) ? "" : _changelog));
             _lock.Set();
         }
@@ -122,7 +112,7 @@ namespace Onsharp.Updater
             _progress.Refresh(e.ProgressPercentage, "Downloading...");
         }
 
-        internal static void DeleteFileSilently(string path)
+        private static void DeleteFileSilently(string path)
         {
             try
             {

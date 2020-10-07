@@ -20,7 +20,6 @@ namespace Onsharp.Plugins
     {
         private static readonly Type EntryPointType = typeof(EntryPoint);
         private static readonly Type PluginType = typeof(Plugin);
-        private readonly AssemblyLoadContext _context;
         private Assembly _assembly;
         
         /// <summary>
@@ -64,17 +63,6 @@ namespace Onsharp.Plugins
         {
             Path = path;
             PluginManager = pluginManager;
-            _context = new AssemblyLoadContext(null, true);
-        }
-
-        /// <summary>
-        /// Resets the complete domain before it even started. This is for the updater to clean up.
-        /// </summary>
-        internal void PreReset()
-        {
-            _context.Unload();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
         }
         
         /// <summary>
@@ -86,9 +74,13 @@ namespace Onsharp.Plugins
             Bridge.Logger.Info("Loading plugin on path \"{PATH}\"...", Path);
             Server = new Server(this);
             EntryPoints = new List<EntryPoint>();
-            using (Stream stream = File.OpenRead(Path))
+            _assembly = PluginManager.Context.Load(Path);
+            if (_assembly == null)
             {
-                _assembly = _context.LoadFromStream(stream);
+                ChangePluginState(PluginState.Failed);
+                Bridge.Logger.Fatal(
+                    "Could not finish the load process of the plugin on path \"{PATH}\": An assembly is already loaded in the context!", Path);
+                return;
             }
             
             foreach (Type type in _assembly.GetExportedTypes())
@@ -213,12 +205,14 @@ namespace Onsharp.Plugins
 
         private PackageProvider TryCreatePackageProvider(Type type)
         {
+            if (type == null) return null;
             try
             {
                 return (PackageProvider) Activator.CreateInstance(type);
             }
-            catch
+            catch(Exception e)
             {
+                Bridge.Logger.Error(e, "Could not create package provider {T} because of an error!", type.FullName);
                 return null;
             }
         }
@@ -250,14 +244,12 @@ namespace Onsharp.Plugins
         /// <summary>
         /// Stops the plugin and unloads it.
         /// </summary>
-        /// <param name="completely">If true, the domain is getting unregistered and later disposed</param>
-        internal void Stop(bool completely)
+        internal void Stop()
         {
             try
             {
                 Plugin.Logger.Warn("Stopping plugin {NAME}...", Plugin.Display);
                 Plugin.OnStop();
-                _context.Unload();
                 lock (PluginManager.Plugins)
                     PluginManager.Plugins.Remove(Plugin);
                 ChangePluginState(PluginState.Stopped);
@@ -268,9 +260,6 @@ namespace Onsharp.Plugins
                 Plugin.Logger.Error(ex, "Plugin {NAME} failed to stop!", Plugin.Display);
             }
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            if (!completely) return;
             lock (PluginManager.Domains)
             {
                 PluginManager.Domains.Remove(this);

@@ -38,7 +38,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The current version of Onsharp running.
         /// </summary>
-        internal static readonly Version Version = new Version(1, 1, 2);
+        internal static readonly Version Version = new Version(1, 1, 3);
 
         /// <summary>
         /// The current api version of onsharp.
@@ -130,17 +130,17 @@ namespace Onsharp.Native
         /// <summary>
         /// A list which contains occupied command names.
         /// </summary>
-        private static List<string> OccupiedCommandNames { get; set; }
+        internal static List<string> OccupiedCommandNames { get; private set; }
         
         /// <summary>
         /// A list which contains occupied console command names.
         /// </summary>
-        private static List<string> OccupiedConsoleCommandNames { get; set; }
+        internal static List<string> OccupiedConsoleCommandNames { get; private set; }
         
         /// <summary>
         /// The current console manager running in the background.
         /// </summary>
-        private static ConsoleManager ConsoleManager { get; set; }
+        internal static ConsoleManager ConsoleManager { get; set; }
         
         /// <summary>
         /// All converters which are registered in the runtime.
@@ -219,7 +219,7 @@ namespace Onsharp.Native
                 if(Config.IsDebug) Logger.Warn("{DEBUG}-Mode is currently active!", "DEBUG");
                 ConsoleManager = new ConsoleManager();
                 Runtime = new Bridge();
-                Runtime.RegisterConsoleCommands(Runtime);
+                ConsoleManager.Reset();
             }
             catch (Exception ex)
             {
@@ -239,6 +239,7 @@ namespace Onsharp.Native
                 PluginManager.ForceStop(plugin);
             }
             
+            PluginManager.Unload();
             Logger.Info("Onsharp successfully stopped!");
         }
 
@@ -356,7 +357,8 @@ namespace Onsharp.Native
                     int typeId = System.Convert.ToInt32(args[0]);
                     if (typeId == 7 || typeId == 6) return true;
                     EventType type = (EventType) typeId;
-                    
+
+                    bool consoleBreak = false;
                     bool flag = true;
                     PluginManager.IteratePlugins(plugin =>
                     {
@@ -386,7 +388,15 @@ namespace Onsharp.Native
                         }
                         else if (type == EventType.ConsoleInput)
                         {
-                            ConsoleManager.PollInput((string) objArgs[0]);
+                            if (consoleBreak) return;
+                            string input = (string) objArgs[0];
+                            if (ConsoleManager.PollInput(input, true))
+                            {
+                                consoleBreak = true;
+                                return;
+                            }
+                            
+                            consoleBreak = ConsoleManager.PollInput(input);
                         }
                     });
             
@@ -864,6 +874,13 @@ namespace Onsharp.Native
         public void OnHelpConsoleCommand([Describe("The page number with the next 5 commands.")] int page = 1)
         {
             ConsoleManager.PrintCommands(page);
+        }
+
+        [ConsoleCommand("reload", "Reloads all plugins")]
+        public void OnReloadConsoleCommand()
+        {
+            PluginManager.ReloadLibs();
+            PluginManager.Reload();
         }
 
         [ConsoleCommand("exit", "Stops the server")]

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Onsharp.Commands;
-using Onsharp.Plugins;
 using Onsharp.Utils;
 
 namespace Onsharp.Native
@@ -21,7 +20,17 @@ namespace Onsharp.Native
             _commands = new List<ConsoleCommand>();
         }
 
-        internal void PollInput(string input)
+        internal void Reset()
+        {
+            lock (_commands)
+            {
+                _commands.Clear();
+            }
+            
+            Register(Bridge.Runtime, "native", true);
+        }
+        
+        internal bool PollInput(string input, bool native = false)
         {
             if (input.StartsWith("/"))
             {
@@ -36,20 +45,23 @@ namespace Onsharp.Native
                         args[i - 1] = parts[i];
                     }
                     
-                    ExecuteCommand(input, name, args);
+                    return ExecuteCommand(input, name, args, native);
                 }
             }
+
+            return false;
         }
 
-        private void ExecuteCommand(string line, string name, string[] parts)
+        private bool ExecuteCommand(string line, string name, string[] parts, bool native = false)
         {
             try
             {
-                ConsoleCommand command = GetCommand(name);
+                ConsoleCommand command = GetCommand(name, native);
                 if (command == null)
                 {
-                    Bridge.Logger.Fatal("No such a command found! Consider \"help\" to see all existing commands.");
-                    return;
+                    if(!native)
+                        Bridge.Logger.Fatal("No such a command found! Consider \"help\" to see all existing commands.");
+                    return false;
                 }
                 
                 List<string> strArgs = new List<string>();
@@ -113,11 +125,11 @@ namespace Onsharp.Native
                 if (requiredParams > strArgs.Count)
                 {
                     Bridge.Logger.Fatal("Not enough arguments!");
-                    return;
+                    return true;
                 }
 
                 object[] args = Bridge.ConvertBasic(strArgs, parameters, true);
-                if(args == null) return;
+                if(args == null) return true;
                 command.FireEvent(args);
             }
             catch (Exception ex)
@@ -125,15 +137,17 @@ namespace Onsharp.Native
                 Bridge.Logger.Error(ex,
                     "An error occurred while executing an command with line \"{LINE}\"!", line);
             }
+            return true;
         }
 
-        private ConsoleCommand GetCommand(string name)
+        private ConsoleCommand GetCommand(string name, bool native)
         {
             lock (_commands)
             {
                 for (int i = _commands.Count - 1; i >= 0; i--)
                 {
                     ConsoleCommand command = _commands[i];
+                    if (command.IsNative != native) continue;
                     if (string.Equals(command.Name, name, StringComparison.CurrentCultureIgnoreCase))
                     {
                         return command;
@@ -157,26 +171,30 @@ namespace Onsharp.Native
                 if(page > pages) return;
                 string header = page + "/" + pages;
                 Bridge.Logger.Info("<============[ Help ({PAGES}) ]============>", header);
-                int start = CommandsPerPage * page;
+                int start = CommandsPerPage * (page - 1);
                 int end = start + CommandsPerPage - 1;
-                foreach (ConsoleCommand command in _commands)
-                {
-                    Bridge.Logger.Info("{COMMAND}" + command.Usage.Text + " : " + command.Description, command.CommandText);
-                    foreach (Usage.Parameter parameter in command.Usage.Parameters)
-                    {
-                        Bridge.Logger.Info("    {NAME} (" + parameter.Type + "): " + parameter.Description, parameter.Name);
-                    }
 
-                    start++;
-                    if(start > end)
-                        break;
+                for (int i = start; i <= end; i++)
+                {
+                    if(_commands.Count <= i) break;
+                    ConsoleCommand command = _commands[i];
+                    PrintCommand(command);
                 }
                 
                 Bridge.Logger.Info("<============[ Help ({PAGES}) ]============>", header);
             }
         }
+
+        private void PrintCommand(ConsoleCommand command)
+        {
+            Bridge.Logger.Info("{COMMAND}" + command.Usage.Text + " : " + command.Description, command.CommandText);
+            foreach (Usage.Parameter parameter in command.Usage.Parameters)
+            {
+                Bridge.Logger.Info("    {NAME} (" + parameter.Type + "): " + parameter.Description, parameter.Name);
+            }
+        }
         
-        internal void Register(object owner, string specific)
+        internal void Register(object owner, string specific, bool native = false)
         {
             lock (_commands)
             {
@@ -188,6 +206,11 @@ namespace Onsharp.Native
                     Bridge.Logger.Debug("A new console command was found: {name}; Try to register it...", command.Name);
                     if (Bridge.IsConsoleCommandOccupied(command.Name))
                     {
+                        if (specific == "native")
+                        {
+                            return;
+                        }
+                        
                         if (string.IsNullOrEmpty(specific))
                         {
                             Bridge.Logger.Fatal(
@@ -195,7 +218,7 @@ namespace Onsharp.Native
                                 command.Name);
                             continue;
                         }
-                        
+
                         string newName = specific + ":" + command.Name;
                         Bridge.Logger.Warn("Occupied console command name found, changed it to plugin-specific: {OLD} => {NEW}", command.Name, newName);
                         command.SetCommandName(newName);
@@ -203,6 +226,7 @@ namespace Onsharp.Native
                     
                     Bridge.OccupyConsoleCommand(command.Name);
                     command.SetHandler(owner, method);
+                    command.IsNative = native;
                     _commands.Add(command);
                     Bridge.Logger.Debug("A new console command was registered: {CMD}!", command.Name);
                 }
@@ -221,6 +245,11 @@ namespace Onsharp.Native
                     Bridge.Logger.Debug("A new console command was found: {name}; Try to register it...", command.Name);
                     if (Bridge.IsConsoleCommandOccupied(command.Name))
                     {
+                        if (specific == "native")
+                        {
+                            return;
+                        }
+                        
                         if (string.IsNullOrEmpty(specific))
                         {
                             Bridge.Logger.Fatal(

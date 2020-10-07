@@ -38,6 +38,8 @@ namespace Onsharp.Commands
         /// </summary>
         internal string CommandText { get; private set; }
         
+        internal bool IsNative { get; set; }
+        
         private MethodInfo _handler;
         private object _owner;
 

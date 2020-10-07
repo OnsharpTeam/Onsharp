@@ -466,7 +466,7 @@ namespace Onsharp
                     if (@event.Name == name)
                     {
                         ParameterInfo[] parameters = @event.Parameters;
-                        object[] args = new object[nArgs.Length - 2];
+                        object[] args = new object[nArgs.Length + 1];
                         args[0] = CreatePlayer(player);
                         for (int j = 0; j < nArgs.Length; j++)
                         {

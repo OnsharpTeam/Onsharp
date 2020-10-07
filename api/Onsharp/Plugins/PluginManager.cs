@@ -5,9 +5,10 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Onsharp.Exceptions;
+using Onsharp.Commands;
 using Onsharp.Native;
 using Onsharp.Updater;
+using Onsharp.Utils;
 
 namespace Onsharp.Plugins
 {
@@ -15,13 +16,92 @@ namespace Onsharp.Plugins
     {
         public List<Plugin> Plugins { get; }
         
-        internal List<PluginDomain> Domains { get; }
-        
+        internal List<PluginDomain> Domains { get; private set; }
+
+        internal PluginLoadContext Context { get; private set; }
+
+        private bool _isLoaded;
+
         internal PluginManager()
         {
             Plugins = new List<Plugin>();
             Domains = new List<PluginDomain>();
+            Context = new PluginLoadContext();
             ReloadLibs();
+            Reload();
+        }
+
+        /// <summary>
+        /// Adds a package to the server config object if not existing.
+        /// </summary>
+        /// <param name="name"></param>
+        private void AddPackage(string name)
+        {
+            JArray array = Bridge.ServerConfig["packages"] as JArray;
+            if (array == null) return;
+            if (array.Any(t => t.Value<string>() == name)) return;
+            array.Add(name);
+            Onset.StartPackage(name);
+        }
+
+        public IReadOnlyList<Plugin> GetAllPlugins()
+        {
+            return Plugins.AsReadOnly();
+        }
+
+        internal void IteratePlugins(Action<Plugin> callback)
+        {
+            lock (Plugins)
+            {
+                for (int i = Plugins.Count - 1; i >= 0; i--)
+                {
+                    Plugin plugin = Plugins[i];
+                    callback.Invoke(plugin);
+                }
+            }
+        }
+
+        internal PluginDomain GetDomain(string id)
+        {
+            lock (Domains)
+            {
+                return Domains.SelectFirst(domain => domain.Plugin.Meta.Id == id);
+            }
+        }
+
+        public Plugin GetPlugin(string id)
+        {
+            lock (Plugins)
+            {
+                for (int i = Plugins.Count - 1; i >= 0; i--)
+                {
+                    Plugin plugin = Plugins[i];
+                    if (plugin.Meta.Id == id)
+                    {
+                        return plugin;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public void Start(string name)
+        {
+            string path = Path.Combine(Bridge.PluginsPath, name + ".dll");
+            CreateDomain(path)?.Start();
+        }
+
+        public void Reload()
+        {
+            if (_isLoaded)
+            {
+                Unload();
+                Context = new PluginLoadContext();
+            }
+
+            _isLoaded = true;
+            bool reloadAfter = false;
             List<PluginDomain> domainCache = new List<PluginDomain>();
             foreach (string pluginPath in Directory.GetFiles(Bridge.PluginsPath))
             {
@@ -43,9 +123,7 @@ namespace Onsharp.Plugins
                             domain.Plugin.Display, domain.Plugin.Meta.Version, domain.UpdatingData.Version);
                         AutoUpdater updater = new AutoUpdater(domain);
                         updater.Start();
-                        if (updater.Domain == null)
-                            continue;
-                        domain = updater.Domain;
+                        reloadAfter = true;
                     }
                 }
 
@@ -58,6 +136,12 @@ namespace Onsharp.Plugins
                 }
                 
                 domainCache.Add(domain);
+            }
+
+            if (reloadAfter)
+            {
+                Reload();
+                return;
             }
 
             File.WriteAllText(Path.Combine(Bridge.ServerPath, "server_config.json"),
@@ -101,100 +185,25 @@ namespace Onsharp.Plugins
             }
         }
 
-        /// <summary>
-        /// Adds a package to the server config object if not existing.
-        /// </summary>
-        /// <param name="name"></param>
-        private void AddPackage(string name)
+        internal void Unload()
         {
-            JArray array = Bridge.ServerConfig["packages"] as JArray;
-            if (array == null) return;
-            if (array.Any(t => t.Value<string>() == name)) return;
-            array.Add(name);
-            Onset.StartPackage(name);
-        }
-
-        public IReadOnlyList<Plugin> GetAllPlugins()
-        {
-            return Plugins.AsReadOnly();
-        }
-
-        internal void IteratePlugins(Action<Plugin> callback)
-        {
-            lock (Plugins)
-            {
-                for (int i = Plugins.Count - 1; i >= 0; i--)
-                {
-                    Plugin plugin = Plugins[i];
-                    callback.Invoke(plugin);
-                }
-            }
-        }
-        
-
-        public Plugin GetPlugin(string id)
-        {
-            lock (Plugins)
-            {
-                for (int i = Plugins.Count - 1; i >= 0; i--)
-                {
-                    Plugin plugin = Plugins[i];
-                    if (plugin.Meta.Id == id)
-                    {
-                        return plugin;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        public void Start(string name)
-        {
-            string path = Path.Combine(Bridge.PluginsPath, name + ".dll");
-            CreateDomain(path)?.Start();
-        }
-
-        public void Stop(Plugin plugin)
-        {
-            List<string> dependencies = new List<string>();
-            IteratePlugins(otherPlugin =>
-            {
-                if(otherPlugin.Meta.Id == plugin.Meta.Id) return;
-                if(otherPlugin.Meta.Dependencies.Length == 0) return;
-                if(!otherPlugin.Meta.Dependencies.Contains(plugin.Meta.Id)) return;
-                dependencies.Add(otherPlugin.Meta.Id);
-            });
-
-            if (dependencies.Count > 0)
-                throw new PluginNeededAsDependencyException(plugin.Meta.Id, dependencies);
+            Context.UnloadAndClean();
+            Plugins.Clear();
+            Domains.Clear();
+            CommandInfo.Reset();
+            Bridge.OccupiedCommandNames.Clear();
+            Bridge.OccupiedConsoleCommandNames.Clear();
+            Bridge.ConsoleManager.Reset();
             
-            ForceStop(plugin);
+            _isLoaded = false;
         }
-        
+
         internal void ForceStop(Plugin plugin)
         {
             PluginDomain domain = GetDomain(plugin);
             if (domain != null)
             {
-                domain.Stop(true);
-            }
-            else
-            {
-                Bridge.Logger.Fatal("No domain found for plugin {ID}!", plugin.Meta.Id);
-            }
-        }
-
-        public void Restart(Plugin plugin)
-        {
-            PluginDomain domain = GetDomain(plugin);
-            if (domain != null)
-            {
-                domain.Stop(false);
-                domain.Initialize();
-                if (domain.Plugin.State == PluginState.Failed)
-                    return;
-                domain.Start();
+                domain.Stop();
             }
             else
             {

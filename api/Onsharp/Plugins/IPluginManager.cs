@@ -27,19 +27,9 @@ namespace Onsharp.Plugins
         void Start(string name);
 
         /// <summary>
-        /// Stops the given plugin and unloads it completely.
-        /// Stopping a plugin which is dependency of another running plugin, will cancel the stopping process due to a dependency lock.
+        /// Reloads all plugins. If new plugins were added to the plugins folder, the newly added plugins will be loaded, too.
         /// </summary>
-        /// <param name="plugin">The plugin to be stopped</param>
-        /// <exception cref="PluginNeededAsDependencyException">When the plugin is still a dependency of another plugin</exception>
-        void Stop(Plugin plugin);
-
-        /// <summary>
-        /// Restarts the plugin: Stops the plugin and unloads it. After the plugin is unloaded, the plugin gets loaded again and started.
-        /// </summary>
-        /// <param name="plugin"></param>
-        void Restart(Plugin plugin);
-
+        void Reload();
         /// <summary>
         /// Reloads the libraries folder. When reloading the folder, every library will be reinitialized by the .NET runtime.
         /// </summary>

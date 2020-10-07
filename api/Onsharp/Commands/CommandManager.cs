@@ -36,6 +36,11 @@ namespace Onsharp.Commands
                     Bridge.Logger.Debug("A new command was found: {name}; Try to register it...", command.Name);
                     if (Bridge.IsCommandOccupied(command.Name))
                     {
+                        if (specific == "native")
+                        {
+                            return;
+                        }
+
                         string newName = specific + ":" + command.Name;
                         Bridge.Logger.Warn("Occupied console command name found, changed it to plugin-specific: {OLD} => {NEW}", command.Name, newName);
                         command.SetCommandName(newName);
@@ -68,6 +73,11 @@ namespace Onsharp.Commands
                     Bridge.Logger.Debug("A new command was found: {name}; Try to register it...", command.Name);
                     if (Bridge.IsCommandOccupied(command.Name))
                     {
+                        if (specific == "native")
+                        {
+                            return;
+                        }
+                        
                         string newName = specific + ":" + command.Name;
                         Bridge.Logger.Warn("Occupied console command name found, changed it to plugin-specific: {OLD} => {NEW}", command.Name, newName);
                         command.SetCommandName(newName);
