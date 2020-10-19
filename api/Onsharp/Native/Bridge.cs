@@ -38,7 +38,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The current version of Onsharp running.
         /// </summary>
-        internal static readonly Version Version = new Version(1, 1, 3);
+        internal static readonly Version Version = new Version(1, 1, 4);
 
         /// <summary>
         /// The current api version of onsharp.
