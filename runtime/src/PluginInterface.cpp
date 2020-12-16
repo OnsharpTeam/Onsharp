@@ -32,6 +32,7 @@ EXPORT(void) OnPluginStop()
 EXPORT(void) OnPluginTick(float DeltaSeconds)
 {
     (void)DeltaSeconds;
+    Plugin::Get()->GetBridge().TriggerTick();
 }
 
 EXPORT(void) OnPackageLoad(const char *PackageName, lua_State *L)

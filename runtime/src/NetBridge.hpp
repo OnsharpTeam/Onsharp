@@ -339,6 +339,11 @@ public:
         init();
     }
 
+    void TriggerTick()
+    {
+        triggerTick();
+    }
+
     void Stop()
     {
         unload();
