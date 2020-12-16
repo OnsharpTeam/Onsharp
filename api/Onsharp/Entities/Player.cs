@@ -302,8 +302,8 @@ namespace Onsharp.Entities
         /// <param name="args">The arguments which will passed to the event handler. The maximum length is 10</param>
         public void CallRemote(string name, params object[] args)
         {
-            if(args.Length > 10)
-                throw new ArgumentException("The maximum length of event handler arguments are 10!");
+            if(args.Length > 14)
+                throw new ArgumentException("The maximum length of event handler arguments is 14!");
 
             IntPtr[] argsArr = new IntPtr[args.Length];
             for (int i = 0; i < args.Length; i++)

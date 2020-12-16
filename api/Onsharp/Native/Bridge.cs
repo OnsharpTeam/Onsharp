@@ -38,7 +38,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The current version of Onsharp running.
         /// </summary>
-        internal static readonly Version Version = new Version(1, 1, 4);
+        internal static readonly Version Version = new Version(1, 1, 5);
 
         /// <summary>
         /// The current api version of onsharp.
@@ -154,6 +154,14 @@ namespace Onsharp.Native
         /// The path to the file containing all admins.
         /// </summary>
         private static string AdminsFile { get; set; }
+        
+        /// <summary>
+        /// The queue task care of callbacks which needs to be called from the main thread.
+        /// In here actions can be added from other threads which than will be called by
+        /// the main thread by the tick trigger. This allows multithreading without risking a memory
+        /// violation. The speed of the queue is regulated by the underlying plugin tick of Onset.
+        /// </summary>
+        private static List<Action> TaskQueue { get; set; }
 
         private static readonly Converter DefaultConverter = new BasicConverter();
 
@@ -165,6 +173,7 @@ namespace Onsharp.Native
         {
             try
             {
+                TaskQueue = new List<Action>();
                 OccupiedCommandNames = new List<string>();
                 OccupiedConsoleCommandNames = new List<string>();
                 ServerPath = appPath;
@@ -231,6 +240,22 @@ namespace Onsharp.Native
             
             PluginManager.Unload();
             Logger.Info("Onsharp successfully stopped!");
+        }
+
+        /// <summary>
+        /// Pulls a plugin tick trigger.
+        /// </summary>
+        internal static void TriggerTick()
+        {
+            lock (TaskQueue)
+            {
+                foreach (Action callback in TaskQueue)
+                {
+                    callback();
+                }
+                
+                TaskQueue.Clear();
+            }
         }
 
         /// <summary>
@@ -816,6 +841,14 @@ namespace Onsharp.Native
 
         public double DeltaSeconds => Onset.GetDeltaSeconds();
 
+        public void Invoke(Action callback)
+        {
+            lock (TaskQueue)
+            {
+                TaskQueue.Add(callback);
+            }
+        }
+
         public bool CallEvent(string name, params object[] args)
         {
             bool flag = true;
@@ -832,11 +865,6 @@ namespace Onsharp.Native
                     flag = false;
             });
             return flag;
-        }
-
-        [Obsolete("Since entities get created when the proper event got fired, there is no need for refreshing with the LUA side")]
-        public void DisableEntityPoolRefreshing()
-        {
         }
 
         public void RegisterConverter<T>(Func<string, Type, object> convertProcess)

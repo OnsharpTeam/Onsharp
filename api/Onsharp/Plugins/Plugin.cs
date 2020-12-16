@@ -1,4 +1,6 @@
-﻿using Onsharp.IO;
+﻿using System;
+using Onsharp.IO;
+using Onsharp.Metrics;
 using Onsharp.Native;
 
 namespace Onsharp.Plugins
@@ -55,6 +57,34 @@ namespace Onsharp.Plugins
         /// </summary>
         public virtual void OnInitialize()
         {
+        }
+
+        /// <summary>
+        /// Enables the metrics system for this plugin. In order to use the metrics system, every plugin needs a metrics
+        /// secret generated on https://onsharp.eternitylife.de/metrics.
+        /// The secret in combination with the plugin id allowing the underlying metrics client to communicate with
+        /// the remote metrics API.
+        /// After the connection could be successfully established to the metrics API, a connection gets wrapped in a
+        /// <see cref="IMetrics"/> client in order to allow simple access.
+        /// If the connection failed or something was configured wrong or the MetricsEnabled flag in the runtime config is disabled,
+        /// the process will fail and the method returns null.
+        /// </summary>
+        /// <param name="secret">The secret for the metrics API</param>
+        /// <returns>The <see cref="IMetrics"/> client or null on failure</returns>
+        protected IMetrics EnableMetrics(string secret)
+        {
+            try
+            {
+                if (!Bridge.Config.MetricsEnabled) return null;
+                MetricsClient client = new MetricsClient(Meta.Id, secret);
+                client.Connect();
+                return client;
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "An error occurred while trying to enable the metrics system!");
+                return null;
+            }
         }
     }
 }

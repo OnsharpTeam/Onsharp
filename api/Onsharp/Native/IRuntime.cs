@@ -33,6 +33,14 @@ namespace Onsharp.Native
         /// The delta time in seconds.
         /// </summary>
         double DeltaSeconds { get; }
+
+        /// <summary>
+        /// Adds the given callback to the main thread task queue. The action will be executed in the near future
+        /// by the main thread. Every function which directly contacts the underlying LUA api needs to be called either
+        /// directly from the main thread, or through this invoke functions, if you are not in the main thread currently.
+        /// </summary>
+        /// <param name="callback">The callback which defines the queue task</param>
+        void Invoke(Action callback);
         
         /// <summary>
         /// Calls a custom event on all current running plugin instances. If the event gets cancelled, this event is returning false.
@@ -41,13 +49,6 @@ namespace Onsharp.Native
         /// <param name="args">The arguments of the custom event. Onsharp Entities are valid but only in the single form. Lists or something like that are not allowed in combination</param>
         /// <returns>False, if the event gets cancelled</returns>
         bool CallEvent(string name, params object[] args);
-
-        /// <summary>
-        /// Disables the refreshing of the entity pools when retrieving all elements of the pools.
-        /// The disabling is only recommended if only Onsharp will be used for server-side scripting because than the
-        /// refreshing process is unnecessary.
-        /// </summary>
-        void DisableEntityPoolRefreshing();
 
         /// <summary>
         /// Registers a new converter in the system.

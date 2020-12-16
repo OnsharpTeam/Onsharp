@@ -5,8 +5,8 @@
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Company>OnsharpTeam</Company>
-        <AssemblyVersion>1.1.4</AssemblyVersion>
-        <FileVersion>1.1.4</FileVersion>
+        <AssemblyVersion>1.1.5</AssemblyVersion>
+        <FileVersion>1.1.5</FileVersion>
 
         <PackageId>Onsharp</PackageId>
         <Version>1.0.0</Version>
@@ -22,7 +22,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>Wrapper </PackageTags>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <PackageVersion>1.1.4</PackageVersion>
+        <PackageVersion>1.1.5</PackageVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

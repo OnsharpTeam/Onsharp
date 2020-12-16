@@ -545,29 +545,5 @@ namespace Onsharp.Native
 
         [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr GetNString(IntPtr ptr);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void FreeVPtr(IntPtr ptr);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern double GetVDouble(IntPtr ptr);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern float GetVFloat(IntPtr ptr);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool GetVBool(IntPtr ptr);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr GetVString(IntPtr ptr);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void ForceRuntimeRestart(bool complete);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int ReleaseIntArray(IntPtr ptr);
-        
-        [DllImport(Bridge.DllName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr GetEntities([MarshalAs(UnmanagedType.LPStr)] string name, ref int len);
     }
 }

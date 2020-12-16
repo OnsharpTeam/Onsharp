@@ -1,7 +1,4 @@
-﻿
-using System;
-
-namespace Onsharp.Native
+﻿namespace Onsharp.Native
 {
     /// <summary>
     /// The config for the native runtime of Onsharp.
@@ -19,14 +16,13 @@ namespace Onsharp.Native
         public bool KeepPluginsUpdated { get; set; } = true;
 
         /// <summary>
-        /// The timeout how long the console command manager should wait until start to take input.
-        /// </summary>
-        [Obsolete("The console input is not getting overwatched by the console manager but by the Onset server itself.")]
-        public int ConsoleInputTimeout { get; set; } = 3000;
-
-        /// <summary>
         /// Whether the lazy mover is active or not.
         /// </summary>
         public bool LazyMoverActive { get; set; } = false;
+
+        /// <summary>
+        /// Whether the metrics system is enabled on this server or not.
+        /// </summary>
+        public bool MetricsEnabled { get; set; } = true;
     }
 }
