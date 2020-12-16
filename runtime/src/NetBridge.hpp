@@ -45,6 +45,7 @@ typedef int (*report_callback_ptr)(int progress);
 typedef void (*load_ptr)(const char* appPath);
 typedef void (*unload_ptr)();
 typedef void (*init_ptr)();
+typedef void (*trigger_tick_ptr)();
 typedef void* (*call_bridge_ptr)(const char* key, void** args, int len);
 
 #ifdef __cplusplus
@@ -62,6 +63,7 @@ private:
     coreclr_shutdown_ptr shutdownCoreClr;
     unload_ptr unload;
     init_ptr init;
+    trigger_tick_ptr triggerTick;
     call_bridge_ptr callBridge;
 
 public:
@@ -289,6 +291,21 @@ public:
         if (hr < 0)
         {
             printf("ERROR: call_bridge delegate failed - status: 0x%08x\n", hr);
+            last_error = NET_CONSOLE_ERROR;
+            return;
+        }
+
+        hr = createManagedDelegate(
+                hostHandle,
+                domainId,
+                "Onsharp",
+                "Onsharp.Native.Bridge",
+                "TriggerTick",
+                (void**)&triggerTick);
+
+        if (hr < 0)
+        {
+            printf("ERROR: trigger_tick delegate failed - status: 0x%08x\n", hr);
             last_error = NET_CONSOLE_ERROR;
             return;
         }

@@ -1314,35 +1314,6 @@ EXPORTED Plugin::NTYPE GetNType(Plugin::NValue* nPtr)
     return nPtr->type;
 }
 
-EXPORTED int* GetEntities(const char* entityName, int* len)
-{
-    std::string sFuncName = "GetAll" + std::string(entityName);
-    Lua::LuaArgs_t argValues = Lua::BuildArgumentList();
-    Lua::LuaArgs_t returnValues = Plugin::Get()->CallLuaFunction(sFuncName.c_str(), &argValues);
-    auto entityTable = returnValues.at(0).GetValue<Lua::LuaTable_t>();
-    *len = entityTable->Count();
-    int* entities = new int[entityTable->Count()];
-    int idx = 0;
-    entityTable->ForEach([entities, &idx](Lua::LuaValue k, Lua::LuaValue v) {
-        (void) k;
-        entities[idx] = (int)v.GetValue<float>();
-        idx++;
-    });
-    return entities;
-}
-
-EXPORTED int ReleaseIntArray(int* lArray)
-{
-    delete[] lArray;
-    return 0;
-}
-
-EXPORTED void ForceRuntimeRestart(bool complete)
-{
-    (void) complete;
-    Plugin::Get()->GetBridge().Restart();
-}
-
 EXPORTED bool IsEntityValid(int id, const char* entityName)
 {
     std::string sFuncName = "IsValid" + std::string(entityName);
