@@ -129,7 +129,9 @@ namespace Onsharp.Modules
                     Dictionary<string, string> langPack = new Dictionary<string, string>();
                     foreach (string line in content.Split('\n'))
                     {
+                        if (string.IsNullOrEmpty(line.Trim())) continue;
                         string[] parts = line.Trim().Split('=', 2);
+                        if (parts.Length != 2) continue;
                         langPack.Add(parts[0], parts[1]);
                     }
 
