@@ -19,7 +19,6 @@ using Onsharp.Service;
 using Onsharp.Updater;
 using Onsharp.Utils;
 using Onsharp.World;
-using IServiceProvider = System.IServiceProvider;
 using Object = Onsharp.Entities.Object;
 using Timer = Onsharp.Threading.Timer;
 
@@ -40,7 +39,7 @@ namespace Onsharp.Native
         /// <summary>
         /// The current version of Onsharp running.
         /// </summary>
-        internal static readonly Version Version = new Version(1, 1, 5);
+        internal static readonly Version Version = new Version(1, 1, 6);
 
         /// <summary>
         /// The current api version of onsharp.
