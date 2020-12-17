@@ -15,9 +15,11 @@ using Onsharp.Interop;
 using Onsharp.IO;
 using Onsharp.Modules;
 using Onsharp.Plugins;
+using Onsharp.Service;
 using Onsharp.Updater;
 using Onsharp.Utils;
 using Onsharp.World;
+using IServiceProvider = System.IServiceProvider;
 using Object = Onsharp.Entities.Object;
 using Timer = Onsharp.Threading.Timer;
 
@@ -162,7 +164,8 @@ namespace Onsharp.Native
         /// violation. The speed of the queue is regulated by the underlying plugin tick of Onset.
         /// </summary>
         private static List<Action> TaskQueue { get; set; }
-
+        
+        private static readonly Onsharp.Service.IServiceProvider InternalServiceProvider = new ServiceProvider();
         private static readonly Converter DefaultConverter = new BasicConverter();
 
         /// <summary>
@@ -840,6 +843,8 @@ namespace Onsharp.Native
         public double UptimeMillis => Onset.GetTheTickCount();
 
         public double DeltaSeconds => Onset.GetDeltaSeconds();
+
+        public Onsharp.Service.IServiceProvider ServiceProvider => InternalServiceProvider;
 
         public void Invoke(Action callback)
         {

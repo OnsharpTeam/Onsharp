@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Onsharp.Native
 {
@@ -33,6 +32,11 @@ namespace Onsharp.Native
         /// The delta time in seconds.
         /// </summary>
         double DeltaSeconds { get; }
+        
+        /// <summary>
+        /// The current instance of the service provider running in the Onsharp runtime.
+        /// </summary>
+        Onsharp.Service.IServiceProvider ServiceProvider { get; }
 
         /// <summary>
         /// Adds the given callback to the main thread task queue. The action will be executed in the near future
