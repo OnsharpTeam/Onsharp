@@ -1,0 +1,1 @@
+mono "%WASM_SDK%\packager.exe" --copy=always --out=./dist --asset=./runtime.html --asset=./server.py Onsharp.Client.Runtime.dll

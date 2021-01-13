@@ -563,3 +563,6 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/jetbrains+all,cmake,clion+all,visualstudio,rider
+
+runtime-cef/dist
+runtime-cef/Onsharp.Client.Runtime.dll
